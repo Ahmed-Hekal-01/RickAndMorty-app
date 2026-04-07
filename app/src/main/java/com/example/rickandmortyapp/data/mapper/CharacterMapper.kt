@@ -23,13 +23,3 @@ fun CharacterDto.toDomain(): Character {
         episodeIds = this.episode.map { url -> url.substringAfterLast("/") }
     )
 }
-
-fun CharacterPageResponse.toPage(): Page<Character> {
-    return Page(
-        count = this.info.count,
-        pages = this.info.pages,
-        next = this.info.next,
-        prev = this.info.prev,
-        results = this.results.map { it.toDomain() }
-    )
-}

@@ -17,16 +17,6 @@ fun EpisodeDto.toDomain(): Episode {
     )
 }
 
-fun EpisodePageResponse.toPage(): Page<Episode> {
-    return Page(
-        count = this.info.count,
-        pages = this.info.pages,
-        next = this.info.next,
-        prev = this.info.prev,
-        results = this.results.map { it.toDomain() }
-    )
-}
-
 private fun parseSeasonAndEpisode(episodeString: String): Pair<Int, Int> {
     // "S01E01" -> season 1, episode 1
     val regex = "S(\\d+)E(\\d+)".toRegex()
