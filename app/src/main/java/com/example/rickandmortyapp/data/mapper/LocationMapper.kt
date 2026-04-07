@@ -12,7 +12,7 @@ fun LocationDto.toDomain(): Location {
         name = this.name,
         type = this.type,
         dimension = this.dimension,
-        residentCount = this.residentCharacters.size
+        residentCharactersIds = this.residentCharacters
     )
 }
 
