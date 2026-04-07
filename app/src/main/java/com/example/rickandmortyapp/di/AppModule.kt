@@ -15,11 +15,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient() : HttpClient {
-        return KtorClient.httpClient
-    }
+    fun provideHttpClient(): HttpClient = KtorClient.httpClient
 
-    fun provideRickAndMortyApiService(client: HttpClient): IRickAndMortyApiService {
-        return KtorRickAndMortyService(client)
-    }
+    @Provides
+    @Singleton
+    fun provideRickAndMortyApiService(
+        client: HttpClient
+    ): IRickAndMortyApiService = KtorRickAndMortyService(client)
 }
