@@ -12,6 +12,6 @@ fun LocationDto.toDomain(): Location {
         name = this.name,
         type = this.type,
         dimension = this.dimension,
-        residentCharactersIds = this.residentCharacters
+        residentCharactersIds = this.residentCharacters.map{ it.substringAfterLast("/")}
     )
 }
