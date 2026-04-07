@@ -250,13 +250,13 @@ class KtorRickAndMortyServiceTest {
     )
 
     private fun characterPageJson(name: String) =
-        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"result":[${characterJson(1, name)}]}"""
+        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"results":[${characterJson(1, name)}]}"""
 
     private fun locationPageJson(name: String) =
-        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"result":[${locationJson(1, name)}]}"""
+        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"results":[${locationJson(1, name)}]}"""
 
     private fun episodePageJson(name: String) =
-        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"result":[${episodeJson(1, name)}]}"""
+        """{"info":{"count":1,"pages":1,"next":null,"prev":null},"results":[${episodeJson(1, name)}]}"""
 
     private fun characterJson(id: Int, name: String) =
         """{"id":$id,"name":"$name","status":"Alive","species":"Human","type":"","gender":"Male","image":"https://example.com/$id.png","origin":{"name":"Earth","url":"https://example.com/origin"},"location":{"name":"Earth","url":"https://example.com/location"},"episode":[]}"""
