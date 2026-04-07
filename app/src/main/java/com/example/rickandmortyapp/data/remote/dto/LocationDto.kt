@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocationPageResponse(
     override val info: Info,
-    override val result: List<LocationDto>
+    override val results: List<LocationDto>
 ) : IPageResponse<LocationDto>
 
 @Serializable

@@ -30,6 +30,6 @@ fun CharacterPageResponse.toPage(): Page<Character> {
         pages = this.info.pages,
         next = this.info.next,
         prev = this.info.prev,
-        results = this.result.map { it.toDomain() }
+        results = this.results.map { it.toDomain() }
     )
 }

@@ -33,7 +33,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getAllCharacters()
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Rick Sanchez", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Rick Sanchez", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
@@ -60,7 +60,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getCharacterByPage(2)
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Morty Smith", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Morty Smith", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
@@ -86,7 +86,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getAllLocations()
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Citadel of Ricks", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Citadel of Ricks", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
@@ -113,7 +113,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getLocationByPage(4)
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Earth (C-137)", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Earth (C-137)", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
@@ -139,7 +139,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getAllEpisodes()
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Pilot", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Pilot", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
@@ -166,7 +166,7 @@ class KtorRickAndMortyServiceTest {
         val result = KtorRickAndMortyService(client).getEpisodeByPage(3)
 
         assertTrue(result is NetworkResult.Success)
-        assertEquals("Pickle Rick", (result as NetworkResult.Success).data.result.first().name)
+        assertEquals("Pickle Rick", (result as NetworkResult.Success).data.results.first().name)
     }
 
     @Test
