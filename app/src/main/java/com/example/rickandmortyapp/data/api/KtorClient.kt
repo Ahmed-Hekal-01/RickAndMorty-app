@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.data.api
 
+import com.example.rickandmortyapp.BuildConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,14 +15,18 @@ object KtorClient {
 
     val httpClient = HttpClient(OkHttp) {
         expectSuccess = true
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    Timber.tag("HTTP_LOG").d(message)
+
+        if (BuildConfig.DEBUG) {
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        Timber.tag("HTTP_LOG").d(message)
+                    }
                 }
+                level = LogLevel.BODY
             }
-            level = LogLevel.BODY
         }
+
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true

@@ -15,6 +15,6 @@ data class EpisodeDto(
 
 @Serializable
 data class EpisodePageResponse(
-    override val result: List<EpisodeDto>,
+    override val results: List<EpisodeDto>,
     override val info: Info
 ) : IPageResponse<EpisodeDto>

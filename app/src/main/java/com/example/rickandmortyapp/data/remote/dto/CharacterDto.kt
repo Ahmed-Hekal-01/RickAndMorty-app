@@ -26,5 +26,5 @@ data class CharacterDto(
 @Serializable
 data class CharacterPageResponse(
     override val info: Info,
-    override val result: List<CharacterDto>
+    override val results: List<CharacterDto>
 ) : IPageResponse<CharacterDto>
