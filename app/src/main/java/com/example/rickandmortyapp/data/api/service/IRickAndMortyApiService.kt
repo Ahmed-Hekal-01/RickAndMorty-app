@@ -14,6 +14,11 @@ interface IRickAndMortyApiService {
     suspend fun getCharacterByID(id : Int): NetworkResult<CharacterDto>
     suspend fun getCharacterByPage(page : Int) : NetworkResult<CharacterPageResponse>
     suspend fun getListOfCharactersByIds(ids : List<Int>) : NetworkResult<List<CharacterDto>>
+    suspend fun searchCharacters(
+        name: String,
+        status: String? = null,
+        page: Int = 1
+    ): NetworkResult<CharacterPageResponse>
 
     suspend fun getAllLocations(): NetworkResult<LocationPageResponse>
     suspend fun getLocationByID(id : Int): NetworkResult<LocationDto>
