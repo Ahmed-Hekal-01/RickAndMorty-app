@@ -12,32 +12,102 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryPurple,
+    onPrimary = White,
+    primaryContainer = PrimaryPurpleDark,
+    onPrimaryContainer = PrimaryLavender,
+
+    secondary = AccentCyan,
+    onSecondary = DarkBackground,
+    secondaryContainer = DarkSurfaceHigh,
+    onSecondaryContainer = DarkTextPrimary,
+
+    tertiary = PrimaryLavender,
+    onTertiary = DarkBackground,
+    tertiaryContainer = DarkSurface,
+    onTertiaryContainer = PrimaryLavender,
+
+    background = DarkBackground,
+    onBackground = DarkTextPrimary,
+
+    surface = DarkSurface,
+    onSurface = DarkTextPrimary,
+
+    surfaceVariant = DarkTextField,
+    onSurfaceVariant = DarkTextSecondary,
+
+    surfaceContainerLowest = DarkBottomBar,
+    surfaceContainerLow = DarkSurface,
+    surfaceContainer = DarkSurfaceHigh,
+    surfaceContainerHigh = DarkTextField,
+    surfaceContainerHighest = DarkBorder,
+
+    error = ErrorRed,
+    onError = White,
+    errorContainer = ErrorSoft,
+    onErrorContainer = DarkBackground,
+
+    outline = DarkBorder,
+    outlineVariant = DarkIconInactive,
+
+    inverseSurface = DarkTextPrimary,
+    inverseOnSurface = DarkBackground,
+    inversePrimary = PrimaryLavender,
+
+    scrim = Black
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val LightColorScheme = lightColorScheme(
+    primary = PrimaryPurple,
+    onPrimary = White,
+    primaryContainer = PrimaryPurpleLight,
+    onPrimaryContainer = White,
+
+    secondary = AccentCyan,
+    onSecondary = White,
+    secondaryContainer = LightSurfacePurple,
+    onSecondaryContainer = PrimaryPurple,
+
+    tertiary = PrimaryLavender,
+    onTertiary = LightTextPrimary,
+    tertiaryContainer = LightSurfacePurple,
+    onTertiaryContainer = PrimaryPurple,
+
+    background = LightBackground,
+    onBackground = LightTextPrimary,
+
+    surface = LightSurface,
+    onSurface = LightTextPrimary,
+
+    surfaceVariant = LightTextField,
+    onSurfaceVariant = LightTextSecondary,
+
+    surfaceContainerLowest = LightBottomBar,
+    surfaceContainerLow = LightSurface,
+    surfaceContainer = LightSurfacePurple,
+    surfaceContainerHigh = LightCard,
+    surfaceContainerHighest = LightTextField,
+
+    error = ErrorRed,
+    onError = White,
+    errorContainer = ErrorLightContainer,
+    onErrorContainer = LightTextPrimary,
+
+    outline = LightBorder,
+    outlineVariant = LightIconInactive,
+
+    inverseSurface = LightTextPrimary,
+    inverseOnSurface = LightSurface,
+    inversePrimary = PrimaryPurpleLight,
+
+    scrim = Black
 )
 
 @Composable
 fun RickAndMortyAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -5,50 +5,68 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rickandmortyapp.R
+import com.example.rickandmortyapp.ui.components.AnimatedGradientText
+import com.example.rickandmortyapp.ui.theme.AccentCyan
+import com.example.rickandmortyapp.ui.theme.PrimaryLavender
+import com.example.rickandmortyapp.ui.theme.PrimaryPurple
 
+@Preview(showSystemUi = true)
+@Composable
+fun LoginScreenPreview() {
+    LoginScreen()
+}
 
 @Composable
 fun LoginScreen() {
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3F0F7))
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(55.dp))
 
-            // دائرة الخلفية
             Box(
                 modifier = Modifier
-                    .size(180.dp)
+                    .size(270.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color(0xFFB39DDB),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
                                 Color.Transparent
-                            )
+                            ),
+                            radius = 480f
                         ),
                         shape = CircleShape
                     ),
@@ -56,59 +74,103 @@ fun LoginScreen() {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = null
+                    contentDescription = "Rick and Morty Logo",
+                    modifier = Modifier.size(240.dp),
+                    contentScale = ContentScale.Crop
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            Text(
+            AnimatedGradientText(
                 text = "Welcome Back",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF7E57C2)
+                fontSize = 30.sp
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Authenticate to access the news.",
+                text = "Authenticate to access the nexus.",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
-            // Email Field
             TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Email Address") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                value = email,
+                onValueChange = { email = it },
+                placeholder = {
+                    Text(
+                        text = "Email Address",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(10.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = {
+                    Text(
+                        text = "Password",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(10.dp),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Password Field
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
             Text(
                 text = "Forgot Password?",
-                color = Color(0xFF7E57C2),
+                color = MaterialTheme.colorScheme.tertiary,
+                fontSize = 14.sp,
                 modifier = Modifier.align(Alignment.End)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
-            // زرار Gradient
             Button(
                 onClick = {},
                 modifier = Modifier
@@ -117,7 +179,8 @@ fun LoginScreen() {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent
                 ),
-                contentPadding = PaddingValues()
+                contentPadding = PaddingValues(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -125,8 +188,8 @@ fun LoginScreen() {
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    Color(0xFF7E57C2),
-                                    Color(0xFFB39DDB)
+                                    PrimaryPurple,
+                                    PrimaryLavender
                                 )
                             ),
                             shape = RoundedCornerShape(12.dp)
@@ -135,17 +198,37 @@ fun LoginScreen() {
                 ) {
                     Text(
                         text = "INITIALIZE SESSION →",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 1.2.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text(
-                text = "Unregistered entity? Request Access",
-                fontSize = 12.sp,
-                color = Color.Gray
+                text = buildAnnotatedString {
+                    append("Unregistered entity? ")
+
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = "SIGN_UP",
+                            styles = TextLinkStyles(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                        ) {
+                            println("Sign Up clicked")
+                        }
+                    ) {
+                        append("Request Access")
+                    }
+                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 13.sp
             )
         }
     }
