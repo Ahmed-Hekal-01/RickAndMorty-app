@@ -5,8 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,14 +27,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rickandmortyapp.R
-import com.example.rickandmortyapp.ui.components.AnimatedGradientText
-import com.example.rickandmortyapp.ui.theme.AccentCyan
 import com.example.rickandmortyapp.ui.theme.PrimaryLavender
 import com.example.rickandmortyapp.ui.theme.PrimaryPurple
+import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 
 @Preview(showSystemUi = true)
 @Composable
@@ -50,15 +57,16 @@ fun LoginScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Spacer(modifier = Modifier.height(55.dp))
 
+            // دائرة الخلفية
             Box(
                 modifier = Modifier
-                    .size(270.dp)
+                    .size(180.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
@@ -90,7 +98,7 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Authenticate to access the nexus.",
+                text = "Authenticate to access the news.",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -161,6 +169,18 @@ fun LoginScreen() {
             )
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Password Field
+            TextField(
+                value = "",
+                onValueChange = {},
+                placeholder = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "Forgot Password?",
