@@ -261,10 +261,20 @@ private val shape = AppShape(
 )
 
 private val size = AppSize(
+
     large = 24.dp,
     medium = 16.dp,
     normal = 12.dp,
-    small = 8.dp
+    small = 8.dp,
+
+    screenPadding = 32.dp,
+    cardPadding = 20.dp,
+    formPadding = 26.dp,
+    fieldHeight = 56.dp,
+    buttonHeight = 58.dp,
+    glowWidth = 260.dp,
+    glowHeight = 420.dp,
+    glowBlur = 80.dp
 )
 
 @Composable
