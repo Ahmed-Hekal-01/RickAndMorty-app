@@ -124,6 +124,16 @@ data class AppSize(
     val medium: Dp,
     val normal: Dp,
     val small: Dp,
+    val screenPadding: Dp,
+    val cardPadding: Dp,
+    val formPadding: Dp,
+    val fieldHeight: Dp,
+    val buttonHeight: Dp,
+    val glowWidth: Dp,
+    val glowHeight: Dp,
+    val glowBlur: Dp,
+    val otpBoxWidth: Dp,
+    val otpBoxHeight: Dp,
 )
 
 val LocalAppColorScheme = staticCompositionLocalOf {
@@ -210,5 +220,15 @@ val LocalAppSize = staticCompositionLocalOf {
         medium = Dp.Unspecified,
         normal = Dp.Unspecified,
         small = Dp.Unspecified,
+        screenPadding = Dp.Unspecified,
+        cardPadding = Dp.Unspecified,
+        formPadding = Dp.Unspecified,
+        fieldHeight= Dp.Unspecified,
+        buttonHeight= Dp.Unspecified,
+        glowWidth= Dp.Unspecified,
+        glowHeight= Dp.Unspecified,
+        glowBlur= Dp.Unspecified ,
+        otpBoxWidth =Dp.Unspecified ,
+        otpBoxHeight = Dp.Unspecified ,
     )
 }
