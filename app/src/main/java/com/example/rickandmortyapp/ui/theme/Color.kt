@@ -1,6 +1,8 @@
 package com.example.rickandmortyapp.ui.theme
 
 import android.R
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 
@@ -47,7 +49,3 @@ val ErrorLightContainer = Color(0xFFFFD7D7)
 // Common
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
-
-
-
-

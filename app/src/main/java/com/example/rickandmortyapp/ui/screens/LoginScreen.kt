@@ -4,16 +4,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,19 +27,19 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.withLink
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rickandmortyapp.R
-import com.example.rickandmortyapp.ui.theme.PrimaryLavender
-import com.example.rickandmortyapp.ui.theme.PrimaryPurple
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
+import com.example.rickandmortyapp.ui.theme.AppTheme
 
 @Preview(showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    AppTheme {
+        LoginScreen()
+    }
 }
 
 @Composable
@@ -51,27 +51,26 @@ fun LoginScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(AppTheme.colorScheme.background)
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(AppTheme.size.large),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Spacer(modifier = Modifier.height(55.dp))
 
-            // دائرة الخلفية
             Box(
                 modifier = Modifier
                     .size(180.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                                AppTheme.colorScheme.glowPrimary.copy(alpha = 0.35f),
+                                AppTheme.colorScheme.glowPrimary.copy(alpha = 0.18f),
                                 Color.Transparent
                             ),
                             radius = 480f
@@ -99,8 +98,8 @@ fun LoginScreen() {
 
             Text(
                 text = "Authenticate to access the news.",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = AppTheme.typography.paragraph,
+                color = AppTheme.colorScheme.textSecondary
             )
 
             Spacer(modifier = Modifier.height(36.dp))
@@ -111,27 +110,27 @@ fun LoginScreen() {
                 placeholder = {
                     Text(
                         text = "Email Address",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = AppTheme.colorScheme.textMuted.copy(alpha = 0.7f)
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = AppTheme.shape.button,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = AppTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = AppTheme.colorScheme.surfaceVariant,
+                    disabledContainerColor = AppTheme.colorScheme.surfaceVariant,
 
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTextColor = AppTheme.colorScheme.textPrimary,
+                    unfocusedTextColor = AppTheme.colorScheme.textPrimary,
 
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
 
-                    cursorColor = MaterialTheme.colorScheme.primary
+                    cursorColor = AppTheme.colorScheme.primary
                 )
             )
 
@@ -143,49 +142,37 @@ fun LoginScreen() {
                 placeholder = {
                     Text(
                         text = "Password",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = AppTheme.colorScheme.textMuted.copy(alpha = 0.7f)
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = AppTheme.shape.button,
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = AppTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = AppTheme.colorScheme.surfaceVariant,
+                    disabledContainerColor = AppTheme.colorScheme.surfaceVariant,
 
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTextColor = AppTheme.colorScheme.textPrimary,
+                    unfocusedTextColor = AppTheme.colorScheme.textPrimary,
 
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
 
-                    cursorColor = MaterialTheme.colorScheme.primary
+                    cursorColor = AppTheme.colorScheme.primary
                 )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Password Field
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                visualTransformation = PasswordVisualTransformation()
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "Forgot Password?",
-                color = MaterialTheme.colorScheme.tertiary,
-                fontSize = 14.sp,
+                color = AppTheme.colorScheme.accent,
+                style = AppTheme.typography.labelNormal,
                 modifier = Modifier.align(Alignment.End)
             )
 
@@ -200,7 +187,7 @@ fun LoginScreen() {
                     containerColor = Color.Transparent
                 ),
                 contentPadding = PaddingValues(),
-                shape = RoundedCornerShape(12.dp)
+                shape = AppTheme.shape.button
             ) {
                 Box(
                     modifier = Modifier
@@ -208,17 +195,17 @@ fun LoginScreen() {
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    PrimaryPurple,
-                                    PrimaryLavender
+                                    AppTheme.colorScheme.gradientStart,
+                                    AppTheme.colorScheme.gradientEnd
                                 )
                             ),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = AppTheme.shape.button
                         ),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "INITIALIZE SESSION →",
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = AppTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium,
                         letterSpacing = 1.2.sp
                     )
@@ -236,7 +223,7 @@ fun LoginScreen() {
                             tag = "SIGN_UP",
                             styles = TextLinkStyles(
                                 style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.tertiary,
+                                    color = AppTheme.colorScheme.accent,
                                     fontWeight = FontWeight.Medium
                                 )
                             )
@@ -247,8 +234,8 @@ fun LoginScreen() {
                         append("Request Access")
                     }
                 },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 13.sp
+                color = AppTheme.colorScheme.textSecondary,
+                style = AppTheme.typography.labelSmall
             )
         }
     }
