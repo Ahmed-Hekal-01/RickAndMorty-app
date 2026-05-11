@@ -115,7 +115,7 @@ data class AppTypography(
 @Stable
 data class AppShape(
     val container: Shape,
-    val button: Shape
+    val button: Shape,
 )
 
 @Stable
@@ -134,6 +134,12 @@ data class AppSize(
     val glowBlur: Dp,
     val otpBoxWidth: Dp,
     val otpBoxHeight: Dp,
+    val bottomBarHeight: Dp,
+    val navIconSize: Dp,
+    val searchHeight: Dp,
+    val homeCardWidth: Dp,
+    val homeCardHeight: Dp,
+    val characterImageSize: Dp
 )
 
 val LocalAppColorScheme = staticCompositionLocalOf {
@@ -230,5 +236,11 @@ val LocalAppSize = staticCompositionLocalOf {
         glowBlur= Dp.Unspecified ,
         otpBoxWidth =Dp.Unspecified ,
         otpBoxHeight = Dp.Unspecified ,
+        bottomBarHeight = Dp.Unspecified,
+        navIconSize = Dp.Unspecified,
+        searchHeight = Dp.Unspecified,
+        homeCardWidth = Dp.Unspecified,
+        homeCardHeight = Dp.Unspecified,
+        characterImageSize = Dp.Unspecified
     )
 }

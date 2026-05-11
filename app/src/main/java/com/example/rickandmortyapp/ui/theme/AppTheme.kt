@@ -2,6 +2,7 @@ package com.example.rickandmortyapp.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -254,14 +255,11 @@ private val typography = AppTypography(
         letterSpacing = 1.sp
     )
 )
-
 private val shape = AppShape(
-    container = TODO(),
-    button = TODO()
+    container = RoundedCornerShape(24.dp),
+    button = RoundedCornerShape(14.dp),
 )
-
 private val size = AppSize(
-
     large = 24.dp,
     medium = 16.dp,
     normal = 12.dp,
@@ -277,6 +275,13 @@ private val size = AppSize(
     glowBlur = 80.dp,
     otpBoxWidth = 43.dp,
     otpBoxHeight = 64.dp,
+
+    bottomBarHeight = 72.dp,
+    navIconSize = 48.dp,
+    searchHeight = 56.dp,
+    homeCardWidth = 155.dp,
+    homeCardHeight = 230.dp,
+    characterImageSize = 110.dp
 )
 
 @Composable
