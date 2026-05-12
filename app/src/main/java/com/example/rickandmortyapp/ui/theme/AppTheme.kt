@@ -284,7 +284,11 @@ private val size = AppSize(
     characterImageSize = 110.dp,
     favoriteCardHeight = 112.dp,
     favoriteAvatarSize = 64.dp,
-    emptyIconSize = 96.dp
+    emptyIconSize = 96.dp,
+    episodeCardHeight = 260.dp,
+    episodeChipHeight = 36.dp,
+    episodeCodeWidth = 82.dp,
+    loadMoreWidth = 240.dp
 
 )
 

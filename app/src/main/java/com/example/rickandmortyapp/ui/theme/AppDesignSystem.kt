@@ -142,7 +142,11 @@ data class AppSize(
     val characterImageSize: Dp,
     val favoriteCardHeight: Dp,
     val favoriteAvatarSize: Dp,
-    val emptyIconSize: Dp
+    val emptyIconSize: Dp,
+    val episodeCardHeight: Dp,
+    val episodeChipHeight: Dp,
+    val episodeCodeWidth: Dp,
+    val loadMoreWidth: Dp
 )
 
 val LocalAppColorScheme = staticCompositionLocalOf {
@@ -247,6 +251,10 @@ val LocalAppSize = staticCompositionLocalOf {
         characterImageSize = Dp.Unspecified,
         favoriteCardHeight = Dp.Unspecified,
         favoriteAvatarSize = Dp.Unspecified,
-        emptyIconSize = Dp.Unspecified
+        emptyIconSize = Dp.Unspecified,
+        episodeCardHeight = Dp.Unspecified,
+        episodeChipHeight = Dp.Unspecified,
+        episodeCodeWidth = Dp.Unspecified,
+        loadMoreWidth = Dp.Unspecified
     )
 }
