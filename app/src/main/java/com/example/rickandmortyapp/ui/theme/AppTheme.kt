@@ -266,7 +266,7 @@ private val size = AppSize(
     small = 8.dp,
 
     screenPadding = 32.dp,
-    cardPadding = 20.dp,
+    cardPadding = 24.dp,
     formPadding = 26.dp,
     fieldHeight = 56.dp,
     buttonHeight = 58.dp,
@@ -288,7 +288,25 @@ private val size = AppSize(
     episodeCardHeight = 260.dp,
     episodeChipHeight = 36.dp,
     episodeCodeWidth = 82.dp,
-    loadMoreWidth = 240.dp
+    loadMoreWidth = 240.dp,
+    detailsHeroHeight = 500.dp,
+    detailsSmallCardHeight = 132.dp,
+    detailsLargeCardHeight = 84.dp,
+    detailsIconSize = 46.dp,
+    detailsContentPadding = 26.dp,
+    topScreenPadding = 42.dp,
+    titleToTopSpacing = 120.dp,
+
+    titleFontSize = 54.sp,
+    paragraphLineHeight = 26.sp,
+
+    sectionSpacing = 96.dp,
+    cardVerticalPadding = 40.dp,
+    topBarHeight = 80.dp,
+    rosterCardHeight = 280.dp,
+    rosterImageHeight = 190.dp,
+    statusBadgeHeight = 24.dp,
+    topBarTitleSize = 24.sp
 
 )
 

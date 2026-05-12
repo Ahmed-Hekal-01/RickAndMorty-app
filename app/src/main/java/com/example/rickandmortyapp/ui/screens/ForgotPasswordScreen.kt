@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -63,7 +63,7 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = AppTheme.size.large)
-                .padding(top = 42.dp),
+                .padding(top = AppTheme.size.topScreenPadding),
         ) {
 
             TextButton(
@@ -71,7 +71,7 @@ fun ForgotPasswordScreen(
                 contentPadding = PaddingValues()
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = "Back",
                     tint = AppTheme.colorScheme.textPrimary
                 )
@@ -85,11 +85,11 @@ fun ForgotPasswordScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier  = Modifier.height(AppTheme.size.titleToTopSpacing))
 
             AnimatedGradientText(
                 text = "Reset",
-                fontSize = 54.sp
+                fontSize = AppTheme.size.titleFontSize
             )
 
             Spacer(modifier = Modifier.height(AppTheme.size.medium))
@@ -98,7 +98,7 @@ fun ForgotPasswordScreen(
                 text = "Enter the email associated with your\naccount and we'll send a link to reset\nyour password.",
                 color = AppTheme.colorScheme.textSecondary,
                 style = AppTheme.typography.paragraph,
-                lineHeight = 26.sp
+                lineHeight  = AppTheme.size.paragraphLineHeight
             )
 
             Spacer(modifier = Modifier.height(96.dp))
@@ -112,8 +112,8 @@ fun ForgotPasswordScreen(
             ) {
                 Column(
                     modifier = Modifier.padding(
-                        horizontal = AppTheme.size.large,
-                        vertical = 40.dp
+                        horizontal = AppTheme.size.medium,
+                        vertical = AppTheme.size.medium
                     )
                 ) {
 
@@ -141,7 +141,7 @@ fun ForgotPasswordScreen(
                             Icon(
                                 imageVector = Icons.Outlined.Email,
                                 contentDescription = null,
-                                tint = AppTheme.colorScheme.primary
+                                tint = AppTheme.colorScheme.primary.copy(alpha = 0.6f)
                             )
                         },
                         singleLine = true,
@@ -160,7 +160,7 @@ fun ForgotPasswordScreen(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(AppTheme.size.large))
 
                     Button(
                         onClick = onSendResetLinkClick,
@@ -199,7 +199,7 @@ fun ForgotPasswordScreen(
                                 Spacer(modifier = Modifier.width(AppTheme.size.small))
 
                                 Icon(
-                                    imageVector = Icons.Outlined.ArrowForward,
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                                     contentDescription = null,
                                     tint = AppTheme.colorScheme.onPrimary
                                 )

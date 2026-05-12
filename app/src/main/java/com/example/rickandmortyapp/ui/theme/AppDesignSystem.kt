@@ -7,6 +7,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 
 
 @Stable
@@ -146,7 +147,23 @@ data class AppSize(
     val episodeCardHeight: Dp,
     val episodeChipHeight: Dp,
     val episodeCodeWidth: Dp,
-    val loadMoreWidth: Dp
+    val loadMoreWidth: Dp,
+    val detailsHeroHeight: Dp,
+    val detailsSmallCardHeight: Dp,
+    val detailsLargeCardHeight: Dp,
+    val detailsIconSize: Dp,
+    val detailsContentPadding: Dp,
+    val topScreenPadding: Dp,
+    val titleToTopSpacing: Dp,
+    val titleFontSize: TextUnit,
+    val paragraphLineHeight:TextUnit,
+    val sectionSpacing: Dp,
+    val cardVerticalPadding: Dp,
+    val topBarHeight: Dp,
+    val rosterCardHeight: Dp,
+    val rosterImageHeight: Dp,
+    val statusBadgeHeight: Dp,
+    val topBarTitleSize: TextUnit,
 )
 
 val LocalAppColorScheme = staticCompositionLocalOf {
@@ -205,7 +222,8 @@ val LocalAppColorScheme = staticCompositionLocalOf {
         screenBackground = Color.Unspecified,
         surfaceContainer = Color.Unspecified,
         inputField = Color.Unspecified,
-        googleRed = Color.Unspecified
+        googleRed = Color.Unspecified,
+
     )
 }
 
@@ -228,33 +246,65 @@ val localAppShape = staticCompositionLocalOf {
 }
 // staticCompositionLocalOf is implicitly passing the data down the Ui Tree
 val LocalAppSize = staticCompositionLocalOf {
+
     AppSize(
+
         large = Dp.Unspecified,
         medium = Dp.Unspecified,
         normal = Dp.Unspecified,
         small = Dp.Unspecified,
+
         screenPadding = Dp.Unspecified,
         cardPadding = Dp.Unspecified,
         formPadding = Dp.Unspecified,
-        fieldHeight= Dp.Unspecified,
-        buttonHeight= Dp.Unspecified,
-        glowWidth= Dp.Unspecified,
-        glowHeight= Dp.Unspecified,
-        glowBlur= Dp.Unspecified ,
-        otpBoxWidth =Dp.Unspecified ,
-        otpBoxHeight = Dp.Unspecified ,
+
+        fieldHeight = Dp.Unspecified,
+        buttonHeight = Dp.Unspecified,
+
+        glowWidth = Dp.Unspecified,
+        glowHeight = Dp.Unspecified,
+        glowBlur = Dp.Unspecified,
+
+        otpBoxWidth = Dp.Unspecified,
+        otpBoxHeight = Dp.Unspecified,
+
         bottomBarHeight = Dp.Unspecified,
         navIconSize = Dp.Unspecified,
+
         searchHeight = Dp.Unspecified,
+
         homeCardWidth = Dp.Unspecified,
         homeCardHeight = Dp.Unspecified,
+
         characterImageSize = Dp.Unspecified,
+
         favoriteCardHeight = Dp.Unspecified,
         favoriteAvatarSize = Dp.Unspecified,
         emptyIconSize = Dp.Unspecified,
+
         episodeCardHeight = Dp.Unspecified,
         episodeChipHeight = Dp.Unspecified,
         episodeCodeWidth = Dp.Unspecified,
-        loadMoreWidth = Dp.Unspecified
+        loadMoreWidth = Dp.Unspecified,
+
+        detailsHeroHeight = Dp.Unspecified,
+        detailsSmallCardHeight = Dp.Unspecified,
+        detailsLargeCardHeight = Dp.Unspecified,
+        detailsIconSize = Dp.Unspecified,
+        detailsContentPadding = Dp.Unspecified,
+
+        topScreenPadding = Dp.Unspecified,
+        titleToTopSpacing = Dp.Unspecified,
+
+        titleFontSize = TextUnit.Unspecified,
+        paragraphLineHeight = TextUnit.Unspecified,
+
+        sectionSpacing = Dp.Unspecified,
+        cardVerticalPadding = Dp.Unspecified,
+        topBarHeight = Dp.Unspecified,
+        rosterCardHeight = Dp.Unspecified,
+        rosterImageHeight = Dp.Unspecified,
+        statusBadgeHeight = Dp.Unspecified,
+        topBarTitleSize = TextUnit.Unspecified,
     )
 }
