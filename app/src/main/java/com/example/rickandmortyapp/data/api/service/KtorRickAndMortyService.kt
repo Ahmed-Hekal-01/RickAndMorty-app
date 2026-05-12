@@ -47,6 +47,20 @@ class KtorRickAndMortyService @Inject constructor(
         }
     }
 
+    override suspend fun searchCharacters(
+        name: String,
+        status: String?,
+        page: Int
+    ): NetworkResult<CharacterPageResponse> {
+        return safeApiCall {
+            client.get("$baseUrl/character") {
+                parameter("name", name)
+                parameter("page", page)
+                if (status != null) parameter("status", status)
+            }.body()
+        }
+    }
+
     override suspend fun getAllLocations(): NetworkResult<LocationPageResponse> {
         return safeApiCall {
             client.get("$baseUrl/location").body()

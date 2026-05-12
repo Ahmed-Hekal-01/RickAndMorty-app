@@ -101,6 +101,11 @@ class LocationRepositoryTest {
         override suspend fun getCharacterByID(id: Int): NetworkResult<CharacterDto> = unsupported()
         override suspend fun getCharacterByPage(page: Int): NetworkResult<CharacterPageResponse> = unsupported()
         override suspend fun getListOfCharactersByIds(ids: List<Int>): NetworkResult<List<CharacterDto>> = unsupported()
+        override suspend fun searchCharacters(
+            name: String,
+            status: String?,
+            page: Int
+        ): NetworkResult<CharacterPageResponse> = unsupported()
         override suspend fun getAllCharacters(): NetworkResult<CharacterPageResponse> = unsupported()
         override suspend fun getListOfLocationsByIds(ids: List<Int>): NetworkResult<List<LocationDto>> = unsupported()
         override suspend fun getAllEpisodes(): NetworkResult<EpisodePageResponse> = unsupported()

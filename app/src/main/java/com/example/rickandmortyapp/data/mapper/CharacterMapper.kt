@@ -3,8 +3,6 @@ package com.example.rickandmortyapp.data.mapper
 import com.example.rickandmortyapp.data.model.Character
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.data.remote.dto.CharacterDto
-import com.example.rickandmortyapp.data.model.Page
-import com.example.rickandmortyapp.data.remote.dto.CharacterPageResponse
 
 fun CharacterDto.toDomain(): Character {
     return Character(

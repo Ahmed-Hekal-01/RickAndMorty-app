@@ -2,8 +2,6 @@ package com.example.rickandmortyapp.data.mapper
 
 import com.example.rickandmortyapp.data.model.Episode
 import com.example.rickandmortyapp.data.remote.dto.EpisodeDto
-import com.example.rickandmortyapp.data.model.Page
-import com.example.rickandmortyapp.data.remote.dto.EpisodePageResponse
 
 fun EpisodeDto.toDomain(): Episode {
     val seasonAndEpisode = parseSeasonAndEpisode(this.episode)

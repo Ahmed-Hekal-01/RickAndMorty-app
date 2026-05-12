@@ -91,15 +91,46 @@ class CharacterRepositoryTest {
         assertEquals(NetworkResult.Error.BackendError.NotFound, result)
     }
 
+    @Test
+    fun searchCharacters_forwardsQueryFilterAndPage_thenMapsResult() = runBlocking {
+        val service = FakeApiService().apply {
+            searchCharactersResponse = NetworkResult.Success(
+                CharacterPageResponse(
+                    info = Info(count = 1, pages = 2, next = "next", prev = null),
+                    results = listOf(characterDto(id = 5, name = "Birdperson", status = "Unknown"))
+                )
+            )
+        }
+        val repository = CharacterRepository(service)
+
+        val result = repository.searchCharacters(
+            name = "bird",
+            status = CharacterStatus.UNKNOWN,
+            page = 2
+        )
+
+        assertEquals("bird", service.lastSearchName)
+        assertEquals("unknown", service.lastSearchStatus)
+        assertEquals(2, service.lastSearchPage)
+        assertTrue(result is NetworkResult.Success)
+        val item = (result as NetworkResult.Success).data.results.first()
+        assertEquals("Birdperson", item.name)
+        assertEquals(CharacterStatus.UNKNOWN, item.status)
+    }
+
     private class FakeApiService : IRickAndMortyApiService {
         var allCharactersResponse: NetworkResult<CharacterPageResponse>? = null
         var characterByIdResponse: NetworkResult<CharacterDto>? = null
         var characterByPageResponse: NetworkResult<CharacterPageResponse>? = null
         var listCharactersResponse: NetworkResult<List<CharacterDto>>? = null
+        var searchCharactersResponse: NetworkResult<CharacterPageResponse>? = null
 
         var lastCharacterIdRequest: Int? = null
         var lastCharacterPageRequest: Int? = null
         var lastCharacterIdsRequest: List<Int>? = null
+        var lastSearchName: String? = null
+        var lastSearchStatus: String? = null
+        var lastSearchPage: Int? = null
 
         override suspend fun getAllCharacters(): NetworkResult<CharacterPageResponse> {
             return allCharactersResponse ?: unsupported()
@@ -118,6 +149,17 @@ class CharacterRepositoryTest {
         override suspend fun getListOfCharactersByIds(ids: List<Int>): NetworkResult<List<CharacterDto>> {
             lastCharacterIdsRequest = ids
             return listCharactersResponse ?: unsupported()
+        }
+
+        override suspend fun searchCharacters(
+            name: String,
+            status: String?,
+            page: Int
+        ): NetworkResult<CharacterPageResponse> {
+            lastSearchName = name
+            lastSearchStatus = status
+            lastSearchPage = page
+            return searchCharactersResponse ?: unsupported()
         }
 
         override suspend fun getAllLocations(): NetworkResult<LocationPageResponse> = unsupported()
