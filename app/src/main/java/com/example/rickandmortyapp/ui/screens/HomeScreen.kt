@@ -2,36 +2,49 @@ package com.example.rickandmortyapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FilterList
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.components.CustomBottomNavBar
+import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
+
+data class RosterCharacter(
+    val name: String,
+    val role: String,
+    val status: String,
+    val image: Int
+)
 
 @Preview(showSystemUi = true)
 @Composable
@@ -41,22 +54,19 @@ fun HomeScreenPreview() {
     }
 }
 
-data class HomeCharacter(
-    val name: String,
-    val status: String,
-    val image: Int
-)
-
 @Composable
-fun HomeScreen() {
-
-    var search by remember { mutableStateOf("") }
-
+fun HomeScreen(
+    onNavClick: (String) -> Unit = {}
+) {
     val characters = listOf(
-        HomeCharacter("Rick Sanchez", "Alive", R.drawable.ic_launcher_foreground),
-        HomeCharacter("Morty Smith", "Alive", R.drawable.ic_launcher_foreground),
-        HomeCharacter("Summer Smith", "Alive", R.drawable.ic_launcher_foreground),
-        HomeCharacter("Beth Smith", "Alive", R.drawable.ic_launcher_foreground)
+        RosterCharacter("Elara Nox", "Netrunner", "SXANDBH", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground)
     )
 
     Box(
@@ -64,228 +74,157 @@ fun HomeScreen() {
             .fillMaxSize()
             .background(AppTheme.colorScheme.screenBackground)
     ) {
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = AppTheme.size.large),
-            contentPadding = PaddingValues(
-                top = AppTheme.size.large,
-                bottom = AppTheme.size.bottomBarHeight + AppTheme.size.large
-            )
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
+            CustomTopBar("RICK & MORTY")
 
-            item {
-                AnimatedGradientText(
-                    text = "Rick & Morty",
-                    fontSize = AppTheme.typography.titleLarge.fontSize
-                )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = AppTheme.size.large,
+                    end = AppTheme.size.large,
+                    top = AppTheme.size.large,
+                    bottom = AppTheme.size.bottomBarHeight + AppTheme.size.large
+                ),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.size.medium),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.size.medium)
+            ) {
+                item {
+                    Column {
+                        Text(
+                            text = "DATABASE ACCESS",
+                            color = AppTheme.colorScheme.primaryLight,
+                            style = AppTheme.typography.labelSmall
+                        )
 
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
-
-                Text(
-                    text = "Explore characters, episodes and locations across the multiverse.",
-                    color = AppTheme.colorScheme.textSecondary,
-                    style = AppTheme.typography.paragraph
-                )
-
-                Spacer(modifier = Modifier.height(AppTheme.size.large))
-
-                SearchBar(
-                    value = search,
-                    onValueChange = { search = it }
-                )
-
-                Spacer(modifier = Modifier.height(AppTheme.size.large))
-
-                SectionTitle(title = "Featured Characters")
-
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
-            }
-
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(AppTheme.size.medium)
-                ) {
-                    items(characters) { character ->
-                        CharacterCard(character = character)
+                        Text(
+                            text = "Roster",
+                            color = AppTheme.colorScheme.textSecondary,
+                            style = AppTheme.typography.titleLarge
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(AppTheme.size.large))
+                item {
+                    Spacer(modifier = Modifier.height(AppTheme.size.small))
+                }
 
-                SectionTitle(title = "Continue Exploring")
-
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
-            }
-
-            items(characters) { character ->
-                ContinueCard(character = character)
-
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
+                items(characters) { character ->
+                    RosterCharacterCard(character = character)
+                }
             }
         }
 
         CustomBottomNavBar(
             selectedRoute = "home",
-            onItemClick = {},
+            onItemClick = onNavClick,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
 
 @Composable
-private fun SearchBar(
-    value: String,
-    onValueChange: (String) -> Unit
+private fun RosterCharacterCard(
+    character: RosterCharacter
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(AppTheme.size.searchHeight),
-        placeholder = {
-            Text(
-                text = "Search multiverse...",
-                color = AppTheme.colorScheme.textMuted,
-                style = AppTheme.typography.labelNormal
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = AppTheme.colorScheme.iconSecondary
-            )
-        },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.FilterList,
-                contentDescription = null,
-                tint = AppTheme.colorScheme.primary
-            )
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text
-        ),
-        shape = AppTheme.shape.button,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = AppTheme.colorScheme.inputField,
-            unfocusedContainerColor = AppTheme.colorScheme.inputField,
-            focusedBorderColor = AppTheme.colorScheme.border,
-            unfocusedBorderColor = AppTheme.colorScheme.border,
-            focusedTextColor = AppTheme.colorScheme.textPrimary,
-            unfocusedTextColor = AppTheme.colorScheme.textPrimary,
-            cursorColor = AppTheme.colorScheme.primary
-        )
-    )
-}
-
-@Composable
-private fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        color = AppTheme.colorScheme.textPrimary,
-        style = AppTheme.typography.titleNormal
-    )
-}
-
-@Composable
-private fun CharacterCard(character: HomeCharacter) {
     Card(
         modifier = Modifier
-            .width(AppTheme.size.homeCardWidth)
-            .height(AppTheme.size.homeCardHeight),
+            .fillMaxWidth()
+            .height(AppTheme.size.rosterCardHeight),
         shape = AppTheme.shape.container,
         colors = CardDefaults.cardColors(
-            containerColor = AppTheme.colorScheme.surfaceContainer
+            containerColor = AppTheme.colorScheme.cardBackground
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(AppTheme.size.medium),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(AppTheme.size.small)
         ) {
-
-            Image(
-                painter = painterResource(id = character.image),
-                contentDescription = character.name,
+            Box(
                 modifier = Modifier
-                    .size(AppTheme.size.characterImageSize)
-                    .background(
-                        color = AppTheme.colorScheme.inputField,
-                        shape = CircleShape
-                    ),
-                contentScale = ContentScale.Crop
-            )
+                    .fillMaxWidth()
+                    .height(AppTheme.size.rosterImageHeight)
+            ) {
+                Image(
+                    painter = painterResource(id = character.image),
+                    contentDescription = character.name,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(AppTheme.shape.button),
+                    contentScale = ContentScale.Crop
+                )
 
-            Spacer(modifier = Modifier.height(AppTheme.size.medium))
+                StatusBadge(
+                    text = character.status,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(AppTheme.size.small)
+                )
+
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = null,
+                    tint = AppTheme.colorScheme.primaryLight,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(AppTheme.size.small)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(AppTheme.size.normal))
 
             Text(
                 text = character.name,
-                color = AppTheme.colorScheme.textPrimary,
-                style = AppTheme.typography.labelLarge
+                color = AppTheme.colorScheme.primaryLight,
+                style = AppTheme.typography.labelLarge,
+                modifier = Modifier.padding(horizontal = AppTheme.size.small)
             )
 
             Spacer(modifier = Modifier.height(AppTheme.size.small))
 
             Text(
-                text = character.status,
-                color = AppTheme.colorScheme.success,
-                style = AppTheme.typography.labelSmall
+                text = character.role,
+                color = AppTheme.colorScheme.textSecondary,
+                style = AppTheme.typography.labelSmall,
+                modifier = Modifier.padding(horizontal = AppTheme.size.small)
             )
         }
     }
 }
 
 @Composable
-private fun ContinueCard(character: HomeCharacter) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppTheme.shape.container,
-        colors = CardDefaults.cardColors(
-            containerColor = AppTheme.colorScheme.surfaceContainer
-        )
+private fun StatusBadge(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.height(AppTheme.size.statusBadgeHeight),
+        shape = AppTheme.shape.button,
+        color = AppTheme.colorScheme.darkCardBackground
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppTheme.size.medium),
+            modifier = Modifier.padding(horizontal = AppTheme.size.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Image(
-                painter = painterResource(id = character.image),
-                contentDescription = character.name,
+            Box(
                 modifier = Modifier
-                    .size(AppTheme.size.buttonHeight)
+                    .size(AppTheme.size.small)
                     .background(
-                        color = AppTheme.colorScheme.inputField,
+                        color = AppTheme.colorScheme.accent,
                         shape = CircleShape
-                    ),
-                contentScale = ContentScale.Crop
+                    )
             )
 
-            Spacer(modifier = Modifier.width(AppTheme.size.medium))
+            Spacer(modifier = Modifier.size(AppTheme.size.small))
 
-            Column {
-                Text(
-                    text = character.name,
-                    color = AppTheme.colorScheme.textPrimary,
-                    style = AppTheme.typography.labelLarge
-                )
-
-                Spacer(modifier = Modifier.height(AppTheme.size.small))
-
-                Text(
-                    text = "Character Profile",
-                    color = AppTheme.colorScheme.textSecondary,
-                    style = AppTheme.typography.labelSmall
-                )
-            }
+            Text(
+                text = text,
+                color = AppTheme.colorScheme.textPrimary,
+                style = AppTheme.typography.labelSmall
+            )
         }
     }
 }

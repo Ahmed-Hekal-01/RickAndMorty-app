@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.ui.components
 
+import android.R
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -10,18 +11,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.rickandmortyapp.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopBar() {
+fun CustomTopBar(text: String) {
 
     CenterAlignedTopAppBar(
 
         title = {
 
             AnimatedGradientText(
-                text = "RICK & MORTY",
-                fontSize = 18.sp
+                text =text,
+                fontSize = AppTheme.size.topBarTitleSize
             )
 
         },

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FormatListBulleted
 import androidx.compose.material3.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.ui.components.CustomBottomNavBar
+import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
 
 data class FavoriteCharacter(
@@ -58,15 +60,8 @@ fun FavoriteScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(AppTheme.size.large))
 
-            Text(
-                text = "Favorite Characters",
-                color = AppTheme.colorScheme.primaryLight,
-                style = AppTheme.typography.titleNormal
-            )
-
-            Spacer(modifier = Modifier.height(AppTheme.size.large))
+            CustomTopBar("RICK & MORTY")
 
             if (favoriteCharacters.isEmpty()) {
                 EmptyFavoriteContent(
@@ -203,7 +198,7 @@ private fun EmptyFavoriteContent(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Outlined.FormatListBulleted,
+                imageVector = Icons.AutoMirrored.Outlined.FormatListBulleted,
                 contentDescription = null,
                 tint = AppTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(AppTheme.size.navIconSize)
