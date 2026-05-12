@@ -115,7 +115,7 @@ data class AppTypography(
 @Stable
 data class AppShape(
     val container: Shape,
-    val button: Shape,
+    val button: Shape
 )
 
 @Stable
