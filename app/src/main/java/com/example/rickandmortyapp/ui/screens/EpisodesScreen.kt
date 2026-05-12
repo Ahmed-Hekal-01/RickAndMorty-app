@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -147,7 +148,8 @@ fun EpisodesScreen(
                         .fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     shape = AppTheme.shape.button,
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                    border = BorderStroke(
+                        width = AppTheme.size.small,
                         brush = Brush.horizontalGradient(
                             listOf(
                                 AppTheme.colorScheme.gradientStart,
@@ -300,7 +302,7 @@ private fun EpisodeCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Divider(
+            HorizontalDivider(
                 color = AppTheme.colorScheme.divider
             )
 
