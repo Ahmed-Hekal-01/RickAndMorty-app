@@ -281,7 +281,11 @@ private val size = AppSize(
     searchHeight = 56.dp,
     homeCardWidth = 155.dp,
     homeCardHeight = 230.dp,
-    characterImageSize = 110.dp
+    characterImageSize = 110.dp,
+    favoriteCardHeight = 112.dp,
+    favoriteAvatarSize = 64.dp,
+    emptyIconSize = 96.dp
+
 )
 
 @Composable
