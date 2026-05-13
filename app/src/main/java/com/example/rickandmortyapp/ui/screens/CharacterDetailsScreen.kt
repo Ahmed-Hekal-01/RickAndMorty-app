@@ -3,6 +3,7 @@ package com.example.rickandmortyapp.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -53,121 +54,140 @@ fun CharacterDetailsScreen(
     ) {
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = AppTheme.size.bottomBarHeight)
+            modifier = Modifier.fillMaxSize()
         ) {
 
             CustomTopBar("RICK & MORTY")
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(AppTheme.size.detailsHeroHeight)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    bottom = AppTheme.size.bottomBarHeight + AppTheme.size.large
+                )
             ) {
 
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = name,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                item {
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    AppTheme.colorScheme.screenBackground.copy(alpha = 0f),
-                                    AppTheme.colorScheme.screenBackground.copy(alpha = 0.25f),
-                                    AppTheme.colorScheme.screenBackground
-                                )
-                            )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(AppTheme.size.detailsHeroHeight)
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = image),
+                            contentDescription = name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
-                )
 
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = null,
-                    tint = AppTheme.colorScheme.primaryLight,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(AppTheme.size.large)
-                )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            AppTheme.colorScheme.screenBackground.copy(alpha = 0f),
+                                            AppTheme.colorScheme.screenBackground.copy(alpha = 0.25f),
+                                            AppTheme.colorScheme.screenBackground
+                                        )
+                                    )
+                                )
+                        )
 
-                StatusBadge(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(AppTheme.size.large)
-                )
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = AppTheme.colorScheme.primaryLight,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(AppTheme.size.large)
+                        )
 
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(horizontal = AppTheme.size.large)
-                        .padding(bottom = AppTheme.size.large)
-                ) {
-                    Text(
-                        text = "SUBJECT DESIGNATION",
-                        color = AppTheme.colorScheme.textSecondary,
-                        style = AppTheme.typography.labelSmall
-                    )
+                        StatusBadge(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(AppTheme.size.large)
+                        )
 
-                    AnimatedGradientText(
-                        text = name,
-                        fontSize = AppTheme.typography.titleLarge.fontSize
-                    )
-                }
-            }
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(horizontal = AppTheme.size.large)
+                                .padding(bottom = AppTheme.size.medium)
+                        ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTheme.size.large)
-            ) {
+                            Text(
+                                text = "SUBJECT DESIGNATION",
+                                color = AppTheme.colorScheme.textSecondary,
+                                style = AppTheme.typography.labelSmall
+                            )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTheme.size.medium)
-                ) {
-                    DetailSmallCard(
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.Fingerprint,
-                        label = "SPECIES",
-                        value = species
-                    )
-
-                    DetailSmallCard(
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.Male,
-                        label = "GENDER",
-                        value = gender
-                    )
+                            AnimatedGradientText(
+                                text = name,
+                                fontSize = AppTheme.typography.titleLarge.fontSize
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
+                item {
 
-                DetailLargeCard(
-                    icon = Icons.Outlined.Public,
-                    label = "ORIGIN",
-                    value = origin
-                )
+                    Spacer(modifier = Modifier.height(AppTheme.size.small))
 
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTheme.size.large)
+                    ) {
 
-                DetailLargeCard(
-                    icon = Icons.Outlined.LocationOn,
-                    label = "CURRENT LOCATION",
-                    value = location
-                )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTheme.size.medium)
+                        ) {
 
-                Spacer(modifier = Modifier.height(AppTheme.size.medium))
+                            DetailSmallCard(
+                                modifier = Modifier.weight(1f),
+                                icon = Icons.Outlined.Fingerprint,
+                                label = "SPECIES",
+                                value = species
+                            )
 
-                EpisodesPresenceCard(value = episodes)
+                            DetailSmallCard(
+                                modifier = Modifier.weight(1f),
+                                icon = Icons.Outlined.Male,
+                                label = "GENDER",
+                                value = gender
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(AppTheme.size.normal))
+
+                        DetailLargeCard(
+                            icon = Icons.Outlined.Public,
+                            label = "ORIGIN",
+                            value = origin
+                        )
+
+                        Spacer(modifier = Modifier.height(AppTheme.size.normal))
+
+                        DetailLargeCard(
+                            icon = Icons.Outlined.LocationOn,
+                            label = "CURRENT LOCATION",
+                            value = location
+                        )
+
+                        Spacer(modifier = Modifier.height(AppTheme.size.normal))
+
+                        EpisodesPresenceCard(
+                            value = episodes
+                        )
+
+                        Spacer(modifier = Modifier.height(AppTheme.size.large))
+                    }
+                }
             }
         }
-
         CustomBottomNavBar(
             selectedRoute = "home",
             onItemClick = onNavClick,
@@ -188,10 +208,11 @@ private fun StatusBadge(
         Row(
             modifier = Modifier.padding(
                 horizontal = AppTheme.size.medium,
-                vertical  = AppTheme.size.normal
+                vertical = AppTheme.size.small
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Box(
                 modifier = Modifier
                     .size(AppTheme.size.small)
@@ -226,11 +247,13 @@ private fun DetailSmallCard(
             containerColor = AppTheme.colorScheme.cardBackground
         )
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(AppTheme.size.medium)
         ) {
+
             CircleIcon(icon = icon)
 
             Spacer(modifier = Modifier.weight(1f))
@@ -265,12 +288,14 @@ private fun DetailLargeCard(
             containerColor = AppTheme.colorScheme.cardBackground
         )
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(AppTheme.size.large),
+                .padding(AppTheme.size.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             CircleIcon(icon = icon)
 
             Spacer(modifier = Modifier.width(AppTheme.size.medium))
@@ -302,15 +327,25 @@ private fun EpisodesPresenceCard(
             .height(AppTheme.size.detailsLargeCardHeight),
         shape = AppTheme.shape.button,
         colors = CardDefaults.cardColors(
-            containerColor = AppTheme.colorScheme.primary
+            containerColor = AppTheme.colorScheme.primaryDark
         )
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            AppTheme.colorScheme.gradientStart,
+                            AppTheme.colorScheme.primaryDark
+                        )
+                    )
+                )
                 .padding(AppTheme.size.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Box(
                 modifier = Modifier
                     .size(AppTheme.size.detailsIconSize)
@@ -332,6 +367,7 @@ private fun EpisodesPresenceCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+
                 Text(
                     text = "PRESENCE",
                     color = AppTheme.colorScheme.primaryLight,
@@ -362,11 +398,12 @@ private fun CircleIcon(
         modifier = Modifier
             .size(AppTheme.size.detailsIconSize)
             .background(
-                color = AppTheme.colorScheme.primary.copy(alpha = 0.45f),
+                color = AppTheme.colorScheme.primaryDark.copy(alpha = 0.9f),
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
     ) {
+
         Icon(
             imageVector = icon,
             contentDescription = null,
