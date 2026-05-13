@@ -212,7 +212,6 @@ private fun StatusBadge(
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .size(AppTheme.size.small)
@@ -247,13 +246,11 @@ private fun DetailSmallCard(
             containerColor = AppTheme.colorScheme.cardBackground
         )
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(AppTheme.size.medium)
         ) {
-
             CircleIcon(icon = icon)
 
             Spacer(modifier = Modifier.weight(1f))
@@ -288,14 +285,12 @@ private fun DetailLargeCard(
             containerColor = AppTheme.colorScheme.cardBackground
         )
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(AppTheme.size.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             CircleIcon(icon = icon)
 
             Spacer(modifier = Modifier.width(AppTheme.size.medium))
@@ -330,7 +325,6 @@ private fun EpisodesPresenceCard(
             containerColor = AppTheme.colorScheme.primaryDark
         )
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -345,7 +339,6 @@ private fun EpisodesPresenceCard(
                 .padding(AppTheme.size.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .size(AppTheme.size.detailsIconSize)
@@ -367,7 +360,6 @@ private fun EpisodesPresenceCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-
                 Text(
                     text = "PRESENCE",
                     color = AppTheme.colorScheme.primaryLight,
@@ -403,7 +395,6 @@ private fun CircleIcon(
             ),
         contentAlignment = Alignment.Center
     ) {
-
         Icon(
             imageVector = icon,
             contentDescription = null,
