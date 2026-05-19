@@ -2,6 +2,9 @@ package com.example.rickandmortyapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
@@ -9,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.rickandmortyapp.ui.theme.darkColorScheme
 
 private val darkColorScheme = AppColorScheme(
 
@@ -253,6 +257,7 @@ private val shape = AppShape(
     button = RoundedCornerShape(14.dp),
 )
 private val size = AppSize(
+    veryLarge = 200.dp,
     large = 24.dp,
     medium = 16.dp,
     normal = 12.dp,
@@ -309,13 +314,42 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
+
+    val materialColorScheme = if (isDarkTheme) {
+        darkColorScheme(
+            background = colorScheme.background,
+            surface = colorScheme.surface,
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            onBackground = colorScheme.onBackground,
+            onSurface = colorScheme.onSurface,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    } else {
+        lightColorScheme(
+            background = colorScheme.background,
+            surface = colorScheme.surface,
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            onBackground = colorScheme.onBackground,
+            onSurface = colorScheme.onSurface,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    }
+
     CompositionLocalProvider(
         LocalAppColorScheme provides colorScheme,
         localAppTypography provides typography,
         LocalAppSize provides size,
         localAppShape provides shape,
-        content = content
-    )
+    ) {
+        MaterialTheme(
+            colorScheme = materialColorScheme,
+            content = content
+        )
+    }
 }
 
 object AppTheme {
@@ -328,4 +362,3 @@ object AppTheme {
     val size : AppSize
         @Composable get() = LocalAppSize.current
 }
-

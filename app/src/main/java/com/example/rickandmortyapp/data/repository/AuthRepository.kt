@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.data.repository
 
+import androidx.lifecycle.ViewModelProvider
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
@@ -48,6 +49,10 @@ class AuthRepository @Inject constructor(
         } catch (e: Exception) {
             NetworkResult.Error.OfflineError
         }
+    }
+
+    override suspend fun loginWithGoogle(idToken: String): NetworkResult<Boolean>{
+        TODO()
     }
 
     override suspend fun register(email: String, password: String): NetworkResult<FirebaseUser> {

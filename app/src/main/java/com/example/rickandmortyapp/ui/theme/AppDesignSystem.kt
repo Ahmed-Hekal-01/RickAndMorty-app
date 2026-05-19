@@ -28,7 +28,6 @@ data class AppColorScheme(
     val onSurfaceVariant: Color,
 
 
-
     // Primary Brand Colors
 
     val primary: Color,
@@ -36,7 +35,6 @@ data class AppColorScheme(
 
     val primaryDark: Color,
     val primaryLight: Color,
-
 
 
     // Accent / Interactive
@@ -48,7 +46,6 @@ data class AppColorScheme(
     val neonAccent: Color,
 
 
-
     // Text Colors
 
     val textPrimary: Color,
@@ -56,13 +53,11 @@ data class AppColorScheme(
     val textMuted: Color,
 
 
-
     // Icons
 
     val iconPrimary: Color,
     val iconSecondary: Color,
     val inactiveIcon: Color,
-
 
 
     // States
@@ -74,19 +69,16 @@ data class AppColorScheme(
     val warning: Color,
 
 
-
     // Borders & Dividers
 
     val border: Color,
     val divider: Color,
 
 
-
     // Glow / Effects
 
     val glowPrimary: Color,
     val glowSecondary: Color,
-
 
 
     // Gradients
@@ -121,6 +113,7 @@ data class AppShape(
 
 @Stable
 data class AppSize(
+    val veryLarge: Dp,
     val large: Dp,
     val medium: Dp,
     val normal: Dp,
@@ -156,7 +149,7 @@ data class AppSize(
     val topScreenPadding: Dp,
     val titleToTopSpacing: Dp,
     val titleFontSize: TextUnit,
-    val paragraphLineHeight:TextUnit,
+    val paragraphLineHeight: TextUnit,
     val sectionSpacing: Dp,
     val cardVerticalPadding: Dp,
     val topBarHeight: Dp,
@@ -224,7 +217,7 @@ val LocalAppColorScheme = staticCompositionLocalOf {
         inputField = Color.Unspecified,
         googleRed = Color.Unspecified,
 
-    )
+        )
 }
 
 val localAppTypography = staticCompositionLocalOf {
@@ -244,11 +237,12 @@ val localAppShape = staticCompositionLocalOf {
         button = RectangleShape
     )
 }
+
 // staticCompositionLocalOf is implicitly passing the data down the Ui Tree
 val LocalAppSize = staticCompositionLocalOf {
 
     AppSize(
-
+        veryLarge = Dp.Unspecified,
         large = Dp.Unspecified,
         medium = Dp.Unspecified,
         normal = Dp.Unspecified,

@@ -1,15 +1,52 @@
 package com.example.rickandmortyapp.ui.screens
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,30 +57,322 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.R
+import com.example.rickandmortyapp.feature.auth.login.LoginEffect
+import com.example.rickandmortyapp.feature.auth.login.LoginEvent
+import com.example.rickandmortyapp.feature.auth.login.LoginState
+import com.example.rickandmortyapp.feature.auth.login.LoginViewModel
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.theme.AppTheme
+import kotlinx.coroutines.flow.collectLatest
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
-fun LoginScreenPreview() {
+private fun StatefulLoginPreview() {
+    var state by remember { mutableStateOf(LoginState()) }
+    LoginContent(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                is LoginEvent.EmailChanged -> state = state.copy(email = event.email)
+                is LoginEvent.PasswordChanged -> state = state.copy(password = event.password)
+                else -> {}
+            }
+        }
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true
+)
+@Composable
+private fun LoginScreenDarkPreview() {
     AppTheme {
-        LoginScreen()
+        StatefulLoginPreview()
+    }
+}
+
+@Preview(
+    name = "Light Mode",
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true
+)
+@Composable
+private fun LoginScreenLightPreview() {
+    AppTheme {
+        StatefulLoginPreview()
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToHome: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToForgetPassword: () -> Unit,
+    onShowSnackbar: suspend (String) -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is LoginEffect.NavigateToHome -> onNavigateToHome()
+                is LoginEffect.NavigateToRegister -> onNavigateToRegister()
+                is LoginEffect.NavigateToSignUp -> onNavigateToSignUp()
+                is LoginEffect.NavigateToForgetPassword -> onNavigateToForgetPassword()
+                is LoginEffect.ShowError -> onShowSnackbar(effect.message)
+                is LoginEffect.LaunchGoogleSignIn -> {
+
+                }
+            }
+        }
+    }
+    LoginContent(
+        state = state,
+        onEvent = viewModel::onEvent
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LoginContent(
+    state: LoginState,
+    onEvent: (LoginEvent) -> Unit
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+    val isImeVisible = WindowInsets.isImeVisible
+    val scrollState = rememberScrollState()
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AnimatedVisibility(
+                visible = !isImeVisible,
+                enter = fadeIn(animationSpec = tween(100)) +
+                        expandVertically(
+                            animationSpec = tween(100),
+                            expandFrom = Alignment.Top
+                        ),
+                exit = fadeOut(animationSpec = tween(100)) +
+                        shrinkVertically(
+                            animationSpec = tween(100),
+                            shrinkTowards = Alignment.Top
+                        )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .size(200.dp)
+                            .background(
+                                color = AppTheme.colorScheme.primary,
+                                shape = CircleShape
+                            ),
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo),
+                            contentDescription = "Rick and Morty Logo",
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center
+                        )
+                    }
+                }
+
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 24.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = AppTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.welcome_message),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.email,
+                    onValueChange = {
+                        onEvent(LoginEvent.EmailChanged(it))
+                    },
+                    label = { Text("Email") },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
+                    enabled = !state.isLoading,
+                    isError = state.emailError != null
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.password,
+                    onValueChange = {
+                        onEvent(LoginEvent.PasswordChanged(it))
+                    },
+                    label = { Text("password") },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                            )
+                        }
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    singleLine = true,
+                    enabled = !state.isLoading,
+                    isError = state.passwordError != null
+                )
+                TextButton(
+                    onClick = { onEvent(LoginEvent.ForgetPasswordClicked) },
+                    modifier = Modifier
+                        .align(Alignment.End),
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) {
+                    Text(
+                        text = "Forgot Password?",
+                        color = AppTheme.colorScheme.accent,
+                        style = AppTheme.typography.labelNormal,
+                    )
+                }
+                OutlinedButton(
+                    onClick = {
+                        onEvent(LoginEvent.LoginClicked)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    enabled = state.email.trim().isNotBlank() && state.password.trim()
+                        .isNotBlank() && !state.isLoading,
+                    shape = AppTheme.shape.button,
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "Login",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { onEvent(LoginEvent.GoogleLoginClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    enabled = !state.isLoading,
+                    shape = AppTheme.shape.button
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_google_logo),
+                            contentDescription = "Google Logo",
+                            modifier = Modifier.size(24.dp),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Continue with Google",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = buildAnnotatedString {
+                        append("Have no account? ")
+
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "SIGN_UP",
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        color = AppTheme.colorScheme.accent,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                )
+                            ) {
+                                onEvent(LoginEvent.SignUpClicked)
+                            }
+                        ) {
+                            append("SignUp")
+                        }
+                    },
+                    color = AppTheme.colorScheme.textSecondary,
+                    style = AppTheme.typography.labelNormal,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+
+        }
+    }
+
+}
+
+@Preview
+@Composable
+fun OldOne() {
+    AppTheme() {
+        Login()
     }
 }
 
 @Composable
-fun LoginScreen() {
+fun Login() {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -80,7 +409,7 @@ fun LoginScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    painter = painterResource(id = R.drawable.app_logo),
                     contentDescription = "Rick and Morty Logo",
                     modifier = Modifier.size(240.dp),
                     contentScale = ContentScale.Crop

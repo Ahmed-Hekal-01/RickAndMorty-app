@@ -16,6 +16,9 @@ interface IAuthRepository {
     /** Emits the current [FirebaseUser] every time auth state changes. Null = logged out. */
     val currentUser: Flow<FirebaseUser?>
 
+    suspend fun loginWithGoogle(idToken : String) : NetworkResult<Boolean> {
+       TODO()
+    }
     /** Synchronous check — true if a user session is currently active. */
     val isLoggedIn: Boolean
 

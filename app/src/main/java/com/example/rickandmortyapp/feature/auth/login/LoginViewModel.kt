@@ -29,15 +29,41 @@ class LoginViewModel @Inject constructor(
     override fun handleEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.EmailChanged -> setState { copy(email = event.email, emailError = null) }
-            is LoginEvent.PasswordChanged -> setState { copy(password = event.password, passwordError = null) }
+            is LoginEvent.PasswordChanged -> setState {
+                copy(
+                    password = event.password,
+                    passwordError = null
+                )
+            }
+
             is LoginEvent.LoginClicked -> attemptLogin()
             is LoginEvent.NavigateToRegister -> setEffect(LoginEffect.NavigateToRegister)
+            is LoginEvent.ForgetPasswordClicked -> setEffect(LoginEffect.NavigateToForgetPassword)
+            is LoginEvent.GoogleLoginClicked -> setEffect(LoginEffect.LaunchGoogleSignIn)
+            is LoginEvent.GoogleTokenReceived -> authenticateWithGoogle(event.idToken)
+            is LoginEvent.SignUpClicked -> setEffect(LoginEffect.NavigateToSignUp)
+        }
+    }
+
+    private fun authenticateWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            when (val result = authRepository.loginWithGoogle(idToken)) {
+                is NetworkResult.Success -> {
+                    sessionRepository.saveAuthToken(idToken)
+                    setState { copy(isLoading = false) }
+                    setEffect(LoginEffect.NavigateToHome)
+                }
+
+                is NetworkResult.Error -> {
+                    setState { copy(isLoading = false) }
+                    setEffect(LoginEffect.ShowError(result.toErrorMessage()))
+                }
+            }
         }
     }
 
     private fun attemptLogin() {
-        if (!validateInputs()) return
-
         viewModelScope.launch {
             setState { copy(isLoading = true) }
 
@@ -52,6 +78,7 @@ class LoginViewModel @Inject constructor(
                     setState { copy(isLoading = false) }
                     setEffect(LoginEffect.NavigateToHome)
                 }
+
                 is NetworkResult.Error -> {
                     setState { copy(isLoading = false) }
                     setEffect(LoginEffect.ShowError(result.toErrorMessage()))
@@ -60,23 +87,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    /** Returns true if both fields pass basic validation. */
-    private fun validateInputs(): Boolean {
-        val email = state.value.email.trim()
-        val password = state.value.password
-
-        var isValid = true
-
-        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            setState { copy(emailError = "Enter a valid email address") }
-            isValid = false
-        }
-        if (password.length < 6) {
-            setState { copy(passwordError = "Password must be at least 6 characters") }
-            isValid = false
-        }
-        return isValid
-    }
 }
 
 // ─── Extension ───────────────────────────────────────────────────────────────

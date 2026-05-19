@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">RickAndMortyApp</string>
+    <string name="app_name">Rick And Morty</string>
+    <string name="log_in">Login</string>
+    <string name="welcome_message">Welcome Back!</string>
 </resources>
