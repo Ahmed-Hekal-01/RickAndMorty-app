@@ -56,14 +56,14 @@ fun HomeScreen(
     onNavClick: (String) -> Unit = {}
 ) {
     val characters = listOf(
-        RosterCharacter("Elara Nox", "Netrunner", "SXANDBH", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground),
-        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.ic_launcher_foreground)
+        RosterCharacter("Elara Nox", "Netrunner", "SXANDBH", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo),
+        RosterCharacter("Jax-99", "Heavy Ordinance", "MIA", R.drawable.app_logo)
     )
 
     Box(

@@ -44,7 +44,7 @@ fun CharacterDetailsScreen(
     origin: String = "Earth (C-137)",
     location: String = "Citadel of Ricks",
     episodes: String = "42 Episodes",
-    image: Int = R.drawable.ic_launcher_foreground,
+    image: Int = R.drawable.app_logo,
     onNavClick: (String) -> Unit = {}
 ) {
     Box(
