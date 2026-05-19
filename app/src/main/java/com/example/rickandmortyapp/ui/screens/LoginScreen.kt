@@ -1,6 +1,5 @@
 package com.example.rickandmortyapp.ui.screens
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -81,20 +80,23 @@ import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest
 
-@Preview
+@Preview(showBackground = true , showSystemUi = true)
 @Composable
 private fun StatefulLoginPreview() {
     var state by remember { mutableStateOf(LoginState()) }
-    LoginContent(
-        state = state,
-        onEvent = { event ->
-            when (event) {
-                is LoginEvent.EmailChanged -> state = state.copy(email = event.email)
-                is LoginEvent.PasswordChanged -> state = state.copy(password = event.password)
-                else -> {}
+    AppTheme() {
+        LoginContent(
+            state = state,
+            onEvent = { event ->
+                when (event) {
+                    is LoginEvent.EmailChanged -> state = state.copy(email = event.email)
+                    is LoginEvent.PasswordChanged -> state = state.copy(password = event.password)
+                    else -> {}
+                }
             }
-        }
-    )
+        )
+
+    }
 }
 
 @Preview(
