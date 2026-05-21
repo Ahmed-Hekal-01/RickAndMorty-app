@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
-import com.example.rickandmortyapp.ui.components.CustomBottomNavBar
+import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
 
 data class EpisodeUi(
@@ -177,9 +177,9 @@ fun EpisodesScreen(
             }
         }
 
-        CustomBottomNavBar(
+        BottomNavBar(
             selectedRoute = "episodes",
-            onItemClick = onNavClick,
+            onNavigate = onNavClick,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

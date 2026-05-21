@@ -17,7 +17,7 @@ import javax.inject.Named
  * instance separate from the session DataStore.
  */
 class SettingsRepository @Inject constructor(
-    @Named("settings") private val dataStore: DataStore<Preferences>
+    @param:Named("settings") private val dataStore: DataStore<Preferences>
 ) : ISettingsRepository {
 
     private companion object {
