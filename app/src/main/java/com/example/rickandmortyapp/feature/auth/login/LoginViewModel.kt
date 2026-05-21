@@ -37,11 +37,11 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginEvent.LoginClicked -> attemptLogin()
-            is LoginEvent.NavigateToRegister -> setEffect(LoginEffect.NavigateToRegister)
             is LoginEvent.ForgetPasswordClicked -> setEffect(LoginEffect.NavigateToForgetPassword)
             is LoginEvent.GoogleLoginClicked -> setEffect(LoginEffect.LaunchGoogleSignIn)
             is LoginEvent.GoogleTokenReceived -> authenticateWithGoogle(event.idToken)
             is LoginEvent.SignUpClicked -> setEffect(LoginEffect.NavigateToSignUp)
+            else -> {}
         }
     }
 
