@@ -9,10 +9,12 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.outlined.Airplay
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Tv
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -48,8 +50,8 @@ fun BottomNavBar(
     val items = remember {
         listOf(
             BottomNavBarItem(Icons.Default.Home, Icons.Outlined.Home, AppRoutes.HOME_SCREEN, "Home"),
-            BottomNavBarItem(Icons.Default.Airplay, Icons.Outlined.Airplay, AppRoutes.EPISODES_SCREEN, "Episodes"),
-            BottomNavBarItem(Icons.Default.Favorite, Icons.Default.FavoriteBorder, AppRoutes.FAV_SCREEN, "Favourite"),
+            BottomNavBarItem(Icons.Default.Tv, Icons.Outlined.Tv, AppRoutes.EPISODES_SCREEN, "Episodes"),
+            BottomNavBarItem(Icons.Default.Favorite, Icons.Default.FavoriteBorder, AppRoutes.FAV_SCREEN, "Favorites"),
             BottomNavBarItem(Icons.Default.Search, Icons.Outlined.Search, AppRoutes.SEARCH_SCREEN, "Search"),
             BottomNavBarItem(Icons.Default.Person, Icons.Outlined.Person, AppRoutes.PROFILE_SCREEN, "Profile")
         )
@@ -76,7 +78,9 @@ fun BottomNavBar(
                 label = {
                     Text(
                         text = item.label,
-                        fontSize = if (isSelected) 13.sp else 12.sp,
+                        fontSize = if (isSelected) 12.sp else 11.sp,
+                        maxLines = 1,
+                        softWrap = false,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 },
@@ -98,7 +102,7 @@ fun BottomNavBar(
 fun BottomNavBarPreview() {
     AppTheme {
         BottomNavBar(
-            selectedRoute = AppRoutes.FAV_SCREEN,
+            selectedRoute = AppRoutes.HOME_SCREEN,
             onNavigate = {}
         )
     }
