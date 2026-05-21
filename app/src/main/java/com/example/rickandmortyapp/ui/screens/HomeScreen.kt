@@ -32,7 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.rickandmortyapp.R
-import com.example.rickandmortyapp.ui.components.CustomBottomNavBar
+import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
 
@@ -114,11 +114,6 @@ fun HomeScreen(
             }
         }
 
-        CustomBottomNavBar(
-            selectedRoute = "home",
-            onItemClick = onNavClick,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
