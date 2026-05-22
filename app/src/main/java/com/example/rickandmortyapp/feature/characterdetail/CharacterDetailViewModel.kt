@@ -67,4 +67,5 @@ private fun NetworkResult.Error.toUserMessage(): String = when (this) {
     is NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
     is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
     is NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
+    else -> {""}
 }

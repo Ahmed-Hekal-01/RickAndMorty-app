@@ -93,4 +93,5 @@ private fun NetworkResult.Error.toErrorMessage(): String = when (this) {
     is NetworkResult.Error.BackendError.TooManyRequests -> "Too many attempts. Please wait and try again."
     is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable. Please try again later."
     is NetworkResult.Error.BackendError.UnKnown -> "This email may already be in use."
+    else -> {""}
 }
