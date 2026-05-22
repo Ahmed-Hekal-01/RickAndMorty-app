@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.ui.screens
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -51,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,28 +64,28 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.R
+import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.feature.auth.login.LoginEffect
 import com.example.rickandmortyapp.feature.auth.login.LoginEvent
 import com.example.rickandmortyapp.feature.auth.login.LoginState
 import com.example.rickandmortyapp.feature.auth.login.LoginViewModel
+import com.example.rickandmortyapp.feature.auth.register.GoogleAuthUiClient
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest
 
-@Preview(showBackground = true , showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun StatefulLoginPreview() {
     var state by remember { mutableStateOf(LoginState()) }
     AppTheme {
         LoginContent(
-            state = state,
-            onEvent = { event ->
+            state = state, onEvent = { event ->
                 when (event) {
                     is LoginEvent.EmailChanged -> state = state.copy(email = event.email)
                     is LoginEvent.PasswordChanged -> state = state.copy(password = event.password)
                     else -> {}
                 }
-            }
-        )
+            })
 
     }
 }
@@ -124,6 +126,9 @@ fun LoginScreen(
     onShowSnackbar: suspend (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val googleAuth = remember(context) { GoogleAuthUiClient(context) }
+
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
@@ -132,50 +137,51 @@ fun LoginScreen(
                 is LoginEffect.NavigateToForgetPassword -> onNavigateToForgetPassword()
                 is LoginEffect.ShowError -> onShowSnackbar(effect.message)
                 is LoginEffect.LaunchGoogleSignIn -> {
-                    //todo
+                    when (val result = googleAuth.fetchGoogleIdToken()) {
+                        is NetworkResult.Success -> {
+                            viewModel.onEvent(LoginEvent.GoogleTokenReceived(result.data))
+                        }
+
+                        is NetworkResult.Error.UserCancellation -> Unit
+                        else -> {
+                            onShowSnackbar("Google sign-in failed. Please try again.")
+                        }
+                    }
                 }
             }
         }
     }
     LoginContent(
-        state = state,
-        onEvent = viewModel::onEvent
+        state = state, onEvent = viewModel::onEvent
     )
 }
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LoginContent(
-    state: LoginState,
-    onEvent: (LoginEvent) -> Unit
+    state: LoginState, onEvent: (LoginEvent) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+    val isAnyLoading = state.isEmailLoading || state.isGoogleLoading
     val isImeVisible = WindowInsets.isImeVisible
     val scrollState = rememberScrollState()
-    Scaffold { paddingValues ->
+    Scaffold { _ ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AnimatedVisibility(
                 visible = !isImeVisible,
-                enter = fadeIn(animationSpec = tween(100)) +
-                        expandVertically(
-                            animationSpec = tween(100),
-                            expandFrom = Alignment.Top
-                        ),
-                exit = fadeOut(animationSpec = tween(100)) +
-                        shrinkVertically(
-                            animationSpec = tween(100),
-                            shrinkTowards = Alignment.Top
-                        )
+                enter = fadeIn(animationSpec = tween(100)) + expandVertically(
+                    animationSpec = tween(100), expandFrom = Alignment.Top
+                ),
+                exit = fadeOut(animationSpec = tween(100)) + shrinkVertically(
+                    animationSpec = tween(100), shrinkTowards = Alignment.Top
+                )
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(48.dp),
+                        .padding(10.dp),
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -183,8 +189,7 @@ private fun LoginContent(
                         modifier = Modifier
                             .size(200.dp)
                             .background(
-                                color = AppTheme.colorScheme.primary,
-                                shape = CircleShape
+                                color = AppTheme.colorScheme.primary, shape = CircleShape
                             ),
                     ) {
                         Image(
@@ -230,10 +235,10 @@ private fun LoginContent(
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     singleLine = true,
-                    enabled = !state.isLoading,
+                    enabled = !isAnyLoading,
                     isError = state.emailError != null
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -254,13 +259,12 @@ private fun LoginContent(
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     singleLine = true,
-                    enabled = !state.isLoading,
+                    enabled = !isAnyLoading,
                     isError = state.passwordError != null
                 )
                 TextButton(
                     onClick = { onEvent(LoginEvent.ForgetPasswordClicked) },
-                    modifier = Modifier
-                        .align(Alignment.End),
+                    modifier = Modifier.align(Alignment.End),
                     contentPadding = PaddingValues(horizontal = 4.dp)
                 ) {
                     Text(
@@ -277,18 +281,17 @@ private fun LoginContent(
                         .fillMaxWidth()
                         .height(55.dp),
                     enabled = state.email.trim().isNotBlank() && state.password.trim()
-                        .isNotBlank() && !state.isLoading,
+                        .isNotBlank() && !isAnyLoading,
                     shape = AppTheme.shape.button,
                 ) {
-                    if (state.isLoading) {
+                    if (state.isEmailLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
                         Text(
-                            text = "Login",
-                            style = MaterialTheme.typography.titleMedium
+                            text = "Login", style = MaterialTheme.typography.titleMedium
                         )
                     }
 
@@ -299,10 +302,10 @@ private fun LoginContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
-                    enabled = !state.isLoading,
+                    enabled = !isAnyLoading,
                     shape = AppTheme.shape.button
                 ) {
-                    if (state.isLoading) {
+                    if (state.isGoogleLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary
@@ -320,7 +323,6 @@ private fun LoginContent(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(4.dp)
@@ -339,8 +341,7 @@ private fun LoginContent(
                                 println("hello from sign up")
                                 onEvent(LoginEvent.SignUpClicked)
                             }
-                            .padding(4.dp)
-                    )
+                            .padding(4.dp))
                 }
             }
 

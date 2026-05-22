@@ -14,6 +14,7 @@ sealed class NetworkResult<out T> {
             data object UnKnown : BackendError()
         }
         data object OfflineError : Error()
+        data object UserCancellation : Error()
     }
 }
 

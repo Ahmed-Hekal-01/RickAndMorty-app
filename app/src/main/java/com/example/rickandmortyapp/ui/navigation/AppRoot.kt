@@ -2,8 +2,11 @@ package com.example.rickandmortyapp.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,14 +15,17 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.ui.screens.LoginScreen
-import com.example.rickandmortyapp.ui.screens.SplashScreen
+import com.example.rickandmortyapp.ui.screens.ProfileScreen
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
 
 @Composable
-fun AppRoot() {
+fun AppRoot(
+    startDestination: String
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val currentRoute = navBackStackEntry?.destination?.route
     val navigateMain: (String) -> Unit = { route ->
         navController.navigate(route) {
@@ -35,18 +41,21 @@ fun AppRoot() {
         AppRoutes.SEARCH_SCREEN,
         AppRoutes.PROFILE_SCREEN
     )
-    Scaffold(bottomBar = {
-        if (currentRoute in bottomBarRoutes) {
-            BottomNavBar(
-                selectedRoute = currentRoute ?: AppRoutes.HOME_SCREEN,
-                onNavigate = navigateMain
-            )
-        }
-    }) { paddingValues ->
+    Scaffold(
+        bottomBar = {
+            if (currentRoute in bottomBarRoutes) {
+                BottomNavBar(
+                    selectedRoute = currentRoute ?: AppRoutes.HOME_SCREEN,
+                    onNavigate = navigateMain
+                )
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
 
         NavHost(
             navController = navController,
-            startDestination = AppRoutes.SPLASH_SCREEN,
+            startDestination = startDestination,
             modifier = Modifier.padding(paddingValues)
         ) {
             navigation(
@@ -65,9 +74,10 @@ fun AppRoot() {
                         onNavigateToForgetPassword = {
                             navController.navigate(AppRoutes.FORGOT_PASSWORD_SCREEN)
                         },
-                        onShowSnackbar = {
-                            // todo
+                        onShowSnackbar = { message ->
+                            snackbarHostState.showSnackbar(message)
                         }
+
                     )
                 }
                 composable(AppRoutes.SIGN_UP_SCREEN) { }
@@ -86,18 +96,18 @@ fun AppRoot() {
                 composable(AppRoutes.CHARACTER_EPISODE_SCREEN) { }
                 composable(AppRoutes.FAV_SCREEN) { }
                 composable(AppRoutes.SEARCH_SCREEN) { }
-                composable(AppRoutes.PROFILE_SCREEN) { }
-            }
-            composable(AppRoutes.SPLASH_SCREEN) {
-                SplashScreen(onNavigateToLogin = {
-                    navController.navigate(AppGraphs.AUTH) {
-                        popUpTo(AppRoutes.SPLASH_SCREEN) { inclusive = true }
-                    }
-                }, onNavigateToHome = {
-                    navController.navigate(AppGraphs.MAIN) {
-                        popUpTo(AppRoutes.SPLASH_SCREEN) { inclusive = true }
-                    }
-                })
+                composable(AppRoutes.PROFILE_SCREEN) {
+                    ProfileScreen(
+                        onNavigateToLogin = {
+                            navController.navigate(AppGraphs.AUTH) {
+                                popUpTo(AppGraphs.MAIN) { inclusive = true }
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    )
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -51,8 +52,19 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    override suspend fun loginWithGoogle(idToken: String): NetworkResult<Boolean>{
-        TODO()
+    override suspend fun loginWithGoogle(idToken: String): NetworkResult<FirebaseUser>{
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val result = firebaseAuth.signInWithCredential(credential).await()
+            val user = result.user ?: return NetworkResult.Error.BackendError.UnKnown
+            NetworkResult.Success(user)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            NetworkResult.Error.BackendError.UnKnown
+        } catch (e: FirebaseAuthException) {
+            NetworkResult.Error.BackendError.UnKnown
+        } catch (e: Exception) {
+            NetworkResult.Error.OfflineError
+        }
     }
 
     override suspend fun register(email: String, password: String): NetworkResult<FirebaseUser> {

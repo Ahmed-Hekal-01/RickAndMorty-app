@@ -35,7 +35,6 @@ class LoginViewModel @Inject constructor(
                     passwordError = null
                 )
             }
-
             is LoginEvent.LoginClicked -> attemptLogin()
             is LoginEvent.ForgetPasswordClicked -> setEffect(LoginEffect.NavigateToForgetPassword)
             is LoginEvent.GoogleLoginClicked -> setEffect(LoginEffect.LaunchGoogleSignIn)
@@ -47,16 +46,16 @@ class LoginViewModel @Inject constructor(
 
     private fun authenticateWithGoogle(idToken: String) {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isGoogleLoading = true, isEmailLoading = false) }
             when (val result = authRepository.loginWithGoogle(idToken)) {
                 is NetworkResult.Success -> {
                     sessionRepository.saveAuthToken(idToken)
-                    setState { copy(isLoading = false) }
+                    setState { copy(isGoogleLoading = false) }
                     setEffect(LoginEffect.NavigateToHome)
                 }
 
                 is NetworkResult.Error -> {
-                    setState { copy(isLoading = false) }
+                    setState { copy(isGoogleLoading = false) }
                     setEffect(LoginEffect.ShowError(result.toErrorMessage()))
                 }
             }
@@ -65,7 +64,7 @@ class LoginViewModel @Inject constructor(
 
     private fun attemptLogin() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isEmailLoading = true, isGoogleLoading = false) }
 
             when (val result = authRepository.login(state.value.email, state.value.password)) {
                 is NetworkResult.Success -> {
@@ -75,12 +74,12 @@ class LoginViewModel @Inject constructor(
                         result.data.getIdToken(false).await().token
                     }.getOrNull()
                     sessionRepository.saveAuthToken(token)
-                    setState { copy(isLoading = false) }
+                    setState { copy(isEmailLoading = false) }
                     setEffect(LoginEffect.NavigateToHome)
                 }
 
                 is NetworkResult.Error -> {
-                    setState { copy(isLoading = false) }
+                    setState { copy(isEmailLoading = false) }
                     setEffect(LoginEffect.ShowError(result.toErrorMessage()))
                 }
             }
@@ -97,4 +96,5 @@ private fun NetworkResult.Error.toErrorMessage(): String = when (this) {
     is NetworkResult.Error.BackendError.TooManyRequests -> "Too many attempts. Please wait and try again."
     is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable. Please try again later."
     is NetworkResult.Error.BackendError.UnKnown -> "Invalid email or password."
+    is NetworkResult.Error.UserCancellation -> ""
 }
