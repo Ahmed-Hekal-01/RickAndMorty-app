@@ -14,8 +14,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.rickandmortyapp.ui.components.BottomNavBar
-import com.example.rickandmortyapp.ui.screens.LoginScreen
-import com.example.rickandmortyapp.ui.screens.ProfileScreen
+import com.example.rickandmortyapp.feature.auth.login.LoginScreen
+import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
 

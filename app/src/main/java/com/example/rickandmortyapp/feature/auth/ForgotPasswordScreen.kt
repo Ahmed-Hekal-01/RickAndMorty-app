@@ -1,4 +1,4 @@
-package com.example.rickandmortyapp.ui.screens
+package com.example.rickandmortyapp.feature.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

@@ -1,4 +1,4 @@
-package com.example.rickandmortyapp.ui.screens
+package com.example.rickandmortyapp.feature.episodes
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

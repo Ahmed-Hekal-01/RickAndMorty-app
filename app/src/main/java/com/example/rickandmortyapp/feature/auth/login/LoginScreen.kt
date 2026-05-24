@@ -1,4 +1,4 @@
-package com.example.rickandmortyapp.ui.screens
+package com.example.rickandmortyapp.feature.auth.login
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
@@ -65,10 +65,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
-import com.example.rickandmortyapp.feature.auth.login.LoginEffect
-import com.example.rickandmortyapp.feature.auth.login.LoginEvent
-import com.example.rickandmortyapp.feature.auth.login.LoginState
-import com.example.rickandmortyapp.feature.auth.login.LoginViewModel
 import com.example.rickandmortyapp.feature.auth.register.GoogleAuthUiClient
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest

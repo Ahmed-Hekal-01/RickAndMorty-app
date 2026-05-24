@@ -1,4 +1,4 @@
-package com.example.registrationui
+package com.example.rickandmortyapp.feature.auth.register
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
