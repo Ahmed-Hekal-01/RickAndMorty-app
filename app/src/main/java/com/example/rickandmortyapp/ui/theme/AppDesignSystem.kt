@@ -1,5 +1,6 @@
 package com.example.rickandmortyapp.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.runtime.Stable
@@ -8,6 +9,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 
 
 @Stable
@@ -108,7 +110,8 @@ data class AppTypography(
 @Stable
 data class AppShape(
     val container: Shape,
-    val button: Shape
+    val button: Shape ,
+    val cardShape: Shape
 )
 
 @Stable
@@ -234,7 +237,8 @@ val localAppTypography = staticCompositionLocalOf {
 val localAppShape = staticCompositionLocalOf {
     AppShape(
         container = RectangleShape,
-        button = RectangleShape
+        button = RectangleShape,
+        cardShape = RectangleShape
     )
 }
 

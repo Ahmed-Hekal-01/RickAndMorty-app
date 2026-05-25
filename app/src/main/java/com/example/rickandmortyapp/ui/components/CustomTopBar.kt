@@ -14,28 +14,19 @@ import com.example.rickandmortyapp.ui.theme.AppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopBar(text: String) {
-
     CenterAlignedTopAppBar(
-
         title = {
-
             AnimatedGradientText(
-                text =text,
+                text = text,
                 fontSize = AppTheme.size.topBarTitleSize
             )
-
         },
-
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp),
-
         colors = TopAppBarDefaults.topAppBarColors(
-
             containerColor = MaterialTheme.colorScheme.background,
-
             scrolledContainerColor = MaterialTheme.colorScheme.background
-
         )
     )
 }

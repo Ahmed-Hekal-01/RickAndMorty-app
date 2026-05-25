@@ -31,10 +31,12 @@ class HomeViewModel @Inject constructor(
     override fun handleEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.LoadInitial -> loadInitial()
-            is HomeEvent.LoadNextPage -> loadNextPage()
+            is HomeEvent.LoadNextPage -> Unit
             is HomeEvent.Retry -> loadInitial()
             is HomeEvent.CharacterClicked ->
                 setEffect(HomeEffect.NavigateToDetail(event.characterId))
+            is HomeEvent.FavoriteClicked ->
+                setEffect(HomeEffect.ShowError("${event.characterName} added to favorites"))
         }
     }
 
@@ -42,16 +44,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             setState { copy(isLoading = true, error = null, characters = emptyList()) }
             fetchPage(page = 1, isInitial = true)
-        }
-    }
-
-    private fun loadNextPage() {
-        val s = state.value
-        if (s.isLoading || s.isLoadingMore || !s.hasMorePages) return
-
-        viewModelScope.launch {
-            setState { copy(isLoadingMore = true) }
-            fetchPage(page = s.currentPage + 1, isInitial = false)
         }
     }
 

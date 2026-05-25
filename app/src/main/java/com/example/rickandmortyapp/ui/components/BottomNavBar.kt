@@ -49,19 +49,43 @@ fun BottomNavBar(
 ) {
     val items = remember {
         listOf(
-            BottomNavBarItem(Icons.Default.Home, Icons.Outlined.Home, AppRoutes.HOME_SCREEN, "Home"),
-            BottomNavBarItem(Icons.Default.Tv, Icons.Outlined.Tv, AppRoutes.EPISODES_SCREEN, "Episodes"),
-            BottomNavBarItem(Icons.Default.Favorite, Icons.Default.FavoriteBorder, AppRoutes.FAV_SCREEN, "Favorites"),
-            BottomNavBarItem(Icons.Default.Search, Icons.Outlined.Search, AppRoutes.SEARCH_SCREEN, "Search"),
-            BottomNavBarItem(Icons.Default.Person, Icons.Outlined.Person, AppRoutes.PROFILE_SCREEN, "Profile")
+            BottomNavBarItem(
+                Icons.Default.Home,
+                Icons.Outlined.Home,
+                AppRoutes.HOME_SCREEN,
+                "Home"
+            ),
+            BottomNavBarItem(
+                Icons.Default.Tv,
+                Icons.Outlined.Tv,
+                AppRoutes.EPISODES_SCREEN,
+                "Episodes"
+            ),
+            BottomNavBarItem(
+                Icons.Default.Favorite,
+                Icons.Default.FavoriteBorder,
+                AppRoutes.FAV_SCREEN,
+                "Favorites"
+            ),
+            BottomNavBarItem(
+                Icons.Default.Search,
+                Icons.Outlined.Search,
+                AppRoutes.SEARCH_SCREEN,
+                "Search"
+            ),
+            BottomNavBarItem(
+                Icons.Default.Person,
+                Icons.Outlined.Person,
+                AppRoutes.PROFILE_SCREEN,
+                "Profile"
+            )
         )
     }
 
     NavigationBar(
-        modifier = modifier
-            .padding(start = 28.dp, end = 28.dp, bottom = 16.dp, top = 8.dp)
-            .shadow(elevation = 10.dp, shape = RoundedCornerShape(24.dp))
-            .clip(RoundedCornerShape(24.dp)),
+        modifier = Modifier.clip(
+            RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+        ),
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 1.dp
     ) {

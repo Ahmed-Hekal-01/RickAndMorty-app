@@ -8,14 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.rickandmortyapp.ui.components.BottomNavBar
+import androidx.navigation.navArgument
 import com.example.rickandmortyapp.feature.auth.login.LoginScreen
+import com.example.rickandmortyapp.feature.characterdetail.CharacterDetailsScreen
+import com.example.rickandmortyapp.feature.home.HomeScreen
 import com.example.rickandmortyapp.feature.profile.ProfileScreen
+import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
 
@@ -90,9 +94,28 @@ fun AppRoot(
             navigation(
                 startDestination = AppRoutes.HOME_SCREEN, route = AppGraphs.MAIN
             ) {
-                composable(AppRoutes.HOME_SCREEN) { }
+                composable(AppRoutes.HOME_SCREEN) {
+                    HomeScreen(
+                        onNavigateToCharacterDetails = { characterId ->
+                            navController.navigate(
+                                AppRoutes.CHARACTER_DETAILS_SCREEN.replace(
+                                    "{characterId}",
+                                    characterId.toString()
+                                )
+                            )
+                        },
+                        onShowSnackbar = { message ->
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    )
+                }
                 composable(AppRoutes.EPISODES_SCREEN) { }
-                composable(AppRoutes.CHARACTER_DETAILS_SCREEN) { }
+                composable(
+                    route = AppRoutes.CHARACTER_DETAILS_SCREEN,
+                    arguments = listOf(navArgument("characterId") { type = NavType.IntType })
+                ) {
+                    CharacterDetailsScreen()
+                }
                 composable(AppRoutes.CHARACTER_EPISODE_SCREEN) { }
                 composable(AppRoutes.FAV_SCREEN) { }
                 composable(AppRoutes.SEARCH_SCREEN) { }

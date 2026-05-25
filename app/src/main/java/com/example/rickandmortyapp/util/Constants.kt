@@ -10,7 +10,7 @@ object AppRoutes {
     const val NEW_PASSWORD_SCREEN = "new_password"
     const val FAV_SCREEN = "fav"
     const val EPISODES_SCREEN = "episodes"
-    const val CHARACTER_DETAILS_SCREEN = "character_details/{id}"
+    const val CHARACTER_DETAILS_SCREEN = "character_details/{characterId}"
     const val PROFILE_SCREEN = "profile"
     const val SEARCH_SCREEN = "search"
     const val CHARACTER_EPISODE_SCREEN = "character_episode"

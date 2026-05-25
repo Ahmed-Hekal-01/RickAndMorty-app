@@ -12,4 +12,6 @@ sealed class HomeEvent : UiEvent {
     data object Retry : HomeEvent()
     /** User tapped a character card. */
     data class CharacterClicked(val characterId: Int) : HomeEvent()
+    /** User tapped the favorite icon on a character. */
+    data class FavoriteClicked(val characterId: Int, val characterName: String) : HomeEvent()
 }
