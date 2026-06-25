@@ -1,55 +1,312 @@
 package com.example.rickandmortyapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.rickandmortyapp.ui.theme.darkColorScheme
 
 private val darkColorScheme = AppColorScheme(
-    // add the color scheme for the dark mode
-    background = TODO(),
-    onBackground = TODO(),
-    primary = TODO(),
-    onPrimary = TODO(),
-    secondary = TODO(),
-    onSecondary = TODO()
+
+    // =========================
+    // Backgrounds
+    // =========================
+
+    background = DarkBackground,
+    onBackground = DarkTextSecondary,
+
+    surface = DarkSurface,
+    onSurface = DarkTextPrimary,
+
+    cardBackground = DarkSurfaceHigh,
+    darkCardBackground = DarkBottomBar,
+
+    surfaceVariant = DarkTextField,
+    onSurfaceVariant = DarkTextMuted,
+
+
+    // =========================
+    // Primary Brand Colors
+    // =========================
+
+    primary = PrimaryPurple,
+    onPrimary = White,
+
+    primaryDark = PrimaryPurpleDark,
+    primaryLight = PrimaryLavender,
+
+
+    // =========================
+    // Accent / Interactive
+    // =========================
+
+    secondary = AccentCyan,
+    onSecondary = DarkBackground,
+
+    accent = AccentCyan,
+    neonAccent = AccentCyan,
+
+
+    // =========================
+    // Text Colors
+    // =========================
+
+    textPrimary = DarkTextPrimary,
+    textSecondary = DarkTextSecondary,
+    textMuted = DarkTextMuted,
+
+
+    // =========================
+    // Icons
+    // =========================
+
+    iconPrimary = White,
+    iconSecondary = DarkTextSecondary,
+    inactiveIcon = DarkIconInactive,
+
+
+    // =========================
+    // States
+    // =========================
+
+    error = ErrorRed,
+    onError = White,
+
+    success = SuccessGreen,
+    warning = PrimaryLavender,
+
+
+    // =========================
+    // Borders & Dividers
+    // =========================
+
+    border = DarkBorder,
+    divider = DarkBorder,
+
+
+    // =========================
+    // Glow / Effects
+    // =========================
+
+    glowPrimary = PrimaryPurple,
+    glowSecondary = AccentCyan,
+
+
+    // =========================
+    // Gradients
+    // =========================
+
+    gradientStart = PrimaryPurple,
+    gradientEnd = PrimaryLavender,
+    glowTop = PrimaryPurple,
+    glowBottom = AccentCyan,
+
+    screenBackground = DarkBackground,
+    surfaceContainer = DarkSurface,
+    inputField = DarkTextField,
+
+    googleRed = Color(0xFFEA4335),
 )
 
 private val lightColorScheme = AppColorScheme(
-    // add the color scheme for the light mode
-    background = TODO(),
-    onBackground = TODO(),
-    primary = TODO(),
-    onPrimary = TODO(),
-    secondary = TODO(),
-    onSecondary = TODO()
-)
 
+    // =========================
+    // Backgrounds
+    // =========================
+
+    background = LightBackground,
+    onBackground = LightTextSecondary,
+
+    surface = LightSurface,
+    onSurface = LightTextPrimary,
+
+    cardBackground = LightCard,
+    darkCardBackground = LightBottomBar,
+
+    surfaceVariant = LightTextField,
+    onSurfaceVariant = LightTextMuted,
+
+
+    // =========================
+    // Primary Brand Colors
+    // =========================
+
+    primary = PrimaryPurple,
+    onPrimary = White,
+
+    primaryDark = PrimaryPurpleDark,
+    primaryLight = PrimaryLavender,
+
+
+    // =========================
+    // Accent / Interactive
+    // =========================
+
+    secondary = AccentCyan,
+    onSecondary = White,
+
+    accent = AccentCyan,
+    neonAccent = AccentCyan,
+
+
+    // =========================
+    // Text Colors
+    // =========================
+
+    textPrimary = LightTextPrimary,
+    textSecondary = LightTextSecondary,
+    textMuted = LightTextMuted,
+
+
+    // =========================
+    // Icons
+    // =========================
+
+    iconPrimary = LightTextPrimary,
+    iconSecondary = LightTextSecondary,
+    inactiveIcon = LightIconInactive,
+
+
+    // =========================
+    // States
+    // =========================
+
+    error = ErrorRed,
+    onError = White,
+
+    success = SuccessGreen,
+    warning = PrimaryLavender,
+
+
+    // =========================
+    // Borders & Dividers
+    // =========================
+
+    border = LightBorder,
+    divider = LightBorder,
+
+
+    // =========================
+    // Glow / Effects
+    // =========================
+
+    glowPrimary = PrimaryPurple,
+    glowSecondary = AccentCyan,
+
+
+    // =========================
+    // Gradients
+    // =========================
+
+    gradientStart = PrimaryPurple,
+    gradientEnd = PrimaryLavender,
+    glowTop = LightSurfacePurple,
+    glowBottom = AccentCyan,
+
+    screenBackground = LightBackground,
+    surfaceContainer = LightSurface,
+    inputField = LightTextField,
+
+    googleRed = Color(0xFFEA4335)
+)
 private val typography = AppTypography(
-    // add the typography for example look at the first prob
     titleLarge = TextStyle(
-        fontFamily = TODO(),
-        fontWeight = TODO(),
-        fontSize = TODO()
+        fontSize = 30.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.sp
     ),
-    titleNormal = TODO(),
-    paragraph = TODO(),
-    labelLarge = TODO(),
-    labelNormal = TODO(),
-    labelSmall = TODO()
-)
 
+    titleNormal = TextStyle(
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.sp
+    ),
+
+    paragraph = TextStyle(
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Normal,
+        lineHeight = 20.sp
+    ),
+
+    labelLarge = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium
+    ),
+
+    labelNormal = TextStyle(
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium
+    ),
+
+    labelSmall = TextStyle(
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 1.sp
+    )
+)
 private val shape = AppShape(
-    container = TODO(),
-    button = TODO()
+    container = RoundedCornerShape(24.dp),
+    button = RoundedCornerShape(14.dp),
+    cardShape = RoundedCornerShape(12.dp)
 )
-
 private val size = AppSize(
+    veryLarge = 200.dp,
     large = 24.dp,
     medium = 16.dp,
     normal = 12.dp,
-    small = 8.dp
+    small = 8.dp,
+
+    screenPadding = 32.dp,
+    cardPadding = 24.dp,
+    formPadding = 26.dp,
+    fieldHeight = 56.dp,
+    buttonHeight = 58.dp,
+    glowWidth = 260.dp,
+    glowHeight = 420.dp,
+    glowBlur = 80.dp,
+    otpBoxWidth = 43.dp,
+    otpBoxHeight = 64.dp,
+
+    bottomBarHeight = 72.dp,
+    navIconSize = 48.dp,
+    searchHeight = 56.dp,
+    homeCardWidth = 155.dp,
+    homeCardHeight = 230.dp,
+    characterImageSize = 110.dp,
+    favoriteCardHeight = 112.dp,
+    favoriteAvatarSize = 64.dp,
+    emptyIconSize = 96.dp,
+    episodeCardHeight = 260.dp,
+    episodeChipHeight = 36.dp,
+    episodeCodeWidth = 82.dp,
+    loadMoreWidth = 240.dp,
+    detailsHeroHeight = 500.dp,
+    detailsSmallCardHeight = 132.dp,
+    detailsLargeCardHeight = 84.dp,
+    detailsIconSize = 46.dp,
+    detailsContentPadding = 26.dp,
+    topScreenPadding = 42.dp,
+    titleToTopSpacing = 120.dp,
+
+    titleFontSize = 54.sp,
+    paragraphLineHeight = 26.sp,
+
+    sectionSpacing = 96.dp,
+    cardVerticalPadding = 40.dp,
+    topBarHeight = 80.dp,
+    rosterCardHeight = 280.dp,
+    rosterImageHeight = 190.dp,
+    statusBadgeHeight = 24.dp,
+    topBarTitleSize = 24.sp
+
 )
 
 @Composable
@@ -58,18 +315,47 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
+
+    val materialColorScheme = if (isDarkTheme) {
+        darkColorScheme(
+            background = colorScheme.background,
+            surface = colorScheme.surface,
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            onBackground = colorScheme.onBackground,
+            onSurface = colorScheme.onSurface,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    } else {
+        lightColorScheme(
+            background = colorScheme.background,
+            surface = colorScheme.surface,
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            onBackground = colorScheme.onBackground,
+            onSurface = colorScheme.onSurface,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    }
+
     CompositionLocalProvider(
-        localAppColorScheme provides colorScheme,
+        LocalAppColorScheme provides colorScheme,
         localAppTypography provides typography,
         LocalAppSize provides size,
         localAppShape provides shape,
-        content = content
-    )
+    ) {
+        MaterialTheme(
+            colorScheme = materialColorScheme,
+            content = content
+        )
+    }
 }
 
 object AppTheme {
     val colorScheme : AppColorScheme
-        @Composable get() = localAppColorScheme.current
+        @Composable get() = LocalAppColorScheme.current
     val typography : AppTypography
         @Composable get() = localAppTypography.current
     val shape : AppShape

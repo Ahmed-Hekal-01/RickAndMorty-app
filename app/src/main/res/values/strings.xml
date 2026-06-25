@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">RickAndMortyApp</string>
+    <string name="web_client_id">
+        63284833346-g3lic6vhofn2jurftvcmuf9pq5mfvprr.apps.googleusercontent.com
+    </string>
+    <string name="app_name">Rick&amp;Morty</string>
+    <string name="log_in">Login</string>
+    <string name="welcome_message">Welcome Back!</string>
+    <string name="home_screen_top_bar_name">Rick And Morty</string>
 </resources>
