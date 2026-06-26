@@ -211,7 +211,7 @@ fun EpisodesScreenContent(
                                             )
                                         ) {
                                             Text(
-                                                text = "LOAD MORE FILES",
+                                                text = "LOAD MORE EPISODES",
                                                 color = AppTheme.colorScheme.primary,
                                                 style = AppTheme.typography.labelLarge
                                             )
