@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.rickandmortyapp.data.api.KtorClient
 import com.example.rickandmortyapp.data.api.service.IRickAndMortyApiService
 import com.example.rickandmortyapp.data.api.service.KtorRickAndMortyService
+import com.example.rickandmortyapp.data.local.dao.CharacterCacheDao
 import com.example.rickandmortyapp.data.repository.AuthRepository
 import com.example.rickandmortyapp.data.repository.CharacterRepository
 import com.example.rickandmortyapp.data.repository.EpisodeRepository
@@ -63,8 +64,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCharacterRepository(
-        apiService: IRickAndMortyApiService
-    ): ICharacterRepository = CharacterRepository(apiService)
+        apiService: IRickAndMortyApiService,
+        cacheDao: CharacterCacheDao
+    ): ICharacterRepository = CharacterRepository(apiService, cacheDao)
 
     @Provides
     @Singleton

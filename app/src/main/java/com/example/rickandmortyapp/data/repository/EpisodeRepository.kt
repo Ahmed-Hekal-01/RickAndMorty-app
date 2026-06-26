@@ -31,6 +31,10 @@ class EpisodeRepository @Inject constructor(
     }
 
     override suspend fun getListOfEpisodesByIds(ids: List<Int>): NetworkResult<List<Episode>> {
+        if (ids.isEmpty()) return NetworkResult.Success(emptyList())
+        if (ids.size == 1) {
+            return getEpisodeByID(ids[0]).mapSuccess { listOf(it) }
+        }
         return apiService.getListOfEpisodesByIds(ids).mapSuccess { list ->
             list.map { it.toDomain() }
         }

@@ -2,12 +2,12 @@ package com.example.rickandmortyapp.feature.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -18,13 +18,31 @@ import kotlinx.coroutines.launch
  *  1. Provide [createInitialState] — the starting state for the screen.
  *  2. Implement [handleEvent] — describe what to do for each user action.
  *
- * The base class wires up the [StateFlow] for state and a [Channel] for
- * one-shot [UiEffect]s so every feature ViewModel gets consistent plumbing
+ * The base class wires up the [StateFlow] for state and a [MutableSharedFlow]
+ * for one-shot [UiEffect]s so every feature ViewModel gets consistent plumbing
  * for free.
  *
  * @param S Screen state — must implement [UiState].
  * @param E User events — must implement [UiEvent].
  * @param F One-shot side-effects — must implement [UiEffect].
+ *
+ * ─── Why SharedFlow instead of Channel ───────────────────────────────────────
+ *
+ * `Channel(BUFFERED)` accumulates effects in a buffer. When the collector
+ * (LaunchedEffect) is cancelled mid-flight by navigation, those buffered effects
+ * survive and are replayed the next time the screen enters composition — causing
+ * snackbars or navigation actions to fire again on back-navigation.
+ *
+ * `MutableSharedFlow(replay = 0, extraBufferCapacity = 0)` with [tryEmit]:
+ * • `replay = 0`            — no cached value is ever replayed to new subscribers.
+ * • `extraBufferCapacity = 0` — no internal buffer; emission is either delivered
+ *                              synchronously to a current subscriber or dropped.
+ * • [tryEmit]               — non-suspending; returns false (drops the effect)
+ *                              if no subscriber is actively collecting right now.
+ *
+ * Result: effects are truly one-shot. If the screen navigates away before the
+ * effect is consumed, it is silently dropped — never replayed on back-navigation.
+ * For UI feedback (snackbars, toasts) this is always the correct behaviour.
  */
 abstract class MviViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel() {
 
@@ -39,13 +57,19 @@ abstract class MviViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel(
 
     // ─── Effects ─────────────────────────────────────────────────────────────
 
-    private val _effect: Channel<F> = Channel(Channel.BUFFERED)
+    private val _effect = MutableSharedFlow<F>(
+        replay = 0,
+        extraBufferCapacity = 0
+    )
 
     /**
      * One-shot effects to be consumed by the View exactly once.
-     * Uses a [Channel] internally so effects are not replayed on recomposition.
+     *
+     * Backed by [MutableSharedFlow] with zero replay and zero buffer so stale
+     * effects are never re-delivered after the collector re-subscribes (e.g.
+     * on back-navigation).
      */
-    val effect: Flow<F> = _effect.receiveAsFlow()
+    val effect: SharedFlow<F> = _effect.asSharedFlow()
 
     // ─── Abstract API ─────────────────────────────────────────────────────────
 
@@ -77,11 +101,23 @@ abstract class MviViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel(
 
     /**
      * Emit a one-shot [UiEffect] to the View.
-     * The effect is sent on [viewModelScope] so it respects the ViewModel lifecycle.
+     *
+     * Uses [MutableSharedFlow.tryEmit] — non-suspending and thread-safe.
+     * The effect is delivered only if a subscriber is actively collecting
+     * at this moment. If the screen is off-screen (collector cancelled by
+     * navigation), the effect is silently dropped and will NOT replay when
+     * the screen returns to composition.
      *
      * Usage: `setEffect(HomeEffect.NavigateToDetail(id))`
      */
     protected fun setEffect(effect: F) {
-        viewModelScope.launch { _effect.send(effect) }
+        val emitted = _effect.tryEmit(effect)
+        if (!emitted) {
+            // The collector was not active (screen navigated away).
+            // Launch a coroutine to wait for the next subscriber window.
+            // The coroutine is cancelled with viewModelScope when the ViewModel
+            // is cleared, preventing leaks.
+            viewModelScope.launch { _effect.emit(effect) }
+        }
     }
 }

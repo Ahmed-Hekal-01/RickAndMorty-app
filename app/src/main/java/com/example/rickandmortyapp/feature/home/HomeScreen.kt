@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,19 +15,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,7 +52,7 @@ import com.example.rickandmortyapp.data.model.Character
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
-import kotlinx.coroutines.flow.collectLatest
+
 
 
 @Composable
@@ -58,7 +64,7 @@ fun HomeScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 is HomeEffect.NavigateToDetail -> onNavigateToCharacterDetails(effect.characterId)
                 is HomeEffect.ShowError -> onShowSnackbar(effect.message)
@@ -106,6 +112,9 @@ fun HomeScreenContent(
                 },
                 onFavoriteClicked = { id, name ->
                     onEvent(HomeEvent.FavoriteClicked(id, name))
+                },
+                onLoadNextPage = {
+                    onEvent(HomeEvent.LoadNextPage)
                 }
             )
         }
@@ -116,9 +125,24 @@ fun HomeScreenContent(
 fun CharacterGrid(
     state: HomeState,
     onCharacterClicked: (Int) -> Unit,
-    onFavoriteClicked: (Int, String) -> Unit
+    onFavoriteClicked: (Int, String) -> Unit,
+    onLoadNextPage: () -> Unit
 ) {
     val listState = rememberLazyGridState()
+
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val totalItems = listState.layoutInfo.totalItemsCount
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            lastVisibleItem >= totalItems - 4 && totalItems > 0
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value && !state.isLoadingMore && state.hasMorePages) {
+            onLoadNextPage()
+        }
+    }
 
     LazyVerticalGrid(
         modifier = Modifier
@@ -136,12 +160,25 @@ fun CharacterGrid(
         ) { character ->
             CharacterCard(
                 character = character,
+                isFavorite = character.id in state.favoriteIds,
                 onClick = { onCharacterClicked(character.id) },
                 onFavoriteClick = {
                     onFavoriteClicked(character.id, character.name)
                 }
             )
-
+        }
+        
+        if (state.isLoadingMore) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = AppTheme.colorScheme.primary)
+                }
+            }
         }
     }
 }
@@ -149,6 +186,7 @@ fun CharacterGrid(
 @Composable
 fun CharacterCard(
     character: Character,
+    isFavorite: Boolean,
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
@@ -182,34 +220,12 @@ fun CharacterCard(
                     placeholder = painterResource(R.drawable.ic_app_logo),
                     error = painterResource(R.drawable.ic_app_logo)
                 )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(Color.Transparent)
-                        .clickable(onClick = onFavoriteClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                         /* todo this need to be changed on the status of the char if is in the fav or not */
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Add to favorites",
-                        tint = AppTheme.colorScheme.primary
-                    )
-                }
-
             }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-
-                Box(
-                    modifier = Modifier
-                )
                 Text(
                     text = character.name,
                     style = MaterialTheme.typography.titleMedium,
@@ -219,14 +235,33 @@ fun CharacterCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = character.species,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = character.species,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .clickable(onClick = onFavoriteClick),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (isFavorite) AppTheme.colorScheme.primary else AppTheme.colorScheme.onSurface
+                        )
+                    }
+                }
             }
 
         }

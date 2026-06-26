@@ -1,6 +1,8 @@
 package com.example.rickandmortyapp.feature.favorite
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,90 +13,123 @@ import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.rickandmortyapp.ui.components.BottomNavBar
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import com.example.rickandmortyapp.data.model.Character
+import com.example.rickandmortyapp.data.model.CharacterStatus
+import com.example.rickandmortyapp.data.model.color
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
 
-data class FavoriteCharacter(
-    val name: String,
-    val species: String,
-    val isAlive: Boolean,
-    val image: Int
-)
 
-@Preview(showSystemUi = true)
+/**
+ * Entry-point for the Favorites screen — connects the [FavoriteViewModel]
+ * to the stateless [FavoriteScreenContent] composable.
+ *
+ * One-shot effects are collected in a [LaunchedEffect] that lives as long as
+ * the composable is in composition, following the same pattern used by
+ * HomeScreen and CharacterDetailsScreen.
+ */
 @Composable
-fun FavoriteScreenPreview() {
-    AppTheme {
-        FavoriteScreen()
+fun FavoriteScreen(
+    viewModel: FavoriteViewModel = hiltViewModel(),
+    onNavigateToHome: () -> Unit,
+    onShowSnackbar: suspend (String) -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is FavoriteEffect.NavigateToHome  -> onNavigateToHome()
+                is FavoriteEffect.ShowSnackbar    -> onShowSnackbar(effect.message)
+            }
+        }
     }
+
+    FavoriteScreenContent(
+        state = state,
+        onEvent = viewModel::onEvent
+    )
 }
 
 @Composable
-fun FavoriteScreen(
-    favoriteCharacters: List<FavoriteCharacter> = emptyList(),
-    onExploreClick: () -> Unit = {},
-    onNavClick: (String) -> Unit = {}
+fun FavoriteScreenContent(
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colorScheme.screenBackground)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = AppTheme.size.large)
-                .padding(bottom = AppTheme.size.bottomBarHeight + AppTheme.size.large),
+                .padding(horizontal = AppTheme.size.large),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
             CustomTopBar("RICK & MORTY")
 
-            if (favoriteCharacters.isEmpty()) {
+            AnimatedVisibility(
+                visible = state.favorites.isEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 EmptyFavoriteContent(
-                    onExploreClick = onExploreClick
+                    onExploreClick = { onEvent(FavoriteEvent.ExploreClicked) }
                 )
-            } else {
+            }
+
+            AnimatedVisibility(
+                visible = state.favorites.isNotEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 FavoriteCharactersList(
-                    characters = favoriteCharacters
+                    characters = state.favorites,
+                    onRemove = { character -> onEvent(FavoriteEvent.RemoveFavorite(character)) }
                 )
             }
         }
-
-        BottomNavBar(
-            selectedRoute = "favorites",
-            onNavigate = onNavClick,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
 @Composable
 private fun FavoriteCharactersList(
-    characters: List<FavoriteCharacter>
+    characters: List<Character>,
+    onRemove: (Character) -> Unit
 ) {
     LazyColumn(
+        contentPadding = PaddingValues(bottom = AppTheme.size.large),
         verticalArrangement = Arrangement.spacedBy(AppTheme.size.large)
     ) {
-        items(characters) { character ->
-            FavoriteCharacterCard(character = character)
+        items(
+            items = characters,
+            key = { it.id }
+        ) { character ->
+            FavoriteCharacterCard(
+                character = character,
+                onRemove = { onRemove(character) }
+            )
         }
     }
 }
 
 @Composable
 private fun FavoriteCharacterCard(
-    character: FavoriteCharacter
+    character: Character,
+    onRemove: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -111,11 +146,12 @@ private fun FavoriteCharacterCard(
                 .padding(AppTheme.size.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Image(
-                painter = painterResource(id = character.image),
+            AsyncImage(
+                model = character.imageUrl,
                 contentDescription = character.name,
-                modifier = Modifier.size(AppTheme.size.favoriteAvatarSize),
+                modifier = Modifier
+                    .size(AppTheme.size.favoriteAvatarSize)
+                    .clip(AppTheme.shape.container),
                 contentScale = ContentScale.Crop
             )
 
@@ -139,10 +175,7 @@ private fun FavoriteCharacterCard(
                         modifier = Modifier
                             .size(AppTheme.size.small)
                             .background(
-                                color = if (character.isAlive)
-                                    AppTheme.colorScheme.success
-                                else
-                                    AppTheme.colorScheme.error,
+                                color = character.status.color,
                                 shape = CircleShape
                             )
                     )
@@ -150,21 +183,21 @@ private fun FavoriteCharacterCard(
                     Spacer(modifier = Modifier.width(AppTheme.size.small))
 
                     Text(
-                        text = if (character.isAlive)
-                            "ALIVE – ${character.species.uppercase()}"
-                        else
-                            "DEAD – ${character.species.uppercase()}",
+                        text = "${character.status.displayName.uppercase()} – ${character.species.uppercase()}",
                         color = AppTheme.colorScheme.textSecondary,
                         style = AppTheme.typography.labelSmall
                     )
                 }
             }
 
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = null,
-                tint = AppTheme.colorScheme.primary
-            )
+            // Heart button: tapping it un-favourites the character
+            IconButton(onClick = onRemove) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "Remove from favorites",
+                    tint = AppTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
@@ -243,5 +276,16 @@ private fun EmptyFavoriteContent(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun FavoriteScreenPreview() {
+    AppTheme {
+        FavoriteScreenContent(
+            state = FavoriteState(),
+            onEvent = {}
+        )
     }
 }

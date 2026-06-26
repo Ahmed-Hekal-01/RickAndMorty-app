@@ -7,7 +7,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.rickandmortyapp.feature.auth.login.LoginScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterDetailsScreen
+import com.example.rickandmortyapp.feature.characterdetail.CharacterEpisodesScreen
+import com.example.rickandmortyapp.feature.favorite.FavoriteScreen
 import com.example.rickandmortyapp.feature.home.HomeScreen
 import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.ui.components.BottomNavBar
@@ -30,6 +35,16 @@ fun AppRoot(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val showSnackbar: suspend (String) -> Unit = { message ->
+        snackbarHostState.currentSnackbarData?.dismiss()
+        val job = scope.launch {
+            delay(1000)
+            snackbarHostState.currentSnackbarData?.dismiss()
+        }
+        snackbarHostState.showSnackbar(message)
+        job.cancel()
+    }
     val currentRoute = navBackStackEntry?.destination?.route
     val navigateMain: (String) -> Unit = { route ->
         navController.navigate(route) {
@@ -79,7 +94,7 @@ fun AppRoot(
                             navController.navigate(AppRoutes.FORGOT_PASSWORD_SCREEN)
                         },
                         onShowSnackbar = { message ->
-                            snackbarHostState.showSnackbar(message)
+                            showSnackbar(message)
                         }
 
                     )
@@ -97,15 +112,16 @@ fun AppRoot(
                 composable(AppRoutes.HOME_SCREEN) {
                     HomeScreen(
                         onNavigateToCharacterDetails = { characterId ->
-                            navController.navigate(
-                                AppRoutes.CHARACTER_DETAILS_SCREEN.replace(
-                                    "{characterId}",
-                                    characterId.toString()
-                                )
+                            val route = AppRoutes.CHARACTER_DETAILS_SCREEN.replace(
+                                "{characterId}",
+                                characterId.toString()
                             )
+                            if (navController.currentBackStackEntry?.destination?.route != AppRoutes.CHARACTER_DETAILS_SCREEN) {
+                                navController.navigate(route)
+                            }
                         },
                         onShowSnackbar = { message ->
-                            snackbarHostState.showSnackbar(message)
+                            showSnackbar(message)
                         }
                     )
                 }
@@ -114,10 +130,47 @@ fun AppRoot(
                     route = AppRoutes.CHARACTER_DETAILS_SCREEN,
                     arguments = listOf(navArgument("characterId") { type = NavType.IntType })
                 ) {
-                    CharacterDetailsScreen()
+                    CharacterDetailsScreen(
+                        onNavigateBack = {
+                            navController.navigateUp()
+                        },
+                        onNavigateToEpisodes = { characterId ->
+                            val route = AppRoutes.CHARACTER_EPISODE_SCREEN.replace(
+                                "{characterId}",
+                                characterId.toString()
+                            )
+                            if (navController.currentBackStackEntry?.destination?.route != AppRoutes.CHARACTER_EPISODE_SCREEN) {
+                                navController.navigate(route)
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
                 }
-                composable(AppRoutes.CHARACTER_EPISODE_SCREEN) { }
-                composable(AppRoutes.FAV_SCREEN) { }
+                composable(
+                    route = AppRoutes.CHARACTER_EPISODE_SCREEN,
+                    arguments = listOf(navArgument("characterId") { type = NavType.IntType })
+                ) {
+                    CharacterEpisodesScreen(
+                        onNavigateBack = {
+                            navController.navigateUp()
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
+                composable(AppRoutes.FAV_SCREEN) {
+                    FavoriteScreen(
+                        onNavigateToHome = {
+                            navigateMain(AppRoutes.HOME_SCREEN)
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
                 composable(AppRoutes.SEARCH_SCREEN) { }
                 composable(AppRoutes.PROFILE_SCREEN) {
                     ProfileScreen(
@@ -127,7 +180,7 @@ fun AppRoot(
                             }
                         },
                         onShowSnackbar = { message ->
-                            snackbarHostState.showSnackbar(message)
+                            showSnackbar(message)
                         }
                     )
                 }
