@@ -22,6 +22,7 @@ import com.example.rickandmortyapp.feature.auth.login.LoginScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterDetailsScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterEpisodesScreen
 import com.example.rickandmortyapp.feature.favorite.FavoriteScreen
+import com.example.rickandmortyapp.feature.episodes.EpisodesScreen
 import com.example.rickandmortyapp.feature.home.HomeScreen
 import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.ui.components.BottomNavBar
@@ -125,7 +126,16 @@ fun AppRoot(
                         }
                     )
                 }
-                composable(AppRoutes.EPISODES_SCREEN) { }
+                composable(AppRoutes.EPISODES_SCREEN) {
+                    EpisodesScreen(
+                        onNavClick = { route ->
+                            navigateMain(route)
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
                 composable(
                     route = AppRoutes.CHARACTER_DETAILS_SCREEN,
                     arguments = listOf(navArgument("characterId") { type = NavType.IntType })
