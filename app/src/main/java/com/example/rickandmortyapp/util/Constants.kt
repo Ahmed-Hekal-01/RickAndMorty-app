@@ -13,7 +13,7 @@ object AppRoutes {
     const val CHARACTER_DETAILS_SCREEN = "character_details/{characterId}"
     const val PROFILE_SCREEN = "profile"
     const val SEARCH_SCREEN = "search"
-    const val CHARACTER_EPISODE_SCREEN = "character_episode"
+    const val CHARACTER_EPISODE_SCREEN = "character_episode/{characterId}"
 }
 
 object AppGraphs {

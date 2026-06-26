@@ -67,7 +67,7 @@ import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.feature.auth.register.GoogleAuthUiClient
 import com.example.rickandmortyapp.ui.theme.AppTheme
-import kotlinx.coroutines.flow.collectLatest
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -126,7 +126,7 @@ fun LoginScreen(
     val googleAuth = remember(context) { GoogleAuthUiClient(context) }
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 is LoginEffect.NavigateToHome -> onNavigateToHome()
                 is LoginEffect.NavigateToSignUp -> onNavigateToSignUp()

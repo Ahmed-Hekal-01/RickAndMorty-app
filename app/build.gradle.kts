@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -57,6 +58,10 @@ android {
 kotlin {
     jvmToolchain(17)
 }
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 dependencies {
 
     implementation(libs.androidx.interpolator)
@@ -75,12 +80,17 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
     implementation(libs.google.play.services.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play)
     implementation(libs.googleid)
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     // Hilt Navigation Compose
     implementation(libs.hilt.navigation.compose)

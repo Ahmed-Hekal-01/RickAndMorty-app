@@ -10,4 +10,6 @@ sealed class CharacterDetailEvent : UiEvent {
     data object Retry : CharacterDetailEvent()
     /** User tapped the back button. */
     data object NavigateBack : CharacterDetailEvent()
+    /** User tapped the heart icon — toggle this character's favourite status. */
+    data object ToggleFavorite : CharacterDetailEvent()
 }
