@@ -30,7 +30,7 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-
+            signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BASE_URL", "\"https://rickandmortyapi.com/api\"")
         }
 
