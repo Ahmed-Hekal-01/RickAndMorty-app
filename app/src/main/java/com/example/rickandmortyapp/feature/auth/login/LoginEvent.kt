@@ -8,4 +8,8 @@ sealed class LoginEvent : UiEvent {
     data class PasswordChanged(val password: String) : LoginEvent()
     data object LoginClicked : LoginEvent()
     data object NavigateToRegister : LoginEvent()
+    data object ForgetPasswordClicked : LoginEvent()
+    data object GoogleLoginClicked : LoginEvent()
+    data class GoogleTokenReceived(val idToken: String) : LoginEvent()
+    data object SignUpClicked : LoginEvent()
 }
