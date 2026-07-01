@@ -19,6 +19,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.rickandmortyapp.feature.auth.login.LoginScreen
+import com.example.rickandmortyapp.feature.auth.register.RegistrationScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterDetailsScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterEpisodesScreen
 import com.example.rickandmortyapp.feature.favorite.FavoriteScreen
@@ -100,7 +101,7 @@ fun AppRoot(
 
                     )
                 }
-                composable(AppRoutes.SIGN_UP_SCREEN) { }
+                composable(AppRoutes.SIGN_UP_SCREEN) {RegistrationScreen() }
                 composable(AppRoutes.FORGOT_PASSWORD_SCREEN) { }
                 composable(AppRoutes.OTP_VERIFICATION_SCREEN) { }
                 composable(AppRoutes.NEW_PASSWORD_SCREEN) { }
