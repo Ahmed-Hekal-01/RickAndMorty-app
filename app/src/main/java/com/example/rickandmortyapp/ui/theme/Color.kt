@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 val PrimaryPurple = Color(0xFF5D21DF)
 val PrimaryPurpleDark = Color(0xFF370096)
 val PrimaryPurpleLight = Color(0xFF9B6DFF)
-val PrimaryLavender = Color(0xFFCDBDFF)
+val PrimaryLavender = Color(0xFF7265D5)
 val AccentCyan = Color(0xFF00DAF3)
 
 // Dark Theme
