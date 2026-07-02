@@ -1,4 +1,4 @@
-package com.example.rickandmortyapp.feature.auth
+package com.example.rickandmortyapp.feature.auth.forgot
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.theme.AppTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Preview(showSystemUi = true)
 @Composable
@@ -31,10 +33,20 @@ fun ForgotPasswordScreenPreview() {
 
 @Composable
 fun ForgotPasswordScreen(
+    viewModel: ForgotPasswordViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onSendResetLinkClick: () -> Unit = {}
+    onShowSnackbar: suspend (String) -> Unit = {}
 ) {
-    var email by remember { mutableStateOf("") }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is ForgotPasswordEffect.NavigateBackToLogin -> onBackClick()
+                is ForgotPasswordEffect.ShowMessage -> onShowSnackbar(effect.message)
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -66,7 +78,9 @@ fun ForgotPasswordScreen(
         ) {
 
             TextButton(
-                onClick = onBackClick,
+                onClick = {
+                    viewModel.onEvent(ForgotPasswordEvent.BackToLoginClicked)
+                },
                 contentPadding = PaddingValues()
             ) {
                 Icon(
@@ -125,11 +139,13 @@ fun ForgotPasswordScreen(
                     Spacer(modifier = Modifier.height(AppTheme.size.small))
 
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = state.email,
+                        onValueChange = {
+                            viewModel.onEvent(ForgotPasswordEvent.EmailChanged(it))
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(AppTheme.size.fieldHeight),
+                            .defaultMinSize(minHeight = AppTheme.size.fieldHeight),
                         placeholder = {
                             Text(
                                 text = "your@email.com",
@@ -144,6 +160,15 @@ fun ForgotPasswordScreen(
                             )
                         },
                         singleLine = true,
+                        isError = state.emailError != null,
+                        supportingText = {
+                            state.emailError?.let { error ->
+                                Text(
+                                    text = error,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email
                         ),
@@ -162,7 +187,10 @@ fun ForgotPasswordScreen(
                     Spacer(modifier = Modifier.height(AppTheme.size.large))
 
                     Button(
-                        onClick = onSendResetLinkClick,
+                        onClick = {
+                            viewModel.onEvent(ForgotPasswordEvent.SendResetLinkClicked)
+                        },
+                        enabled = !state.isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(AppTheme.size.buttonHeight),
@@ -186,22 +214,28 @@ fun ForgotPasswordScreen(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Send Reset Link",
-                                    color = AppTheme.colorScheme.onPrimary,
-                                    style = AppTheme.typography.labelLarge
+                            if (state.isLoading) {
+                                CircularProgressIndicator(
+                                    color = AppTheme.colorScheme.onPrimary
                                 )
+                            } else {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Send Reset Link",
+                                        color = AppTheme.colorScheme.onPrimary,
+                                        style = AppTheme.typography.labelLarge
+                                    )
 
-                                Spacer(modifier = Modifier.width(AppTheme.size.small))
+                                    Spacer(modifier = Modifier.width(AppTheme.size.small))
 
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                                    contentDescription = null,
-                                    tint = AppTheme.colorScheme.onPrimary
-                                )
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                                        contentDescription = null,
+                                        tint = AppTheme.colorScheme.onPrimary
+                                    )
+                                }
                             }
                         }
                     }

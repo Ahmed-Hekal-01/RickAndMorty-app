@@ -29,6 +29,7 @@ import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
+import com.example.rickandmortyapp.feature.auth.forgot.ForgotPasswordScreen
 
 @Composable
 fun AppRoot(
@@ -101,10 +102,35 @@ fun AppRoot(
 
                     )
                 }
-                composable(AppRoutes.SIGN_UP_SCREEN) {RegistrationScreen() }
-                composable(AppRoutes.FORGOT_PASSWORD_SCREEN) { }
-                composable(AppRoutes.OTP_VERIFICATION_SCREEN) { }
-                composable(AppRoutes.NEW_PASSWORD_SCREEN) { }
+                composable(AppRoutes.SIGN_UP_SCREEN) {
+                    RegistrationScreen(
+                        onNavigateToHome = {
+                            navController.navigate(AppGraphs.MAIN) {
+                                popUpTo(AppGraphs.AUTH) { inclusive = true }
+                            }
+                        },
+                        onNavigateToLogin = {
+                            navController.navigate(AppRoutes.LOGIN_SCREEN) {
+                                popUpTo(AppRoutes.SIGN_UP_SCREEN) { inclusive = true }
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
+                composable(AppRoutes.FORGOT_PASSWORD_SCREEN) {
+                    ForgotPasswordScreen(
+                        onBackClick = {
+                            navController.navigate(AppRoutes.LOGIN_SCREEN) {
+                                popUpTo(AppRoutes.FORGOT_PASSWORD_SCREEN) { inclusive = true }
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
 
             }
 

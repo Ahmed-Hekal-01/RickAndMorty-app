@@ -6,5 +6,6 @@ import com.example.rickandmortyapp.feature.base.UiEffect
 sealed class RegisterEffect : UiEffect {
     data object NavigateToHome : RegisterEffect()
     data object NavigateToLogin : RegisterEffect()
+    data object LaunchGoogleSignIn : RegisterEffect()
     data class ShowError(val message: String) : RegisterEffect()
 }

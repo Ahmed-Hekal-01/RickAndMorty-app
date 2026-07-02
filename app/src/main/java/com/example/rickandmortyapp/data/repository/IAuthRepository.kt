@@ -24,14 +24,23 @@ interface IAuthRepository {
      * Attempt email/password login.
      * @return [NetworkResult.Success] with the signed-in [FirebaseUser], or [NetworkResult.Error].
      */
-    suspend fun login(email: String, password: String): NetworkResult<FirebaseUser>
+    suspend fun login(
+        email: String,
+        password: String
+    ): NetworkResult<FirebaseUser>
 
     /**
      * Create a new email/password account.
      * @return [NetworkResult.Success] with the created [FirebaseUser], or [NetworkResult.Error].
      */
-    suspend fun register(email: String, password: String): NetworkResult<FirebaseUser>
+    suspend fun register(
+        fullName: String,
+        email: String,
+        password: String
+    ): NetworkResult<FirebaseUser>
 
     /** Sign out the current user. Clears the Firebase auth session. */
     suspend fun logout()
+
+    suspend fun sendPasswordResetEmail(email: String): NetworkResult<Unit>
 }
