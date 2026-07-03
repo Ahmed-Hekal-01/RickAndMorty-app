@@ -62,6 +62,7 @@ import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.feature.home.CharacterCard
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
+import com.example.rickandmortyapp.data.model.color
 
 @Composable
 fun SearchScreen(
@@ -361,11 +362,10 @@ private fun StatusChip(
                 modifier = Modifier
                     .size(8.dp)
                     .clip(CircleShape)
-                    .background(statusIndicatorColor(status))
-            )
+                    .background(status.color))
             Spacer(modifier = Modifier.size(7.dp))
             Text(
-                text = status.searchLabel,
+                text = status.displayName,
                 style = AppTheme.typography.labelNormal,
                 fontWeight = FontWeight.Bold,
                 color = if (selected) AppTheme.colorScheme.onPrimary else AppTheme.colorScheme.textSecondary,
@@ -529,17 +529,4 @@ private fun SearchResultsGrid(
             }
         }
     }
-}
-
-private val CharacterStatus.searchLabel: String
-    get() = when (this) {
-        CharacterStatus.ALIVE -> "Live"
-        CharacterStatus.DEAD -> "Dead"
-        CharacterStatus.UNKNOWN -> "Unknown"
-    }
-
-private fun statusIndicatorColor(status: CharacterStatus): Color = when (status) {
-    CharacterStatus.ALIVE -> Color(0xFF22C55E)
-    CharacterStatus.DEAD -> Color(0xFFEF4444)
-    CharacterStatus.UNKNOWN -> Color(0xFFFACC15)
 }
