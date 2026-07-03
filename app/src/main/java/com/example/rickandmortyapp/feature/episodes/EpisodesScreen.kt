@@ -365,14 +365,20 @@ private fun arabicSeasonName(seasonNumber: Int): String {
     }
 }
 
+private fun isLastEpisode(seasonNumber: Int, episodeNumber: Int): Boolean {
+    return (seasonNumber == 1 && episodeNumber == 11) || (seasonNumber > 1 && episodeNumber == 10)
+}
+
 private fun buildEpisodeWatchUrl(
     seasonNumber: Int,
     episodeNumber: Int
 ): String {
     val seasonArabicName = arabicSeasonName(seasonNumber)
+    
+    val suffix = if (isLastEpisode(seasonNumber, episodeNumber)) "والاخيرة مترجمة" else "مترجمة"
 
     val slug =
-        "مسلسل-rick-and-morty-الموسم-$seasonArabicName-الحلقة-$episodeNumber-مترجمة"
+        "مسلسل-rick-and-morty-الموسم-$seasonArabicName-الحلقة-$episodeNumber-$suffix"
 
     return "https://web.topcinemaa.com/${Uri.encode(slug, "-")}/"
 }

@@ -8,6 +8,7 @@ import com.example.rickandmortyapp.util.StringProvider
 import com.example.rickandmortyapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -52,10 +53,12 @@ class EpisodesViewModel @Inject constructor(
     }
 
     private suspend fun fetchPage(page: Int, isInitial: Boolean) {
+        Timber.d("Fetching episodes - page: $page, isInitial: $isInitial")
         when (val result = episodeRepository.getEpisodeByPage(page)) {
             is NetworkResult.Success -> {
                 val newEpisodes = result.data.results
                 val hasMore = result.data.next != null
+                Timber.d("Fetched ${newEpisodes.size} episodes successfully. Has more: $hasMore")
                 setState {
                     copy(
                         episodes = if (isInitial) newEpisodes else episodes + newEpisodes,
@@ -68,6 +71,7 @@ class EpisodesViewModel @Inject constructor(
                 }
             }
             is NetworkResult.Error -> {
+                Timber.e("Failed to fetch episodes for page $page. Error: $result")
                 val message = result.toUserMessage(stringProvider)
                 setState {
                     copy(isLoading = false, isLoadingMore = false, error = if (isInitial) message else error)
