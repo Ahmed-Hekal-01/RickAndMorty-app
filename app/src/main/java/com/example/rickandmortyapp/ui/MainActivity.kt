@@ -3,7 +3,9 @@ package com.example.rickandmortyapp.ui
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,15 +15,14 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.rickandmortyapp.feature.search.SearchScreen
 import com.example.rickandmortyapp.feature.splash.Destination
 import com.example.rickandmortyapp.feature.splash.SplashViewModel
 import com.example.rickandmortyapp.ui.navigation.AppRoot
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import com.example.rickandmortyapp.util.AppGraphs
 import dagger.hilt.android.AndroidEntryPoint
-import com.example.rickandmortyapp.data.model.AppSettings
-import com.example.rickandmortyapp.data.repository.ISettingsRepository
-import javax.inject.Inject
+import androidx.compose.ui.platform.LocalContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

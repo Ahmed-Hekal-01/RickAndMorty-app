@@ -29,7 +29,7 @@ import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
-import com.example.rickandmortyapp.feature.auth.forgot.ForgotPasswordScreen
+import com.example.rickandmortyapp.feature.search.SearchScreen
 
 @Composable
 fun AppRoot(
@@ -144,8 +144,12 @@ fun AppRoot(
                                 "{characterId}",
                                 characterId.toString()
                             )
-                            if (navController.currentBackStackEntry?.destination?.route != AppRoutes.CHARACTER_DETAILS_SCREEN) {
-                                navController.navigate(route)
+
+                            navController.navigate(route)
+                        },
+                        onNavigateToSearch = {
+                            navController.navigate(AppRoutes.SEARCH_SCREEN) {
+                                launchSingleTop = true
                             }
                         },
                         onShowSnackbar = { message ->
@@ -208,7 +212,21 @@ fun AppRoot(
                         }
                     )
                 }
-                composable(AppRoutes.SEARCH_SCREEN) { }
+                composable(AppRoutes.SEARCH_SCREEN) {
+                    SearchScreen(
+                        onNavigateToCharacterDetails = { characterId ->
+                            val route = AppRoutes.CHARACTER_DETAILS_SCREEN.replace(
+                                "{characterId}",
+                                characterId.toString()
+                            )
+
+                            navController.navigate(route)
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
                 composable(AppRoutes.PROFILE_SCREEN) {
                     ProfileScreen(
                         onNavigateToLogin = {

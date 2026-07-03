@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.ICharacterRepository
+import com.example.rickandmortyapp.data.repository.IFavoritesRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -12,27 +13,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Manages character search screen state.
+ * Manages the character search screen.
  *
- * Search strategy:
- * - [SearchEvent.QueryChanged] / [SearchEvent.StatusFilterChanged] update state immediately
- *   and schedule a debounced auto-search (300 ms) so the user gets live results
- *   while typing without hammering the API on every keystroke.
- * - [SearchEvent.Search] cancels any pending debounce and fires immediately.
- * - [SearchEvent.LoadNextPage] appends the next page to the existing results.
- * - [SearchEvent.ClearSearch] resets all state back to the initial blank screen.
- *
- * The API returns 404 when no characters match — this is treated as an empty
- * result set (not a hard error) so the UI can show "No results found."
+ * Supported filters:
+ * - Name only.
+ * - Status only.
+ * - Name + status together.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val characterRepository: ICharacterRepository
+    private val characterRepository: ICharacterRepository,
+    private val favoritesRepository: IFavoritesRepository
 ) : MviViewModel<SearchState, SearchEvent, SearchEffect>() {
 
     override fun createInitialState() = SearchState()
 
     private var debounceJob: Job? = null
+    private var searchJob: Job? = null
+
+    init {
+        observeFavoriteIds()
+    }
 
     override fun handleEvent(event: SearchEvent) {
         when (event) {
@@ -40,23 +41,48 @@ class SearchViewModel @Inject constructor(
                 setState { copy(query = event.query) }
                 scheduleDebounceSearch()
             }
+
             is SearchEvent.StatusFilterChanged -> {
                 setState { copy(statusFilter = event.status) }
                 scheduleDebounceSearch()
             }
-            is SearchEvent.Search -> {
+
+            SearchEvent.Search -> {
                 debounceJob?.cancel()
                 performSearch()
             }
-            is SearchEvent.LoadNextPage -> loadNextPage()
-            is SearchEvent.ClearSearch -> {
+
+            SearchEvent.LoadNextPage -> loadNextPage()
+
+            SearchEvent.ClearSearch -> {
                 debounceJob?.cancel()
-                setState { SearchState() }
+                searchJob?.cancel()
+                setState { SearchState(favoriteIds = favoriteIds) }
+            }
+
+            SearchEvent.Retry -> performSearch()
+
+            is SearchEvent.FavoriteClicked -> toggleFavorite(event)
+        }
+    }
+
+    private fun observeFavoriteIds() {
+        viewModelScope.launch {
+            favoritesRepository.observeFavoriteIds.collect { ids ->
+                setState { copy(favoriteIds = ids) }
             }
         }
     }
 
-    // ─── Search logic ─────────────────────────────────────────────────────────
+    private fun toggleFavorite(event: SearchEvent.FavoriteClicked) {
+        viewModelScope.launch {
+            val character = state.value.results.find { it.id == event.characterId } ?: return@launch
+            val wasFavorite = event.characterId in state.value.favoriteIds
+            favoritesRepository.toggleFavorite(character)
+            val verb = if (wasFavorite) "removed from" else "added to"
+            setEffect(SearchEffect.ShowError("${event.characterName} $verb favorites"))
+        }
+    }
 
     private fun scheduleDebounceSearch() {
         debounceJob?.cancel()
@@ -68,26 +94,56 @@ class SearchViewModel @Inject constructor(
 
     private fun performSearch() {
         val query = state.value.query.trim()
-        if (query.isBlank()) {
-            setState { copy(results = emptyList(), hasSearched = false, error = null) }
+        val status = state.value.statusFilter
+
+        if (query.isBlank() && status == null) {
+            setState {
+                copy(
+                    results = emptyList(),
+                    isLoading = false,
+                    isLoadingMore = false,
+                    currentPage = 1,
+                    hasMorePages = true,
+                    hasSearched = false,
+                    error = null
+                )
+            }
             return
         }
-        viewModelScope.launch {
-            setState { copy(isLoading = true, error = null, results = emptyList(), hasSearched = true) }
-            fetchPage(page = 1, query = query, status = state.value.statusFilter, isInitial = true)
+
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            setState {
+                copy(
+                    isLoading = true,
+                    isLoadingMore = false,
+                    error = null,
+                    results = emptyList(),
+                    currentPage = 1,
+                    hasMorePages = true,
+                    hasSearched = true
+                )
+            }
+            fetchPage(page = 1, query = query, status = status, isInitial = true)
         }
     }
 
     private fun loadNextPage() {
-        val s = state.value
-        if (s.isLoading || s.isLoadingMore || !s.hasMorePages || s.query.isBlank()) return
+        val current = state.value
+        val canSearch = current.query.isNotBlank() || current.statusFilter != null
+        if (
+            !canSearch ||
+            current.isLoading ||
+            current.isLoadingMore ||
+            !current.hasMorePages
+        ) return
 
         viewModelScope.launch {
-            setState { copy(isLoadingMore = true) }
+            setState { copy(isLoadingMore = true, error = null) }
             fetchPage(
-                page = s.currentPage + 1,
-                query = s.query.trim(),
-                status = s.statusFilter,
+                page = current.currentPage + 1,
+                query = current.query.trim(),
+                status = current.statusFilter,
                 isInitial = false
             )
         }
@@ -99,7 +155,12 @@ class SearchViewModel @Inject constructor(
         status: CharacterStatus?,
         isInitial: Boolean
     ) {
-        when (val result = characterRepository.searchCharacters(query, status, page)) {
+        val result = characterRepository.searchCharacters(query, status, page)
+
+        // Ignore old network responses if the user changed the input mid-request.
+        if (state.value.query.trim() != query || state.value.statusFilter != status) return
+
+        when (result) {
             is NetworkResult.Success -> {
                 val newResults = result.data.results
                 val hasMore = result.data.next != null
@@ -114,9 +175,8 @@ class SearchViewModel @Inject constructor(
                     )
                 }
             }
+
             is NetworkResult.Error -> {
-                // 404 from the Rick & Morty API means "no characters match" — show empty list.
-                // Also reset pagination so LoadNextPage cannot run with stale metadata.
                 if (isInitial && result is NetworkResult.Error.BackendError.NotFound) {
                     setState {
                         copy(
@@ -124,26 +184,32 @@ class SearchViewModel @Inject constructor(
                             isLoadingMore = false,
                             results = emptyList(),
                             currentPage = 1,
-                            hasMorePages = false
+                            hasMorePages = false,
+                            error = null
                         )
                     }
                     return
                 }
+
                 val message = result.toUserMessage()
-                setState { copy(isLoading = false, isLoadingMore = false, error = message) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        isLoadingMore = false,
+                        error = message
+                    )
+                }
                 setEffect(SearchEffect.ShowError(message))
             }
         }
     }
 }
 
-// ─── Extension ───────────────────────────────────────────────────────────────
-
 private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError -> "No internet connection."
-    is NetworkResult.Error.BackendError.NotFound -> "No characters found."
-    is NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
-    is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
-    is NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
-    else -> {"todo"}
+    NetworkResult.Error.OfflineError -> "No internet connection."
+    NetworkResult.Error.BackendError.NotFound -> "No characters found."
+    NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
+    NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
+    NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
+    NetworkResult.Error.UserCancellation -> "Request cancelled."
 }
