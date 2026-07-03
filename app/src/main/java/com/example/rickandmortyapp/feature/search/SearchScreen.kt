@@ -93,6 +93,15 @@ fun SearchScreenContent(
     val focusManager = LocalFocusManager.current
     val gridState = rememberLazyGridState()
 
+    LaunchedEffect(state.query, state.statusFilter) {
+        if (
+            gridState.firstVisibleItemIndex != 0 ||
+            gridState.firstVisibleItemScrollOffset != 0
+        ) {
+            gridState.scrollToItem(0)
+        }
+    }
+
     val shouldLoadMore by remember {
         derivedStateOf {
             val totalItems = gridState.layoutInfo.totalItemsCount
