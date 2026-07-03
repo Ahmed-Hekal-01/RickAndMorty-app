@@ -43,6 +43,8 @@
     <string name="no_favorite_characters_yet">No favorite characters yet</string>
     <string name="add_characters_to_favorites">Add characters to favorites to see\nthem here</string>
     <string name="explore_multiverse">EXPLORE MULTIVERSE</string>
+    <string name="your_collection">Your Collection</string>
+    <string name="favorite_characters_title">Favorites</string>
 
     <!-- Search Screen -->
     <string name="discover">Discover</string>

@@ -2,6 +2,9 @@ package com.example.rickandmortyapp.feature.episodes
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.PlayArrow
@@ -35,6 +39,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,13 +53,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.Episode
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
-import androidx.core.net.toUri
 
 @Preview(showSystemUi = true)
 @Composable
@@ -117,6 +122,14 @@ fun EpisodesScreenContent(
         }
     }
 
+    val listState = rememberLazyListState()
+
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -129,19 +142,27 @@ fun EpisodesScreenContent(
         ) {
             CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
 
+            val seasonGuidesText = stringResource(R.string.season_guides)
+            val episodesTitleText = stringResource(R.string.episodes_title)
 
-            Column(modifier = Modifier.padding(vertical = AppTheme.size.medium)) {
-                Text(
-                    text = stringResource(R.string.season_guides),
-                    color = AppTheme.colorScheme.primaryLight,
-                    style = AppTheme.typography.labelSmall
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(R.string.episodes_title),
-                    color = AppTheme.colorScheme.textSecondary,
-                    style = AppTheme.typography.titleLarge
-                )
+            AnimatedVisibility(
+                visible = isHeaderVisible,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(modifier = Modifier.padding(vertical = AppTheme.size.medium)) {
+                    Text(
+                        text = episodesTitleText,
+                        color = AppTheme.colorScheme.textSecondary,
+                        style = AppTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = seasonGuidesText,
+                        color = AppTheme.colorScheme.primaryLight,
+                        style = AppTheme.typography.labelSmall
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(AppTheme.size.normal))
@@ -190,6 +211,7 @@ fun EpisodesScreenContent(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
+                        state = listState,
                         contentPadding = PaddingValues(
                             bottom = AppTheme.size.large
                         )
@@ -275,36 +297,37 @@ fun EpisodesScreenContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SeasonChips(
     seasonNumbers: List<Int>,
     selectedSeasonNumber: Int?,
     onSeasonClick: (Int?) -> Unit
 ) {
-    FlowRow(
+    LazyRow(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.size.normal),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.size.normal)
+        modifier = Modifier.fillMaxWidth()
     ) {
         val isAllSelected = selectedSeasonNumber == null
 
-        Button(
-            onClick = { onSeasonClick(null) },
-            modifier = Modifier.height(AppTheme.size.episodeChipHeight),
-            shape = AppTheme.shape.button,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isAllSelected) AppTheme.colorScheme.primaryLight else AppTheme.colorScheme.darkCardBackground,
-                contentColor = if (isAllSelected) AppTheme.colorScheme.primary else AppTheme.colorScheme.textPrimary
-            ),
-            contentPadding = PaddingValues(horizontal = AppTheme.size.large)
-        ) {
-            Text(
-                text = stringResource(R.string.all_episodes),
-                style = AppTheme.typography.labelNormal
-            )
+        item {
+            Button(
+                onClick = { onSeasonClick(null) },
+                modifier = Modifier.height(AppTheme.size.episodeChipHeight),
+                shape = AppTheme.shape.button,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isAllSelected) AppTheme.colorScheme.primaryLight else AppTheme.colorScheme.darkCardBackground,
+                    contentColor = if (isAllSelected) AppTheme.colorScheme.primary else AppTheme.colorScheme.textPrimary
+                ),
+                contentPadding = PaddingValues(horizontal = AppTheme.size.large)
+            ) {
+                Text(
+                    text = stringResource(R.string.all_episodes),
+                    style = AppTheme.typography.labelNormal
+                )
+            }
         }
 
-        seasonNumbers.forEach { seasonNum ->
+        items(seasonNumbers) { seasonNum ->
             val selected = seasonNum == selectedSeasonNumber
 
             Button(

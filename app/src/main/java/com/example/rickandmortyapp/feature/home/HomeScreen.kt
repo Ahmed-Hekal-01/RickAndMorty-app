@@ -1,5 +1,8 @@
 package com.example.rickandmortyapp.feature.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -81,6 +85,14 @@ fun HomeScreenContent(
     state: HomeState,
     onEvent: (HomeEvent) -> Unit
 ) {
+    val listState = rememberLazyGridState()
+
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -90,21 +102,32 @@ fun HomeScreenContent(
             modifier = Modifier.fillMaxSize()
         ) {
             CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = stringResource(R.string.explore_the_metavirus),
-                    color = AppTheme.colorScheme.primaryLight,
-                    style = AppTheme.typography.labelSmall
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(R.string.home_title),
-                    color = AppTheme.colorScheme.textSecondary,
-                    style = AppTheme.typography.titleLarge
-                )
+
+            val exploreText = stringResource(R.string.explore_the_metavirus)
+            val titleText = stringResource(R.string.home_title)
+
+            AnimatedVisibility(
+                visible = isHeaderVisible,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = titleText,
+                        color = AppTheme.colorScheme.textSecondary,
+                        style = AppTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = exploreText,
+                        color = AppTheme.colorScheme.primaryLight,
+                        style = AppTheme.typography.labelSmall
+                    )
+                }
             }
             CharacterGrid(
                 state = state,
+                listState = listState,
                 onCharacterClicked = { id ->
                     onEvent(HomeEvent.CharacterClicked(id))
                 },
@@ -122,11 +145,11 @@ fun HomeScreenContent(
 @Composable
 fun CharacterGrid(
     state: HomeState,
+    listState: LazyGridState,
     onCharacterClicked: (Int) -> Unit,
     onFavoriteClicked: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
-    val listState = rememberLazyGridState()
 
     val shouldLoadMore = remember {
         derivedStateOf {
@@ -148,7 +171,7 @@ fun CharacterGrid(
             .background(MaterialTheme.colorScheme.background),
         columns = GridCells.Fixed(2),
         state = listState,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -255,7 +278,9 @@ fun CharacterCard(
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(R.string.add_to_favorites),
+                            contentDescription = if (isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(
+                                R.string.add_to_favorites
+                            ),
                             tint = if (isFavorite) AppTheme.colorScheme.primary else AppTheme.colorScheme.onSurface
                         )
                     }
@@ -270,7 +295,7 @@ fun CharacterCard(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun HomePreview() {
-    AppTheme() {
+    AppTheme {
         HomeScreenContent(
             state = HomeState(
                 characters = listOf(

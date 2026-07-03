@@ -1,8 +1,10 @@
 package com.example.rickandmortyapp.feature.favorite
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
@@ -31,7 +35,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +46,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -86,6 +93,14 @@ fun FavoriteScreenContent(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit
 ) {
+    val listState = rememberLazyListState()
+
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -98,6 +113,35 @@ fun FavoriteScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
+
+            val collectionText = stringResource(R.string.your_collection)
+            val favoritesText = stringResource(R.string.favorite_characters_title)
+
+            AnimatedVisibility(
+                visible = isHeaderVisible,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = AppTheme.size.medium),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = favoritesText,
+                        color = AppTheme.colorScheme.textSecondary,
+                        style = AppTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = collectionText,
+                        color = AppTheme.colorScheme.primaryLight,
+                        style = AppTheme.typography.labelSmall
+                    )
+
+                }
+            }
 
 
             AnimatedVisibility(
@@ -117,6 +161,7 @@ fun FavoriteScreenContent(
             ) {
                 FavoriteCharactersList(
                     characters = state.favorites,
+                    listState = listState,
                     onRemove = { character -> onEvent(FavoriteEvent.RemoveFavorite(character)) }
                 )
             }
@@ -127,9 +172,11 @@ fun FavoriteScreenContent(
 @Composable
 private fun FavoriteCharactersList(
     characters: List<Character>,
+    listState: LazyListState,
     onRemove: (Character) -> Unit
 ) {
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(bottom = AppTheme.size.large),
         verticalArrangement = Arrangement.spacedBy(AppTheme.size.large)
     ) {
