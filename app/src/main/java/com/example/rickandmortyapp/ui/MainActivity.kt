@@ -22,6 +22,9 @@ import com.example.rickandmortyapp.ui.navigation.AppRoot
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import com.example.rickandmortyapp.util.AppGraphs
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.example.rickandmortyapp.data.model.AppSettings
+import com.example.rickandmortyapp.data.repository.ISettingsRepository
 import androidx.compose.ui.platform.LocalContext
 
 @AndroidEntryPoint

@@ -494,8 +494,7 @@ private fun SearchResultsGrid(
                 character = character,
                 isFavorite = character.id in state.favoriteIds,
                 onClick = { onCharacterClicked(character.id) },
-                onFavoriteClick = { onFavoriteClicked(character.id, character.name) },
-                modifier = Modifier
+                onFavoriteClick = { onFavoriteClicked(character.id, character.name) }
             )
         }
 

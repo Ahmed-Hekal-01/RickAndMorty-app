@@ -30,6 +30,7 @@ import com.example.rickandmortyapp.ui.components.BottomNavBar
 import com.example.rickandmortyapp.util.AppGraphs
 import com.example.rickandmortyapp.util.AppRoutes
 import com.example.rickandmortyapp.feature.search.SearchScreen
+import com.example.rickandmortyapp.feature.auth.forgot.ForgotPasswordScreen
 
 @Composable
 fun AppRoot(
