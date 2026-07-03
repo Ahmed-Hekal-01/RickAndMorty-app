@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-//import androidx.compose.foundation.lazy.grid.animateItem
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,14 +27,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -255,21 +252,6 @@ private fun PremiumSearchField(
                             )
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(AppTheme.colorScheme.surface.copy(alpha = 0.42f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.FilterAlt,
-                            contentDescription = "Status filter",
-                            tint = AppTheme.colorScheme.primaryLight,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
                 }
             },
             singleLine = true,
@@ -362,7 +344,8 @@ private fun StatusChip(
                 modifier = Modifier
                     .size(8.dp)
                     .clip(CircleShape)
-                    .background(status.color))
+                    .background(status.color)
+            )
             Spacer(modifier = Modifier.size(7.dp))
             Text(
                 text = status.displayName,
@@ -400,7 +383,7 @@ private fun SearchInitialState() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Type a name, choose Live / Dead / Unknown, or combine both.",
+            text = "Type a name, choose Alive / Dead / Unknown, or combine both.",
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.textMuted,
             textAlign = TextAlign.Center
@@ -496,7 +479,7 @@ private fun SearchResultsGrid(
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(AppTheme.colorScheme.screenBackground),
         columns = GridCells.Fixed(2),
         state = gridState,
         contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 28.dp),
@@ -512,7 +495,7 @@ private fun SearchResultsGrid(
                 isFavorite = character.id in state.favoriteIds,
                 onClick = { onCharacterClicked(character.id) },
                 onFavoriteClick = { onFavoriteClicked(character.id, character.name) },
-                modifier = Modifier.animateItem()
+                modifier = Modifier
             )
         }
 
