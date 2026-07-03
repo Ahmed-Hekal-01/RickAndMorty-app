@@ -41,6 +41,8 @@
     <string name="no_favorite_characters_yet">لا توجد شخصيات مفضلة بعد</string>
     <string name="add_characters_to_favorites">أضف شخصيات إلى المفضلة\nلرؤيتها هنا</string>
     <string name="explore_multiverse">استكشف الأكوان المتعددة</string>
+    <string name="your_collection">مجموعتك</string>
+    <string name="favorite_characters_title">المفضلة</string>
 
     <!-- Search Screen -->
     <string name="discover">اكتشف</string>

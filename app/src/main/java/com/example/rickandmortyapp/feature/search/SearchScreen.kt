@@ -20,6 +20,9 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -42,6 +45,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,6 +120,12 @@ fun SearchScreenContent(
     LaunchedEffect(gridState.isScrollInProgress) {
         if (gridState.isScrollInProgress) focusManager.clearFocus()
     }
+    
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex == 0 && gridState.firstVisibleItemScrollOffset == 0
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -121,7 +134,19 @@ fun SearchScreenContent(
     ) {
         CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
 
-        SearchHeader()
+        val searchTitle = stringResource(R.string.discover)
+        val searchSubtitle = stringResource(R.string.search_subtitle)
+
+        AnimatedVisibility(
+            visible = isHeaderVisible,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            SearchHeader(
+                title = searchTitle,
+                subtitle = searchSubtitle
+            )
+        }
 
         PremiumSearchField(
             query = state.query,
@@ -178,7 +203,7 @@ fun SearchScreenContent(
 }
 
 @Composable
-private fun SearchHeader() {
+private fun SearchHeader(title: String, subtitle: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +211,7 @@ private fun SearchHeader() {
             .padding(top = 10.dp, bottom = 8.dp)
     ) {
         Text(
-            text = stringResource(R.string.discover),
+            text = title,
             style = AppTheme.typography.titleLarge,
             color = AppTheme.colorScheme.textPrimary,
             maxLines = 1,
@@ -194,7 +219,7 @@ private fun SearchHeader() {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = stringResource(R.string.search_subtitle),
+            text = subtitle,
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.primaryLight,
             maxLines = 1,
