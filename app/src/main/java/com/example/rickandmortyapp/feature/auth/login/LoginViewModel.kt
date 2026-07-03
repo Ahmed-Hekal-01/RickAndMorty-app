@@ -28,28 +28,61 @@ class LoginViewModel @Inject constructor(
 
     override fun handleEvent(event: LoginEvent) {
         when (event) {
-            is LoginEvent.EmailChanged -> setState { copy(email = event.email, emailError = null) }
-            is LoginEvent.PasswordChanged -> setState {
-                copy(
-                    password = event.password,
-                    passwordError = null
-                )
+            is LoginEvent.EmailChanged -> {
+                setState {
+                    copy(
+                        email = event.email,
+                        emailError = null
+                    )
+                }
             }
-            is LoginEvent.LoginClicked -> attemptLogin()
-            is LoginEvent.ForgetPasswordClicked -> setEffect(LoginEffect.NavigateToForgetPassword)
-            is LoginEvent.GoogleLoginClicked -> setEffect(LoginEffect.LaunchGoogleSignIn)
-            is LoginEvent.GoogleTokenReceived -> authenticateWithGoogle(event.idToken)
-            is LoginEvent.SignUpClicked -> setEffect(LoginEffect.NavigateToSignUp)
-            else -> {}
+
+            is LoginEvent.PasswordChanged -> {
+                setState {
+                    copy(
+                        password = event.password,
+                        passwordError = null
+                    )
+                }
+            }
+
+            is LoginEvent.LoginClicked -> {
+                attemptLogin()
+            }
+
+            is LoginEvent.ForgetPasswordClicked -> {
+                setEffect(LoginEffect.NavigateToForgetPassword)
+            }
+
+            is LoginEvent.GoogleLoginClicked -> {
+                setEffect(LoginEffect.LaunchGoogleSignIn)
+            }
+
+            is LoginEvent.GoogleTokenReceived -> {
+                authenticateWithGoogle(event.idToken)
+            }
+
+            is LoginEvent.SignUpClicked -> {
+                setEffect(LoginEffect.NavigateToSignUp)
+            }
+
+            is LoginEvent.NavigateToRegister -> {
+                setEffect(LoginEffect.NavigateToSignUp)
+            }
         }
     }
 
     private fun authenticateWithGoogle(idToken: String) {
         viewModelScope.launch {
             setState { copy(isGoogleLoading = true, isEmailLoading = false) }
+
             when (val result = authRepository.loginWithGoogle(idToken)) {
                 is NetworkResult.Success -> {
-                    sessionRepository.saveAuthToken(idToken)
+                    val firebaseToken = runCatching {
+                        result.data.getIdToken(false).await().token
+                    }.getOrNull()
+
+                    sessionRepository.saveAuthToken(firebaseToken)
                     setState { copy(isGoogleLoading = false) }
                     setEffect(LoginEffect.NavigateToHome)
                 }
@@ -61,15 +94,33 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+    private fun validateInputs(): Boolean {
+        val email = state.value.email.trim()
+        val password = state.value.password
+
+        var isValid = true
+
+        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            setState { copy(emailError = "Enter a valid email address") }
+            isValid = false
+        }
+
+        if (password.length < 6) {
+            setState { copy(passwordError = "Password must be at least 6 characters") }
+            isValid = false
+        }
+
+        return isValid
+    }
 
     private fun attemptLogin() {
+        if (!validateInputs()) return
+
         viewModelScope.launch {
             setState { copy(isEmailLoading = true, isGoogleLoading = false) }
 
-            when (val result = authRepository.login(state.value.email, state.value.password)) {
+            when (val result = authRepository.login(state.value.email.trim(), state.value.password)) {
                 is NetworkResult.Success -> {
-                    // Retrieve the ID token using a suspend-safe await() call.
-                    // If token fetch fails we still navigate home — Firebase auth already succeeded.
                     val token = runCatching {
                         result.data.getIdToken(false).await().token
                     }.getOrNull()
