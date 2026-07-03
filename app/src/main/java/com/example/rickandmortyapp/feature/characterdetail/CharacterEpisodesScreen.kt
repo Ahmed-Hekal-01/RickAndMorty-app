@@ -1,10 +1,14 @@
 package com.example.rickandmortyapp.feature.characterdetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -12,12 +16,15 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,8 +37,10 @@ import com.example.rickandmortyapp.data.model.Character
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.data.model.Episode
 import com.example.rickandmortyapp.data.model.color
+import com.example.rickandmortyapp.feature.episodes.EpisodeItem
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
+import com.example.rickandmortyapp.util.openEpisodeInBrowser
 
 @Composable
 fun CharacterEpisodesScreen(
@@ -109,23 +118,41 @@ private fun MainScreen(
     character: Character?,
     episodes: List<Episode>
 ) {
+    val listState = rememberLazyListState()
+    val context = LocalContext.current
+
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
     Column(
         Modifier.padding(16.dp)
     ) {
 
         if (!episodes.isEmpty()) {
-            Text(
-                text = stringResource(R.string.episodes_count_format, episodes.size),
-                style = AppTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = AppTheme.colorScheme.textPrimary,
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-            )
+            AnimatedVisibility(
+                visible = isHeaderVisible,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.episodes_count_format, episodes.size),
+                        style = AppTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = AppTheme.colorScheme.textPrimary,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
 
-            Spacer(Modifier.height(AppTheme.size.medium))
+                    Spacer(Modifier.height(AppTheme.size.medium))
+                }
+            }
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            state = listState,
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -147,7 +174,16 @@ private fun MainScreen(
                 }
             } else {
                 items(episodes, key = { it.id }) { episode ->
-                    EpisodeItem(episode = episode)
+                    EpisodeItem(
+                        episode = episode,
+                        onClick = {
+                            openEpisodeInBrowser(
+                                context = context,
+                                seasonNumber = episode.seasonNumber,
+                                episodeNumber = episode.episodeNumber
+                            )
+                        }
+                    )
                 }
             }
 
@@ -162,59 +198,4 @@ private fun MainScreen(
     }
 }
 
-@Composable
-fun EpisodeItem(episode: Episode) {
-    Card(
-        shape = AppTheme.shape.container,
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colorScheme.cardBackground),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    tint = AppTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "S%02dE%02d".format(episode.seasonNumber, episode.episodeNumber),
-                    style = AppTheme.typography.labelNormal,
-                    color = AppTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = episode.name,
-                style = AppTheme.typography.titleNormal,
-                fontWeight = FontWeight.SemiBold,
-                color = AppTheme.colorScheme.textPrimary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    tint = AppTheme.colorScheme.textSecondary,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = episode.airDate,
-                    style = AppTheme.typography.paragraph,
-                    color = AppTheme.colorScheme.textSecondary
-                )
-            }
-        }
-    }
-}

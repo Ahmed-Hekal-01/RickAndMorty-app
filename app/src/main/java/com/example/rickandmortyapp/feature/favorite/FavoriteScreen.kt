@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,6 +70,7 @@ import com.example.rickandmortyapp.ui.theme.AppTheme
 fun FavoriteScreen(
     viewModel: FavoriteViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
+    onNavigateToCharacterDetails: (Int) -> Unit,
     onShowSnackbar: suspend (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,6 +79,7 @@ fun FavoriteScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is FavoriteEffect.NavigateToHome -> onNavigateToHome()
+                is FavoriteEffect.NavigateToDetail -> onNavigateToCharacterDetails(effect.characterId)
                 is FavoriteEffect.ShowSnackbar -> onShowSnackbar(effect.message)
             }
         }
@@ -162,7 +165,8 @@ fun FavoriteScreenContent(
                 FavoriteCharactersList(
                     characters = state.favorites,
                     listState = listState,
-                    onRemove = { character -> onEvent(FavoriteEvent.RemoveFavorite(character)) }
+                    onRemove = { character -> onEvent(FavoriteEvent.RemoveFavorite(character)) },
+                    onCharacterClick = { characterId -> onEvent(FavoriteEvent.CharacterClicked(characterId)) }
                 )
             }
         }
@@ -173,7 +177,8 @@ fun FavoriteScreenContent(
 private fun FavoriteCharactersList(
     characters: List<Character>,
     listState: LazyListState,
-    onRemove: (Character) -> Unit
+    onRemove: (Character) -> Unit,
+    onCharacterClick: (Int) -> Unit
 ) {
     LazyColumn(
         state = listState,
@@ -186,7 +191,8 @@ private fun FavoriteCharactersList(
         ) { character ->
             FavoriteCharacterCard(
                 character = character,
-                onRemove = { onRemove(character) }
+                onRemove = { onRemove(character) },
+                onClick = { onCharacterClick(character.id) }
             )
         }
     }
@@ -195,13 +201,15 @@ private fun FavoriteCharactersList(
 @Composable
 private fun FavoriteCharacterCard(
     character: Character,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(AppTheme.size.favoriteCardHeight),
-        shape = AppTheme.shape.container,
+            .height(AppTheme.size.favoriteCardHeight)
+            .clip(AppTheme.shape.container)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colorScheme.cardBackground
         )
@@ -350,7 +358,7 @@ private fun EmptyFavoriteContent(
 fun FavoriteScreenPreview() {
     AppTheme {
         FavoriteScreenContent(
-            state = FavoriteState(),
+            state = FavoriteState(favorites = emptyList()),
             onEvent = {}
         )
     }

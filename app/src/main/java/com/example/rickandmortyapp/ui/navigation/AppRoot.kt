@@ -205,6 +205,13 @@ fun AppRoot(
                         onNavigateToHome = {
                             navigateMain(AppRoutes.HOME_SCREEN)
                         },
+                        onNavigateToCharacterDetails = { characterId ->
+                            val route = AppRoutes.CHARACTER_DETAILS_SCREEN.replace(
+                                "{characterId}",
+                                characterId.toString()
+                            )
+                            navController.navigate(route)
+                        },
                         onShowSnackbar = { message ->
                             showSnackbar(message)
                         }

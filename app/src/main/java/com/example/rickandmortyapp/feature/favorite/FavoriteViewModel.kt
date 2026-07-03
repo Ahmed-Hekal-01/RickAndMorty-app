@@ -53,6 +53,7 @@ class FavoriteViewModel @Inject constructor(
         when (event) {
             is FavoriteEvent.RemoveFavorite -> removeFavorite(event)
             is FavoriteEvent.ExploreClicked -> setEffect(FavoriteEffect.NavigateToHome)
+            is FavoriteEvent.CharacterClicked -> setEffect(FavoriteEffect.NavigateToDetail(event.characterId))
         }
     }
 

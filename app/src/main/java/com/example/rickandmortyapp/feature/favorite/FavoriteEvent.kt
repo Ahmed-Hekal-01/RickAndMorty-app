@@ -9,4 +9,6 @@ sealed class FavoriteEvent : UiEvent {
     data class RemoveFavorite(val character: Character) : FavoriteEvent()
     /** User tapped "Explore Multiverse" on the empty state. */
     data object ExploreClicked : FavoriteEvent()
+    /** User tapped on a character card. */
+    data class CharacterClicked(val characterId: Int) : FavoriteEvent()
 }

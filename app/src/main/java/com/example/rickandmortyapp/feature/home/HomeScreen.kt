@@ -245,7 +245,7 @@ fun CharacterCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(16.dp)
             ) {
                 Text(
                     text = character.name,

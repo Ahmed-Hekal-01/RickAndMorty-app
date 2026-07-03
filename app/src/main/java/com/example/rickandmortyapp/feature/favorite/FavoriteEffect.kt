@@ -8,4 +8,6 @@ sealed class FavoriteEffect : UiEffect {
     data object NavigateToHome : FavoriteEffect()
     /** Show a short snackbar with [message]. */
     data class ShowSnackbar(val message: String) : FavoriteEffect()
+    /** Navigate the user to the character details screen. */
+    data class NavigateToDetail(val characterId: Int) : FavoriteEffect()
 }
