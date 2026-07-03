@@ -11,26 +11,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
@@ -40,6 +42,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -55,6 +63,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,11 +71,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.ui.theme.AppTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 
 private data class ProfileAvatar(
     val uri: String,
@@ -116,6 +120,9 @@ fun ProfileScreen(
         },
         onBioSave = { bio ->
             viewModel.onEvent(ProfileEvent.UpdateBio(bio))
+        },
+        onLanguageChange = { lang ->
+            viewModel.onEvent(ProfileEvent.ChangeLanguage(lang))
         }
     )
 }
@@ -127,7 +134,8 @@ private fun ProfileContent(
     onRetryClick: () -> Unit,
     onAvatarSelected: (String) -> Unit,
     onThemeToggle: (Boolean) -> Unit,
-    onBioSave: (String) -> Unit
+    onBioSave: (String) -> Unit,
+    onLanguageChange: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -151,13 +159,14 @@ private fun ProfileContent(
                     onLogoutClick = onLogoutClick,
                     onAvatarSelected = onAvatarSelected,
                     onThemeToggle = onThemeToggle,
-                    onBioSave = onBioSave
+                    onBioSave = onBioSave,
+                    onLanguageChange = onLanguageChange
                 )
             }
 
             else -> {
                 ProfileErrorContent(
-                    message = state.error ?: "Failed to load profile.",
+                    message = state.error ?: stringResource(R.string.failed_to_load_profile),
                     onRetryClick = onRetryClick
                 )
             }
@@ -171,13 +180,15 @@ private fun ProfileLoadedContent(
     onLogoutClick: () -> Unit,
     onAvatarSelected: (String) -> Unit,
     onThemeToggle: (Boolean) -> Unit,
-    onBioSave: (String) -> Unit
+    onBioSave: (String) -> Unit,
+    onLanguageChange: (String) -> Unit
 ) {
     var showAvatarDialog by remember { mutableStateOf(false) }
     var showBioDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     val profile = state.profile
-    val displayName = profile?.displayName?.takeIf { it.isNotBlank() } ?: "Anonymous"
+    val displayName = profile?.displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.anonymous)
     val email = profile?.email.orEmpty()
     val selectedAvatarUri = profile?.photoUrl
     val selectedAvatarDrawable = avatarDrawableFromUri(selectedAvatarUri)
@@ -191,7 +202,7 @@ private fun ProfileLoadedContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "PROFILE",
+            text = stringResource(R.string.profile_title),
             color = AppTheme.colorScheme.primaryLight,
             style = AppTheme.typography.titleNormal,
             fontWeight = FontWeight.Medium
@@ -204,7 +215,7 @@ private fun ProfileLoadedContent(
         ) {
             Image(
                 painter = painterResource(id = selectedAvatarDrawable),
-                contentDescription = "Profile image",
+                contentDescription = stringResource(R.string.profile_image_desc),
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)
@@ -239,7 +250,7 @@ private fun ProfileLoadedContent(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Person,
-                    contentDescription = "Change avatar",
+                    contentDescription = stringResource(R.string.change_avatar_desc),
                     tint = AppTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(19.dp)
                 )
@@ -276,7 +287,7 @@ private fun ProfileLoadedContent(
         Spacer(modifier = Modifier.height(36.dp))
 
         Text(
-            text = "APP PREFERENCES",
+            text = stringResource(R.string.app_preferences),
             color = AppTheme.colorScheme.primaryLight,
             style = AppTheme.typography.labelNormal,
             modifier = Modifier.fillMaxWidth()
@@ -287,6 +298,13 @@ private fun ProfileLoadedContent(
         PreferenceCard(
             isDarkMode = state.isDarkMode,
             onThemeToggle = onThemeToggle
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LanguageCard(
+            currentLanguage = state.language,
+            onClick = { showLanguageDialog = true }
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -315,7 +333,7 @@ private fun ProfileLoadedContent(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Outlined.Logout,
+                    imageVector = Icons.AutoMirrored.Outlined.Logout,
                     contentDescription = null,
                     tint = Color(0xFFFFC6C6),
                     modifier = Modifier.size(18.dp)
@@ -324,7 +342,7 @@ private fun ProfileLoadedContent(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = "SIGN OUT",
+                    text = stringResource(R.string.sign_out),
                     color = Color(0xFFFFC6C6),
                     style = AppTheme.typography.labelLarge
                 )
@@ -354,6 +372,16 @@ private fun ProfileLoadedContent(
             }
         )
     }
+    if (showLanguageDialog) {
+        LanguagePickerDialog(
+            currentLanguage = state.language,
+            onDismiss = { showLanguageDialog = false },
+            onLanguageSelected = { lang ->
+                showLanguageDialog = false
+                onLanguageChange(lang)
+            }
+        )
+    }
 }
 
 @Composable
@@ -362,7 +390,7 @@ private fun BioCard(
     onEditClick: () -> Unit
 ) {
     val displayedBio = bio.takeIf { it.isNotBlank() }
-        ?: "Tap here to add your bio."
+        ?: stringResource(R.string.tap_to_add_bio)
 
     Card(
         modifier = Modifier
@@ -386,7 +414,7 @@ private fun BioCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "BIO / DIRECTIVE",
+                        text = stringResource(R.string.bio_directive),
                         color = AppTheme.colorScheme.primaryLight,
                         style = AppTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -395,7 +423,7 @@ private fun BioCard(
 
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit bio",
+                        contentDescription = stringResource(R.string.edit_bio_desc),
                         tint = AppTheme.colorScheme.neonAccent.copy(alpha = 0.8f),
                         modifier = Modifier.size(20.dp)
                     )
@@ -441,7 +469,7 @@ private fun EditBioDialog(
         shape = AppTheme.shape.container,
         title = {
             Text(
-                text = "Edit Bio",
+                text = stringResource(R.string.edit_bio_title),
                 color = AppTheme.colorScheme.textPrimary,
                 style = AppTheme.typography.titleNormal
             )
@@ -458,7 +486,7 @@ private fun EditBioDialog(
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
                         Text(
-                            text = "Write something about yourself...",
+                            text = stringResource(R.string.bio_placeholder),
                             color = AppTheme.colorScheme.textMuted
                         )
                     },
@@ -490,7 +518,7 @@ private fun EditBioDialog(
                 }
             ) {
                 Text(
-                    text = "Save",
+                    text = stringResource(R.string.save),
                     color = AppTheme.colorScheme.primaryLight
                 )
             }
@@ -500,7 +528,7 @@ private fun EditBioDialog(
                 onClick = onDismiss
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(R.string.cancel),
                     color = AppTheme.colorScheme.textSecondary
                 )
             }
@@ -550,7 +578,7 @@ private fun PreferenceCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Atmospheric Mode",
+                    text = stringResource(R.string.atmospheric_mode),
                     color = AppTheme.colorScheme.textPrimary,
                     style = AppTheme.typography.labelLarge
                 )
@@ -559,9 +587,9 @@ private fun PreferenceCard(
 
                 Text(
                     text = if (isDarkMode) {
-                        "Deep cosmic palette"
+                        stringResource(R.string.deep_cosmic_palette)
                     } else {
-                        "Bright portal palette"
+                        stringResource(R.string.bright_portal_palette)
                     },
                     color = AppTheme.colorScheme.textSecondary,
                     style = AppTheme.typography.labelSmall
@@ -576,6 +604,175 @@ private fun PreferenceCard(
                     checkedTrackColor = AppTheme.colorScheme.primary,
                     uncheckedThumbColor = AppTheme.colorScheme.textMuted,
                     uncheckedTrackColor = AppTheme.colorScheme.surfaceVariant
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageCard(
+    currentLanguage: String,
+    onClick: () -> Unit
+) {
+    val languageDisplayName = if (currentLanguage == "ar") {
+        stringResource(R.string.language_subtitle_ar)
+    } else {
+        stringResource(R.string.language_subtitle_en)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = AppTheme.shape.button,
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(AppTheme.colorScheme.primary.copy(alpha = 0.45f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Language,
+                    contentDescription = null,
+                    tint = AppTheme.colorScheme.primaryLight
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.language),
+                    color = AppTheme.colorScheme.textPrimary,
+                    style = AppTheme.typography.labelLarge
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = languageDisplayName,
+                    color = AppTheme.colorScheme.textSecondary,
+                    style = AppTheme.typography.labelSmall
+                )
+            }
+
+            Icon(
+                imageVector = Icons.Outlined.Language,
+                contentDescription = null,
+                tint = AppTheme.colorScheme.primaryLight,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguagePickerDialog(
+    currentLanguage: String,
+    onDismiss: () -> Unit,
+    onLanguageSelected: (String) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = AppTheme.colorScheme.surface,
+        shape = AppTheme.shape.container,
+        title = {
+            Text(
+                text = stringResource(R.string.select_language),
+                color = AppTheme.colorScheme.textPrimary,
+                style = AppTheme.typography.titleNormal
+            )
+        },
+        text = {
+            Column {
+                LanguageOption(
+                    languageName = stringResource(R.string.english),
+                    languageCode = "en",
+                    isSelected = currentLanguage == "en",
+                    onClick = { onLanguageSelected("en") }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LanguageOption(
+                    languageName = stringResource(R.string.arabic),
+                    languageCode = "ar",
+                    isSelected = currentLanguage == "ar",
+                    onClick = { onLanguageSelected("ar") }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.close),
+                    color = AppTheme.colorScheme.primaryLight
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun LanguageOption(
+    languageName: String,
+    languageCode: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = AppTheme.shape.button,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) {
+                AppTheme.colorScheme.primary.copy(alpha = 0.15f)
+            } else {
+                AppTheme.colorScheme.surfaceVariant
+            }
+        ),
+        border = if (isSelected) {
+            BorderStroke(1.dp, AppTheme.colorScheme.primaryLight)
+        } else {
+            null
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = languageName,
+                color = if (isSelected) {
+                    AppTheme.colorScheme.primaryLight
+                } else {
+                    AppTheme.colorScheme.textPrimary
+                },
+                style = AppTheme.typography.labelLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            RadioButton(
+                selected = isSelected,
+                onClick = onClick,
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = AppTheme.colorScheme.primaryLight,
+                    unselectedColor = AppTheme.colorScheme.textMuted
                 )
             )
         }
@@ -608,7 +805,7 @@ private fun ProfileErrorContent(
             shape = AppTheme.shape.button
         ) {
             Text(
-                text = "Retry",
+                text = stringResource(R.string.retry),
                 style = AppTheme.typography.labelLarge
             )
         }
@@ -628,7 +825,7 @@ private fun AvatarPickerDialog(
         shape = AppTheme.shape.container,
         title = {
             Text(
-                text = "Choose Profile Image",
+                text = stringResource(R.string.choose_profile_image),
                 color = AppTheme.colorScheme.textPrimary,
                 style = AppTheme.typography.titleNormal
             )
@@ -694,7 +891,7 @@ private fun AvatarPickerDialog(
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    text = "Close",
+                    text = stringResource(R.string.close),
                     color = AppTheme.colorScheme.primaryLight
                 )
             }

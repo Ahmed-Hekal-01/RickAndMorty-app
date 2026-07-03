@@ -5,6 +5,8 @@ import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.ICharacterRepository
 import com.example.rickandmortyapp.data.repository.IFavoritesRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
+import com.example.rickandmortyapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val characterRepository: ICharacterRepository,
-    private val favoritesRepository: IFavoritesRepository
+    private val favoritesRepository: IFavoritesRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<HomeState, HomeEvent, HomeEffect>() {
 
     override fun createInitialState() = HomeState()
@@ -73,8 +76,9 @@ class HomeViewModel @Inject constructor(
             // been updated by Room's Flow emission by the time toggleFavorite() returns.
             val wasFavorite = event.characterId in state.value.favoriteIds
             favoritesRepository.toggleFavorite(character)
-            val verb = if (wasFavorite) "removed from" else "added to"
-            setEffect(HomeEffect.ShowError("${event.characterName} $verb favorites"))
+            val message = if (wasFavorite) stringProvider.getString(R.string.msg_removed_favorite, character.name)
+            else stringProvider.getString(R.string.msg_added_favorite, character.name)
+            setEffect(HomeEffect.ShowError(message))
         }
     }
 
@@ -113,7 +117,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is NetworkResult.Error -> {
-                val message = result.toUserMessage()
+                val message = result.toUserMessage(stringProvider)
                 if (isInitial) {
                     setState {
                         copy(isLoading = false, isLoadingMore = false, error = message)
@@ -131,11 +135,11 @@ class HomeViewModel @Inject constructor(
 
 // ─── Extension ───────────────────────────────────────────────────────────────
 
-private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError                     -> "No internet connection."
-    is NetworkResult.Error.BackendError.NotFound            -> "Characters not found."
-    is NetworkResult.Error.BackendError.TooManyRequests     -> "Too many requests. Please slow down."
-    is NetworkResult.Error.BackendError.Unavailable         -> "Service unavailable."
-    is NetworkResult.Error.BackendError.UnKnown             -> "Something went wrong."
-    else                                                     -> "todo"
+private fun NetworkResult.Error.toUserMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError                     -> stringProvider.getString(R.string.error_no_internet_short)
+    is NetworkResult.Error.BackendError.NotFound            -> stringProvider.getString(R.string.error_no_characters_found)
+    is NetworkResult.Error.BackendError.TooManyRequests     -> stringProvider.getString(R.string.error_too_many_requests)
+    is NetworkResult.Error.BackendError.Unavailable         -> stringProvider.getString(R.string.error_service_unavailable_short)
+    is NetworkResult.Error.BackendError.UnKnown             -> stringProvider.getString(R.string.error_something_went_wrong)
+    else                                                     -> stringProvider.getString(R.string.error_loading_data)
 }

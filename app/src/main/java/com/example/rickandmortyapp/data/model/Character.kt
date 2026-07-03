@@ -20,6 +20,13 @@ enum class CharacterStatus(val displayName: String) {
     UNKNOWN("Unknown")
 }
 
+val CharacterStatus.displayNameRes: Int
+    get() = when(this){
+        CharacterStatus.ALIVE -> com.example.rickandmortyapp.R.string.status_alive
+        CharacterStatus.DEAD -> com.example.rickandmortyapp.R.string.status_dead
+        CharacterStatus.UNKNOWN -> com.example.rickandmortyapp.R.string.status_unknown
+    }
+
 val CharacterStatus.color : Color
     get() = when(this){
         CharacterStatus.ALIVE -> Color.Green

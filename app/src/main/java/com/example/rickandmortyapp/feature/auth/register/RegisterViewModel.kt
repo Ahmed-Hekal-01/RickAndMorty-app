@@ -1,10 +1,13 @@
 package com.example.rickandmortyapp.feature.auth.register
 
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.IAuthRepository
 import com.example.rickandmortyapp.data.repository.ISessionRepository
+import com.example.rickandmortyapp.data.repository.IUserProfileRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -20,7 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val authRepository: IAuthRepository,
-    private val sessionRepository: ISessionRepository
+    private val sessionRepository: ISessionRepository,
+    private val userProfileRepository: IUserProfileRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<RegisterState, RegisterEvent, RegisterEffect>() {
 
     override fun createInitialState() = RegisterState()
@@ -85,7 +90,7 @@ class RegisterViewModel @Inject constructor(
                 }
                 is NetworkResult.Error -> {
                     setState { copy(isLoading = false) }
-                    setEffect(RegisterEffect.ShowError(result.toErrorMessage()))
+                    setEffect(RegisterEffect.ShowError(result.toErrorMessage(stringProvider)))
                 }
             }
         }
@@ -115,7 +120,7 @@ class RegisterViewModel @Inject constructor(
 
                 is NetworkResult.Error -> {
                     setState { copy(isGoogleLoading = false) }
-                    setEffect(RegisterEffect.ShowError(result.toErrorMessage()))
+                    setEffect(RegisterEffect.ShowError(result.toErrorMessage(stringProvider)))
                 }
             }
         }
@@ -126,22 +131,22 @@ class RegisterViewModel @Inject constructor(
         var isValid = true
 
         if (s.fullName.trim().length < 3) {
-            setState { copy(fullNameError = "Name must be at least 3 characters") }
+            setState { copy(fullNameError = stringProvider.getString(R.string.error_name_length)) }
             isValid = false
         }
 
         if (s.email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(s.email.trim()).matches()) {
-            setState { copy(emailError = "Enter a valid email address") }
+            setState { copy(emailError = stringProvider.getString(R.string.error_invalid_email)) }
             isValid = false
         }
 
         if (s.password.length < 6) {
-            setState { copy(passwordError = "Password must be at least 6 characters") }
+            setState { copy(passwordError = stringProvider.getString(R.string.error_password_length)) }
             isValid = false
         }
 
         if (s.password != s.confirmPassword) {
-            setState { copy(confirmPasswordError = "Passwords do not match") }
+            setState { copy(confirmPasswordError = stringProvider.getString(R.string.error_passwords_mismatch)) }
             isValid = false
         }
 
@@ -151,11 +156,11 @@ class RegisterViewModel @Inject constructor(
 
 // ─── Extension ───────────────────────────────────────────────────────────────
 
-private fun NetworkResult.Error.toErrorMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError -> "No internet connection. Please try again."
-    is NetworkResult.Error.BackendError.NotFound -> "Registration failed. Please try again."
-    is NetworkResult.Error.BackendError.TooManyRequests -> "Too many attempts. Please wait and try again."
-    is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable. Please try again later."
-    is NetworkResult.Error.BackendError.UnKnown -> "This email may already be in use."
+private fun NetworkResult.Error.toErrorMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError -> stringProvider.getString(R.string.error_no_internet)
+    is NetworkResult.Error.BackendError.NotFound -> stringProvider.getString(R.string.error_registration_failed)
+    is NetworkResult.Error.BackendError.TooManyRequests -> stringProvider.getString(R.string.error_too_many_attempts)
+    is NetworkResult.Error.BackendError.Unavailable -> stringProvider.getString(R.string.error_service_unavailable)
+    is NetworkResult.Error.BackendError.UnKnown -> stringProvider.getString(R.string.error_email_in_use)
     else -> {""}
 }

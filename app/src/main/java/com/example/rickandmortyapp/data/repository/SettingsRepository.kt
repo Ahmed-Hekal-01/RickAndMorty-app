@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.rickandmortyapp.data.model.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,12 +24,14 @@ class SettingsRepository @Inject constructor(
     private companion object {
         val KEY_DARK_MODE = booleanPreferencesKey("dark_mode")
         val KEY_NOTIFICATIONS = booleanPreferencesKey("notifications_enabled")
+        val KEY_LANGUAGE = stringPreferencesKey("language")
     }
 
     override val settings: Flow<AppSettings> = dataStore.data.map { prefs ->
         AppSettings(
             darkMode = prefs[KEY_DARK_MODE] ?: true,
-            notificationsEnabled = prefs[KEY_NOTIFICATIONS] ?: true
+            notificationsEnabled = prefs[KEY_NOTIFICATIONS] ?: true,
+            language = prefs[KEY_LANGUAGE] ?: "en"
         )
     }
 
@@ -38,5 +41,9 @@ class SettingsRepository @Inject constructor(
 
     override suspend fun setNotificationsEnabled(enabled: Boolean) {
         dataStore.edit { prefs -> prefs[KEY_NOTIFICATIONS] = enabled }
+    }
+
+    override suspend fun setLanguage(languageCode: String) {
+        dataStore.edit { prefs -> prefs[KEY_LANGUAGE] = languageCode }
     }
 }

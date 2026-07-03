@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.IEpisodeRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
+import com.example.rickandmortyapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +16,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class EpisodesViewModel @Inject constructor(
-    private val episodeRepository: IEpisodeRepository
+    private val episodeRepository: IEpisodeRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<EpisodesState, EpisodesEvent, EpisodesEffect>() {
 
     override fun createInitialState() = EpisodesState()
@@ -65,7 +68,7 @@ class EpisodesViewModel @Inject constructor(
                 }
             }
             is NetworkResult.Error -> {
-                val message = result.toUserMessage()
+                val message = result.toUserMessage(stringProvider)
                 setState {
                     copy(isLoading = false, isLoadingMore = false, error = if (isInitial) message else error)
                 }
@@ -77,11 +80,11 @@ class EpisodesViewModel @Inject constructor(
 
 // ─── Extension ───────────────────────────────────────────────────────────────
 
-private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError -> "No internet connection."
-    is NetworkResult.Error.BackendError.NotFound -> "Episodes not found."
-    is NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
-    is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
-    is NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
-    else -> {""} //todo
-}
+private fun NetworkResult.Error.toUserMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError -> stringProvider.getString(R.string.error_no_internet_short)
+    is NetworkResult.Error.BackendError.NotFound -> stringProvider.getString(R.string.error_episodes_not_found)
+    is NetworkResult.Error.BackendError.TooManyRequests -> stringProvider.getString(R.string.error_too_many_requests)
+    is NetworkResult.Error.BackendError.Unavailable -> stringProvider.getString(R.string.error_service_unavailable_short)
+    is NetworkResult.Error.BackendError.UnKnown -> stringProvider.getString(R.string.error_something_went_wrong)
+    else -> ""
+} //todo

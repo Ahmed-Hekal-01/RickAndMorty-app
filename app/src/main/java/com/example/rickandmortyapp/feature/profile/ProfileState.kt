@@ -16,5 +16,6 @@ data class ProfileState(
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
     val isDarkMode: Boolean = true,
+    val language: String = "en",
     val error: String? = null
 ) : UiState

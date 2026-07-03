@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.util.AppGraphs
@@ -167,7 +168,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(afterLogoSpace))
 
                     Text(
-                        text = "Create Account",
+                        text = stringResource(R.string.create_account),
                         style = AppTheme.typography.titleLarge,
                         color = AppTheme.colorScheme.primaryLight
                     )
@@ -175,7 +176,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Join the luminous network today.",
+                        text = stringResource(R.string.join_network),
                         style = AppTheme.typography.paragraph,
                         color = AppTheme.colorScheme.textSecondary
                     )
@@ -183,12 +184,12 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(if (isSmallHeight) 24.dp else 32.dp))
 
                     CustomTextField(
-                        label = "Full Name",
+                        label = stringResource(R.string.full_name),
                         value = state.fullName,
                         onValueChange = {
                             viewModel.onEvent(RegisterEvent.FullNameChanged(it))
                         },
-                        placeholder = "Jane Doe",
+                        placeholder = stringResource(R.string.name_placeholder),
                         isError = state.fullNameError != null,
                         errorText = state.fullNameError,
                         leadingIcon = {
@@ -203,7 +204,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(formSpace))
 
                     CustomTextField(
-                        label = "Email",
+                        label = stringResource(R.string.email_label),
                         value = state.email,
                         onValueChange = {
                             viewModel.onEvent(RegisterEvent.EmailChanged(it))
@@ -224,7 +225,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(formSpace))
 
                     CustomTextField(
-                        label = "Password",
+                        label = stringResource(R.string.password_label),
                         value = state.password,
                         onValueChange = {
                             viewModel.onEvent(RegisterEvent.PasswordChanged(it))
@@ -249,7 +250,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.height(formSpace))
 
                     CustomTextField(
-                        label = "Confirm Password",
+                        label = stringResource(R.string.confirm_password),
                         value = state.confirmPassword,
                         onValueChange = {
                             viewModel.onEvent(RegisterEvent.ConfirmPasswordChanged(it))
@@ -308,7 +309,7 @@ fun RegistrationScreen(
                                 )
                             } else {
                                 Text(
-                                    text = "CREATE ACCOUNT",
+                                    text = stringResource(R.string.create_account_button),
                                     color = AppTheme.colorScheme.onPrimary,
                                     style = AppTheme.typography.labelLarge
                                 )
@@ -346,14 +347,14 @@ fun RegistrationScreen(
                         } else {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_google_logo),
-                                contentDescription = "Google Logo",
+                                contentDescription = stringResource(R.string.google_logo_desc),
                                 modifier = Modifier.size(24.dp),
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
-                                text = "CONTINUE WITH GOOGLE",
+                                text = stringResource(R.string.continue_with_google_upper),
                                 color = AppTheme.colorScheme.primary,
                                 style = AppTheme.typography.labelNormal
                             )
@@ -364,7 +365,7 @@ fun RegistrationScreen(
 
                     Text(
                         text = buildAnnotatedString {
-                            append("Already have an account? ")
+                            append(stringResource(R.string.already_have_account))
 
                             withLink(
                                 LinkAnnotation.Clickable(
@@ -379,7 +380,7 @@ fun RegistrationScreen(
                                     viewModel.onEvent(RegisterEvent.NavigateToLogin)
                                 }
                             ) {
-                                append("Sign in here")
+                                append(stringResource(R.string.sign_in_here))
                             }
                         },
                         color = AppTheme.colorScheme.textSecondary,

@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,7 +53,7 @@ fun CharacterEpisodesScreen(
     Scaffold(
         topBar = {
             CustomTopBar(
-                text = if (state.characterName.isNotEmpty()) state.characterName.uppercase() else "EPISODES",
+                text = if (state.characterName.isNotEmpty()) state.characterName.uppercase() else stringResource(R.string.episodes_top_bar),
                 showBackButton = true,
                 onBackClick = { viewModel.onEvent(CharacterEpisodesEvent.NavigateBack) }
             )
@@ -87,7 +88,7 @@ fun CharacterEpisodesScreen(
                                 containerColor = AppTheme.colorScheme.primary
                             )
                         ) {
-                            Text("Retry", color = Color.White)
+                            Text(stringResource(R.string.retry), color = Color.White)
                         }
                     }
                 }
@@ -114,7 +115,7 @@ private fun MainScreen(
 
         if (!episodes.isEmpty()) {
             Text(
-                text = "Episodes (${episodes.size})",
+                text = stringResource(R.string.episodes_count_format, episodes.size),
                 style = AppTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = AppTheme.colorScheme.textPrimary,
@@ -138,7 +139,7 @@ private fun MainScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No episodes available",
+                            text = stringResource(R.string.no_episodes_available),
                             style = AppTheme.typography.paragraph,
                             color = AppTheme.colorScheme.textSecondary
                         )

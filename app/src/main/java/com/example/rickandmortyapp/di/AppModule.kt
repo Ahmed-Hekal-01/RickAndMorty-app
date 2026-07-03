@@ -127,4 +127,10 @@ object AppModule {
     fun provideSettingsRepository(
         @Named("settings") dataStore: DataStore<Preferences>
     ): ISettingsRepository = SettingsRepository(dataStore)
+
+    @Provides
+    @Singleton
+    fun provideStringProvider(
+        @ApplicationContext context: Context
+    ): com.example.rickandmortyapp.util.StringProvider = com.example.rickandmortyapp.util.StringProviderImpl(context)
 }

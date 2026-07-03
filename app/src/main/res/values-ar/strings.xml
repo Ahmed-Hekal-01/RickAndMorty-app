@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ريك و مورتي</string>
+    <string name="log_in">تسجيل الدخول</string>
+    <string name="welcome_message">مرحبًا بعودتك!</string>
+    <string name="home_screen_top_bar_name">ريك و مورتي</string>
+
+    <!-- Home Screen -->
+    <string name="explore_the_metavirus">استكشف الميتافيروس</string>
+    <string name="home_title">الرئيسية</string>
+    <string name="character_photo_desc">الصورة الشخصية</string>
+    <string name="remove_from_favorites">إزالة من المفضلة</string>
+    <string name="add_to_favorites">إضافة إلى المفضلة</string>
+
+    <!-- Episodes Screen -->
+    <string name="season_guides">دليل المواسم</string>
+    <string name="episodes_title">الحلقات</string>
+    <string name="all_episodes">كل الحلقات</string>
+    <string name="season_format">الموسم %d</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="no_episodes_found">لم يتم العثور على حلقات.</string>
+    <string name="load_more_episodes">تحميل المزيد من الحلقات</string>
+
+    <!-- Character Details Screen -->
+    <string name="rick_and_morty_top_bar">ريك ومورتي</string>
+    <string name="information">المعلومات</string>
+    <string name="label_status">الحالة</string>
+    <string name="label_episode_count">عدد الحلقات</string>
+    <string name="label_gender">الجنس</string>
+    <string name="label_origin">الأصل</string>
+    <string name="label_location">الموقع</string>
+    <string name="label_species">النوع</string>
+    <string name="view_episodes">عرض الحلقات</string>
+
+    <!-- Character Episodes Screen -->
+    <string name="episodes_top_bar">الحلقات</string>
+    <string name="episodes_count_format">الحلقات (%d)</string>
+    <string name="no_episodes_available">لا توجد حلقات متاحة</string>
+
+    <!-- Favorite Screen -->
+    <string name="no_favorite_characters_yet">لا توجد شخصيات مفضلة بعد</string>
+    <string name="add_characters_to_favorites">أضف شخصيات إلى المفضلة\nلرؤيتها هنا</string>
+    <string name="explore_multiverse">استكشف الأكوان المتعددة</string>
+
+    <!-- Search Screen -->
+    <string name="discover">اكتشف</string>
+    <string name="search_subtitle">ابحث في الميتافيرس بالاسم أو الحالة</string>
+    <string name="search_placeholder">ابحث باسم الشخصية…</string>
+    <string name="search_icon_desc">بحث</string>
+    <string name="clear_search">مسح البحث</string>
+    <string name="find_any_character">ابحث عن أي شخصية</string>
+    <string name="search_hint">اكتب اسمًا، اختر حي / ميت / غير معروف، أو اجمع بينهم.</string>
+    <string name="no_results_found">لا توجد نتائج</string>
+    <string name="try_another_search">جرّب اسمًا آخر أو غيّر فلتر الحالة.</string>
+    <string name="something_went_wrong">حدث خطأ ما.</string>
+    <string name="try_again">حاول مجددًا</string>
+    <string name="status_alive">حي</string>
+    <string name="status_dead">ميت</string>
+    <string name="status_unknown">غير معروف</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">الملف الشخصي</string>
+    <string name="profile_image_desc">صورة الملف الشخصي</string>
+    <string name="change_avatar_desc">تغيير الصورة الرمزية</string>
+    <string name="anonymous">مجهول</string>
+    <string name="app_preferences">تفضيلات التطبيق</string>
+    <string name="sign_out">تسجيل الخروج</string>
+    <string name="bio_directive">السيرة الذاتية</string>
+    <string name="edit_bio_desc">تعديل السيرة</string>
+    <string name="tap_to_add_bio">اضغط هنا لإضافة سيرتك الذاتية.</string>
+    <string name="edit_bio_title">تعديل السيرة</string>
+    <string name="bio_placeholder">اكتب شيئًا عن نفسك…</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="choose_profile_image">اختر صورة الملف الشخصي</string>
+    <string name="close">إغلاق</string>
+    <string name="atmospheric_mode">الوضع الليلي</string>
+    <string name="deep_cosmic_palette">لوحة كونية عميقة</string>
+    <string name="bright_portal_palette">لوحة بوابة مشرقة</string>
+    <string name="failed_to_load_profile">فشل في تحميل الملف الشخصي.</string>
+
+    <!-- Language -->
+    <string name="language">اللغة</string>
+    <string name="select_language">اختر اللغة</string>
+    <string name="english">English</string>
+    <string name="arabic">العربية</string>
+    <string name="language_subtitle_en">English</string>
+    <string name="language_subtitle_ar">العربية</string>
+
+    <!-- Login Screen -->
+    <string name="rick_and_morty_logo_desc">شعار ريك ومورتي</string>
+    <string name="email_label">البريد الإلكتروني</string>
+    <string name="password_label">كلمة المرور</string>
+    <string name="hide_password">إخفاء كلمة المرور</string>
+    <string name="show_password">إظهار كلمة المرور</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="login_button">تسجيل الدخول</string>
+    <string name="google_logo_desc">شعار جوجل</string>
+    <string name="continue_with_google">المتابعة مع جوجل</string>
+    <string name="have_no_account">ليس لديك حساب؟ </string>
+    <string name="sign_up">إنشاء حساب</string>
+    <string name="google_sign_in_failed">فشل تسجيل الدخول بجوجل. حاول مرة أخرى.</string>
+
+    <!-- Registration Screen -->
+    <string name="create_account">إنشاء حساب</string>
+    <string name="join_network">انضم إلى الشبكة المضيئة اليوم.</string>
+    <string name="full_name">الاسم الكامل</string>
+    <string name="name_placeholder">أحمد محمد</string>
+    <string name="password_placeholder">••••••••</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="create_account_button">إنشاء حساب</string>
+    <string name="continue_with_google_upper">المتابعة مع جوجل</string>
+    <string name="already_have_account">لديك حساب بالفعل؟ </string>
+    <string name="sign_in_here">سجّل الدخول هنا</string>
+    <string name="google_sign_up_failed">فشل التسجيل بجوجل. حاول مرة أخرى.</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="back_to_login">العودة لتسجيل الدخول</string>
+    <string name="reset_title">إعادة التعيين</string>
+    <string name="reset_instructions">أدخل البريد الإلكتروني المرتبط بحسابك\nوسنرسل لك رابطًا لإعادة تعيين\nكلمة المرور.</string>
+    <string name="email_address">عنوان البريد الإلكتروني</string>
+    <string name="email_placeholder">example@gmail.com</string>
+    <string name="send_reset_link">إرسال رابط إعادة التعيين</string>
+    <string name="back_desc">رجوع</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_episodes">الحلقات</string>
+    <string name="nav_favorites">المفضلة</string>
+    <string name="nav_search">بحث</string>
+    <string name="nav_profile">الملف الشخصي</string>
+
+    <!-- Errors and Messages -->
+    <string name="error_email_required">البريد الإلكتروني مطلوب</string>
+    <string name="error_invalid_email">أدخل عنوان بريد إلكتروني صالح</string>
+    <string name="error_password_length">يجب أن تتكون كلمة المرور من 6 أحرف على الأقل</string>
+    <string name="error_passwords_mismatch">كلمات المرور غير متطابقة</string>
+    <string name="error_name_length">يجب أن يتكون الاسم من 3 أحرف على الأقل</string>
+    <string name="error_no_internet">لا يوجد اتصال بالإنترنت. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_no_internet_short">لا يوجد اتصال بالإنترنت.</string>
+    <string name="error_account_not_found">لم يتم العثور على الحساب.</string>
+    <string name="error_no_account_email">لم يتم العثور على حساب بهذا البريد الإلكتروني.</string>
+    <string name="error_too_many_attempts">محاولات كثيرة. يرجى الانتظار والمحاولة مرة أخرى.</string>
+    <string name="error_too_many_requests">طلبات كثيرة. يرجى إبطاء السرعة.</string>
+    <string name="error_service_unavailable">الخدمة غير متوفرة. يرجى المحاولة مرة أخرى لاحقًا.</string>
+    <string name="error_service_unavailable_short">الخدمة غير متوفرة.</string>
+    <string name="error_invalid_credentials">البريد الإلكتروني أو كلمة المرور غير صالحة.</string>
+    <string name="error_registration_failed">فشل التسجيل. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_email_in_use">قد يكون هذا البريد الإلكتروني قيد الاستخدام بالفعل.</string>
+    <string name="error_character_not_found">لم يتم العثور على الشخصية.</string>
+    <string name="error_episodes_not_found">لم يتم العثور على الحلقات.</string>
+    <string name="error_data_not_found">لم يتم العثور على بيانات.</string>
+    <string name="error_something_went_wrong">حدث خطأ ما.</string>
+    <string name="error_loading_data">خطأ في تحميل البيانات.</string>
+    <string name="error_failed_reset_link">فشل في إرسال رابط إعادة التعيين. يرجى التحقق من بريدك الإلكتروني.</string>
+    <string name="msg_reset_link_sent">تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.</string>
+    <string name="msg_removed_favorite">تمت إزالة %1$s من المفضلة</string>
+    <string name="msg_added_favorite">تمت إضافة %1$s إلى المفضلة</string>
+    <string name="error_no_characters_found">لم يتم العثور على شخصيات.</string>
+    <string name="error_request_cancelled">تم إلغاء الطلب.</string>
+    <string name="error_change_language">فشل في تغيير اللغة.</string>
+    <string name="error_change_theme">فشل في تغيير السمة.</string>
+    <string name="error_update_avatar">فشل في تحديث صورة الملف الشخصي.</string>
+    <string name="error_empty_display_name">لا يمكن أن يكون اسم العرض فارغًا.</string>
+    <string name="error_update_profile">فشل في تحديث الملف الشخصي.</string>
+    <string name="error_bio_length">يجب أن تكون السيرة الذاتية 160 حرفًا أو أقل.</string>
+    <string name="error_update_bio">فشل في تحديث السيرة الذاتية.</string>
+    <string name="msg_avatar_updated">تم تحديث صورة الملف الشخصي.</string>
+    <string name="msg_profile_updated">تم تحديث الملف الشخصي بنجاح.</string>
+    <string name="msg_bio_updated">تم تحديث السيرة الذاتية بنجاح.</string>
+</resources>

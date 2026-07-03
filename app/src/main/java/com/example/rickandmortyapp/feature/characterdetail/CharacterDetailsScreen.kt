@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -76,7 +77,7 @@ fun CharacterDetailsScreen(
     Scaffold(
         topBar = {
             CustomTopBar(
-                text = "RICK & MORTY",
+                text = stringResource(R.string.rick_and_morty_top_bar),
                 showBackButton = true,
                 onBackClick = { viewModel.onEvent(CharacterDetailEvent.NavigateBack) }
             )
@@ -110,7 +111,7 @@ fun CharacterDetailsScreen(
                                 containerColor = AppTheme.colorScheme.primary
                             )
                         ) {
-                            Text("Retry", color = Color.White)
+                            Text(stringResource(R.string.retry), color = Color.White)
                         }
                     }
                 }
@@ -182,7 +183,7 @@ fun CharacterDetailsScreenContent(
             IconButton(onClick = onFavoriteClick) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    contentDescription = if (isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(R.string.add_to_favorites),
                     tint = if (isFavorite) AppTheme.colorScheme.primary else AppTheme.colorScheme.textSecondary
                 )
             }
@@ -195,7 +196,7 @@ fun CharacterDetailsScreenContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Information",
+            text = stringResource(R.string.information),
             style = AppTheme.typography.titleNormal,
             fontWeight = FontWeight.SemiBold,
             color = AppTheme.colorScheme.textPrimary
@@ -203,12 +204,12 @@ fun CharacterDetailsScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AttributeRow(label = "Status", value = character.status.displayName)
-        AttributeRow(label = "Episode Count", value = character.episodeIds.size.toString())
-        AttributeRow(label = "Gender", value = character.gender)
-        AttributeRow(label = "Origin", value = character.origin)
-        AttributeRow(label = "Location", value = character.location)
-        AttributeRow(label = "Species", value = character.species)
+        AttributeRow(label = stringResource(R.string.label_status), value = character.status.displayName)
+        AttributeRow(label = stringResource(R.string.label_episode_count), value = character.episodeIds.size.toString())
+        AttributeRow(label = stringResource(R.string.label_gender), value = character.gender)
+        AttributeRow(label = stringResource(R.string.label_origin), value = character.origin)
+        AttributeRow(label = stringResource(R.string.label_location), value = character.location)
+        AttributeRow(label = stringResource(R.string.label_species), value = character.species)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -221,7 +222,7 @@ fun CharacterDetailsScreenContent(
             )
         ) {
             Text(
-                text = "View Episodes",
+                text = stringResource(R.string.view_episodes),
                 color = AppTheme.colorScheme.primary
             )
         }

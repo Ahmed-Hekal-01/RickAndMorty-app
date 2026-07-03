@@ -1,18 +1,20 @@
 package com.example.rickandmortyapp.feature.profile
 
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.IAuthRepository
 import com.example.rickandmortyapp.data.repository.ISessionRepository
+import com.example.rickandmortyapp.data.repository.ISettingsRepository
 import com.example.rickandmortyapp.data.repository.IUserProfileRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import com.example.rickandmortyapp.data.repository.ISettingsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Manages user profile screen state.
@@ -27,7 +29,8 @@ class ProfileViewModel @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val authRepository: IAuthRepository,
     private val sessionRepository: ISessionRepository,
-    private val settingsRepository: ISettingsRepository
+    private val settingsRepository: ISettingsRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<ProfileState, ProfileEvent, ProfileEffect>() {
 
     override fun createInitialState() = ProfileState()
@@ -45,6 +48,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileEvent.UpdateAvatar -> updateAvatar(event.avatarUri)
             is ProfileEvent.ToggleDarkMode -> toggleDarkMode(event.enabled)
             is ProfileEvent.UpdateBio -> updateBio(event.bio)
+            is ProfileEvent.ChangeLanguage -> changeLanguage(event.languageCode)
             is ProfileEvent.Logout -> logout()
         }
     }
@@ -54,10 +58,23 @@ class ProfileViewModel @Inject constructor(
         settingsJob = settingsRepository.settings
             .onEach { settings ->
                 setState {
-                    copy(isDarkMode = settings.darkMode)
+                    copy(
+                        isDarkMode = settings.darkMode,
+                        language = settings.language
+                    )
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun changeLanguage(languageCode: String) {
+        viewModelScope.launch {
+            try {
+                settingsRepository.setLanguage(languageCode)
+            } catch (e: Exception) {
+                setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_change_language)))
+            }
+        }
     }
 
     private fun toggleDarkMode(enabled: Boolean) {
@@ -65,7 +82,7 @@ class ProfileViewModel @Inject constructor(
             try {
                 settingsRepository.setDarkMode(enabled)
             } catch (e: Exception) {
-                setEffect(ProfileEffect.ShowError("Failed to change theme."))
+                setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_change_theme)))
             }
         }
     }
@@ -82,12 +99,12 @@ class ProfileViewModel @Inject constructor(
                             isSaving = false
                         )
                     }
-                    setEffect(ProfileEffect.ShowSuccess("Profile image updated."))
+                    setEffect(ProfileEffect.ShowSuccess(stringProvider.getString(R.string.msg_avatar_updated)))
                 }
 
                 is NetworkResult.Error -> {
                     setState { copy(isSaving = false) }
-                    setEffect(ProfileEffect.ShowError("Failed to update profile image."))
+                    setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_update_avatar)))
                 }
             }
         }
@@ -101,7 +118,7 @@ class ProfileViewModel @Inject constructor(
                     setState { copy(profile = result.data, isLoading = false) }
                 }
                 is NetworkResult.Error -> {
-                    val message = "Failed to load profile."
+                    val message = stringProvider.getString(R.string.error_no_account_email)
                     setState { copy(isLoading = false, error = message) }
                     setEffect(ProfileEffect.ShowError(message))
                 }
@@ -111,7 +128,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateDisplayName(name: String) {
         if (name.isBlank()) {
-            setEffect(ProfileEffect.ShowError("Display name cannot be empty."))
+            setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_empty_display_name)))
             return
         }
         viewModelScope.launch {
@@ -119,11 +136,11 @@ class ProfileViewModel @Inject constructor(
             when (val result = userProfileRepository.updateDisplayName(name)) {
                 is NetworkResult.Success -> {
                     setState { copy(profile = result.data, isSaving = false) }
-                    setEffect(ProfileEffect.ShowSuccess("Profile updated successfully."))
+                    setEffect(ProfileEffect.ShowSuccess(stringProvider.getString(R.string.msg_profile_updated)))
                 }
                 is NetworkResult.Error -> {
                     setState { copy(isSaving = false) }
-                    setEffect(ProfileEffect.ShowError("Failed to update profile."))
+                    setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_update_profile)))
                 }
             }
         }
@@ -132,7 +149,7 @@ class ProfileViewModel @Inject constructor(
         val cleanedBio = bio.trim()
 
         if (cleanedBio.length > 160) {
-            setEffect(ProfileEffect.ShowError("Bio must be 160 characters or less."))
+            setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_bio_length)))
             return
         }
 
@@ -147,12 +164,12 @@ class ProfileViewModel @Inject constructor(
                             isSaving = false
                         )
                     }
-                    setEffect(ProfileEffect.ShowSuccess("Bio updated successfully."))
+                    setEffect(ProfileEffect.ShowSuccess(stringProvider.getString(R.string.msg_bio_updated)))
                 }
 
                 is NetworkResult.Error -> {
                     setState { copy(isSaving = false) }
-                    setEffect(ProfileEffect.ShowError("Failed to update bio."))
+                    setEffect(ProfileEffect.ShowError(stringProvider.getString(R.string.error_update_bio)))
                 }
             }
         }

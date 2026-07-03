@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,7 +51,6 @@ import com.example.rickandmortyapp.data.model.Character
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
-
 
 
 @Composable
@@ -94,13 +92,13 @@ fun HomeScreenContent(
             CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Explore The MetaVirus",
+                    text = stringResource(R.string.explore_the_metavirus),
                     color = AppTheme.colorScheme.primaryLight,
                     style = AppTheme.typography.labelSmall
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Home",
+                    text = stringResource(R.string.home_title),
                     color = AppTheme.colorScheme.textSecondary,
                     style = AppTheme.typography.titleLarge
                 )
@@ -214,7 +212,7 @@ fun CharacterCard(
             ) {
                 AsyncImage(
                     model = character.imageUrl,
-                    contentDescription = "character photo",
+                    contentDescription = stringResource(R.string.character_photo_desc),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(R.drawable.ic_app_logo),
@@ -257,7 +255,7 @@ fun CharacterCard(
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            contentDescription = if (isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(R.string.add_to_favorites),
                             tint = if (isFavorite) AppTheme.colorScheme.primary else AppTheme.colorScheme.onSurface
                         )
                     }

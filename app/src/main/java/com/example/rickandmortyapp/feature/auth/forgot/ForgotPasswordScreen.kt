@@ -16,8 +16,10 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,14 +87,14 @@ fun ForgotPasswordScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.back_desc),
                     tint = AppTheme.colorScheme.textPrimary
                 )
 
                 Spacer(modifier = Modifier.width(AppTheme.size.small))
 
                 Text(
-                    text = "Back to Login",
+                    text = stringResource(R.string.back_to_login),
                     color = AppTheme.colorScheme.textPrimary,
                     style = AppTheme.typography.labelNormal
                 )
@@ -101,14 +103,14 @@ fun ForgotPasswordScreen(
             Spacer(modifier  = Modifier.height(AppTheme.size.titleToTopSpacing))
 
             AnimatedGradientText(
-                text = "Reset",
+                text = stringResource(R.string.reset_title),
                 fontSize = AppTheme.size.titleFontSize
             )
 
             Spacer(modifier = Modifier.height(AppTheme.size.medium))
 
             Text(
-                text = "Enter the email associated with your\naccount and we'll send a link to reset\nyour password.",
+                text = stringResource(R.string.reset_instructions),
                 color = AppTheme.colorScheme.textSecondary,
                 style = AppTheme.typography.paragraph,
                 lineHeight  = AppTheme.size.paragraphLineHeight
@@ -131,7 +133,7 @@ fun ForgotPasswordScreen(
                 ) {
 
                     Text(
-                        text = "Email Address",
+                        text = stringResource(R.string.email_address),
                         color = AppTheme.colorScheme.textPrimary,
                         style = AppTheme.typography.labelNormal
                     )
@@ -148,7 +150,7 @@ fun ForgotPasswordScreen(
                             .defaultMinSize(minHeight = AppTheme.size.fieldHeight),
                         placeholder = {
                             Text(
-                                text = "your@email.com",
+                                text = stringResource(R.string.email_placeholder),
                                 color = AppTheme.colorScheme.textMuted
                             )
                         },
@@ -223,7 +225,7 @@ fun ForgotPasswordScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Send Reset Link",
+                                        text = stringResource(R.string.send_reset_link),
                                         color = AppTheme.colorScheme.onPrimary,
                                         style = AppTheme.typography.labelLarge
                                     )

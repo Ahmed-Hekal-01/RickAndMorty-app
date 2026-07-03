@@ -2,8 +2,172 @@
     <string name="web_client_id">
         1041100885226-qa35ujbgfb76tm89h32hd5m2av5uesvf.apps.googleusercontent.com
     </string>
-    <string name="app_name">Rick&amp;Morty</string>
+    <string name="app_name">Rick And Morty</string>
     <string name="log_in">Login</string>
     <string name="welcome_message">Welcome Back!</string>
     <string name="home_screen_top_bar_name">Rick And Morty</string>
+
+    <!-- Home Screen -->
+    <string name="explore_the_metavirus">Explore The MetaVirus</string>
+    <string name="home_title">Home</string>
+    <string name="character_photo_desc">character photo</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+
+    <!-- Episodes Screen -->
+    <string name="season_guides">Season Guides</string>
+    <string name="episodes_title">Episodes</string>
+    <string name="all_episodes">All Episodes</string>
+    <string name="season_format">Season %d</string>
+    <string name="retry">Retry</string>
+    <string name="no_episodes_found">No episodes found.</string>
+    <string name="load_more_episodes">LOAD MORE EPISODES</string>
+
+    <!-- Character Details Screen -->
+    <string name="rick_and_morty_top_bar">RICK And MORTY</string>
+    <string name="information">Information</string>
+    <string name="label_status">Status</string>
+    <string name="label_episode_count">Episode Count</string>
+    <string name="label_gender">Gender</string>
+    <string name="label_origin">Origin</string>
+    <string name="label_location">Location</string>
+    <string name="label_species">Species</string>
+    <string name="view_episodes">View Episodes</string>
+
+    <!-- Character Episodes Screen -->
+    <string name="episodes_top_bar">EPISODES</string>
+    <string name="episodes_count_format">Episodes (%d)</string>
+    <string name="no_episodes_available">No episodes available</string>
+
+    <!-- Favorite Screen -->
+    <string name="no_favorite_characters_yet">No favorite characters yet</string>
+    <string name="add_characters_to_favorites">Add characters to favorites to see\nthem here</string>
+    <string name="explore_multiverse">EXPLORE MULTIVERSE</string>
+
+    <!-- Search Screen -->
+    <string name="discover">Discover</string>
+    <string name="search_subtitle">Search the universe by name or status</string>
+    <string name="search_placeholder">Search by character name…</string>
+    <string name="search_icon_desc">Search</string>
+    <string name="clear_search">Clear search</string>
+    <string name="find_any_character">Find any character</string>
+    <string name="search_hint">Type a name, choose Alive / Dead / Unknown, or combine both.</string>
+    <string name="no_results_found">No results found</string>
+    <string name="try_another_search">Try another name or change the status filter.</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="try_again">Try again</string>
+    <string name="status_alive">Alive</string>
+    <string name="status_dead">Dead</string>
+    <string name="status_unknown">Unknown</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">PROFILE</string>
+    <string name="profile_image_desc">Profile image</string>
+    <string name="change_avatar_desc">Change avatar</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="app_preferences">APP PREFERENCES</string>
+    <string name="sign_out">SIGN OUT</string>
+    <string name="bio_directive">BIO / DIRECTIVE</string>
+    <string name="edit_bio_desc">Edit bio</string>
+    <string name="tap_to_add_bio">Tap here to add your bio.</string>
+    <string name="edit_bio_title">Edit Bio</string>
+    <string name="bio_placeholder">Write something about yourself…</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="choose_profile_image">Choose Profile Image</string>
+    <string name="close">Close</string>
+    <string name="atmospheric_mode">Atmospheric Mode</string>
+    <string name="deep_cosmic_palette">Deep cosmic palette</string>
+    <string name="bright_portal_palette">Bright portal palette</string>
+    <string name="failed_to_load_profile">Failed to load profile.</string>
+
+    <!-- Language -->
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="english">English</string>
+    <string name="arabic">العربية</string>
+    <string name="language_subtitle_en">English</string>
+    <string name="language_subtitle_ar">العربية</string>
+
+    <!-- Login Screen -->
+    <string name="rick_and_morty_logo_desc">Rick and Morty Logo</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login_button">Login</string>
+    <string name="google_logo_desc">Google Logo</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="have_no_account">Have no account? </string>
+    <string name="sign_up">SignUp</string>
+    <string name="google_sign_in_failed">Google sign-in failed. Please try again.</string>
+
+    <!-- Registration Screen -->
+    <string name="create_account">Create Account</string>
+    <string name="join_network">Join the luminous network today.</string>
+    <string name="full_name">Full Name</string>
+    <string name="name_placeholder">Jane Doe</string>
+    <string name="password_placeholder">••••••••</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="create_account_button">CREATE ACCOUNT</string>
+    <string name="continue_with_google_upper">CONTINUE WITH GOOGLE</string>
+    <string name="already_have_account">Already have an account? </string>
+    <string name="sign_in_here">Sign in here</string>
+    <string name="google_sign_up_failed">Google sign-up failed. Please try again.</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="back_to_login">Back to Login</string>
+    <string name="reset_title">Reset</string>
+    <string name="reset_instructions">Enter the email associated with your\naccount and we\'ll send a link to reset\nyour password.</string>
+    <string name="email_address">Email Address</string>
+    <string name="email_placeholder">your@email.com</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="back_desc">Back</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_home">Home</string>
+    <string name="nav_episodes">Episodes</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Errors and Messages -->
+    <string name="error_email_required">Email is required</string>
+    <string name="error_invalid_email">Enter a valid email address</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_passwords_mismatch">Passwords do not match</string>
+    <string name="error_name_length">Name must be at least 3 characters</string>
+    <string name="error_no_internet">No internet connection. Please try again.</string>
+    <string name="error_no_internet_short">No internet connection.</string>
+    <string name="error_account_not_found">Account not found.</string>
+    <string name="error_no_account_email">No account found with this email.</string>
+    <string name="error_too_many_attempts">Too many attempts. Please wait and try again.</string>
+    <string name="error_too_many_requests">Too many requests. Please slow down.</string>
+    <string name="error_service_unavailable">Service unavailable. Please try again later.</string>
+    <string name="error_service_unavailable_short">Service unavailable.</string>
+    <string name="error_invalid_credentials">Invalid email or password.</string>
+    <string name="error_registration_failed">Registration failed. Please try again.</string>
+    <string name="error_email_in_use">This email may already be in use.</string>
+    <string name="error_character_not_found">Character not found.</string>
+    <string name="error_episodes_not_found">Episodes not found.</string>
+    <string name="error_data_not_found">Data not found.</string>
+    <string name="error_something_went_wrong">Something went wrong.</string>
+    <string name="error_loading_data">Error loading data.</string>
+    <string name="error_failed_reset_link">Failed to send reset link. Please check your email.</string>
+    <string name="msg_reset_link_sent">Password reset link has been sent to your email.</string>
+    <string name="msg_removed_favorite">%1$s removed from favorites</string>
+    <string name="msg_added_favorite">%1$s added to favorites</string>
+    <string name="error_no_characters_found">No characters found.</string>
+    <string name="error_request_cancelled">Request cancelled.</string>
+    <string name="error_change_language">Failed to change language.</string>
+    <string name="error_change_theme">Failed to change theme.</string>
+    <string name="error_update_avatar">Failed to update profile image.</string>
+    <string name="error_empty_display_name">Display name cannot be empty.</string>
+    <string name="error_update_profile">Failed to update profile.</string>
+    <string name="error_bio_length">Bio must be 160 characters or less.</string>
+    <string name="error_update_bio">Failed to update bio.</string>
+    <string name="msg_avatar_updated">Profile image updated.</string>
+    <string name="msg_profile_updated">Profile updated successfully.</string>
+    <string name="msg_bio_updated">Bio updated successfully.</string>
 </resources>

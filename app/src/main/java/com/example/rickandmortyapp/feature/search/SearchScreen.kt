@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -55,11 +56,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.feature.home.CharacterCard
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
 import com.example.rickandmortyapp.data.model.color
+import com.example.rickandmortyapp.data.model.displayNameRes
 
 @Composable
 fun SearchScreen(
@@ -116,7 +119,7 @@ fun SearchScreenContent(
             .fillMaxSize()
             .background(AppTheme.colorScheme.screenBackground)
     ) {
-        CustomTopBar("RICK & MORTY")
+        CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
 
         SearchHeader()
 
@@ -160,7 +163,14 @@ fun SearchScreenContent(
                     state = state,
                     gridState = gridState,
                     onCharacterClicked = onCharacterClicked,
-                    onFavoriteClicked = { id, name -> onEvent(SearchEvent.FavoriteClicked(id, name)) }
+                    onFavoriteClicked = { id, name ->
+                        onEvent(
+                            SearchEvent.FavoriteClicked(
+                                id,
+                                name
+                            )
+                        )
+                    }
                 )
             }
         }
@@ -176,7 +186,7 @@ private fun SearchHeader() {
             .padding(top = 10.dp, bottom = 8.dp)
     ) {
         Text(
-            text = "Discover",
+            text = stringResource(R.string.discover),
             style = AppTheme.typography.titleLarge,
             color = AppTheme.colorScheme.textPrimary,
             maxLines = 1,
@@ -184,7 +194,7 @@ private fun SearchHeader() {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Search the universe by name or status",
+            text = stringResource(R.string.search_subtitle),
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.primaryLight,
             maxLines = 1,
@@ -229,7 +239,7 @@ private fun PremiumSearchField(
             onValueChange = onQueryChange,
             placeholder = {
                 Text(
-                    text = "Search by character name...",
+                    text = stringResource(R.string.search_placeholder),
                     style = AppTheme.typography.paragraph,
                     color = AppTheme.colorScheme.textMuted
                 )
@@ -237,7 +247,7 @@ private fun PremiumSearchField(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = "Search",
+                    contentDescription = stringResource(R.string.search_icon_desc),
                     tint = AppTheme.colorScheme.secondary
                 )
             },
@@ -247,7 +257,7 @@ private fun PremiumSearchField(
                         IconButton(onClick = onClear) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
-                                contentDescription = "Clear search",
+                                contentDescription = stringResource(R.string.clear_search),
                                 tint = AppTheme.colorScheme.iconSecondary
                             )
                         }
@@ -348,7 +358,7 @@ private fun StatusChip(
             )
             Spacer(modifier = Modifier.size(7.dp))
             Text(
-                text = status.displayName,
+                text = stringResource(id = status.displayNameRes),
                 style = AppTheme.typography.labelNormal,
                 fontWeight = FontWeight.Bold,
                 color = if (selected) AppTheme.colorScheme.onPrimary else AppTheme.colorScheme.textSecondary,
@@ -376,14 +386,14 @@ private fun SearchInitialState() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Find any character",
+            text = stringResource(R.string.find_any_character),
             style = AppTheme.typography.titleNormal,
             color = AppTheme.colorScheme.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Type a name, choose Alive / Dead / Unknown, or combine both.",
+            text = stringResource(R.string.search_hint),
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.textMuted,
             textAlign = TextAlign.Center
@@ -408,14 +418,14 @@ private fun SearchNoResultsState() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "No results found",
+            text = stringResource(R.string.no_results_found),
             style = AppTheme.typography.titleNormal,
             color = AppTheme.colorScheme.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Try another name or change the status filter.",
+            text = stringResource(R.string.try_another_search),
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.textMuted,
             textAlign = TextAlign.Center
@@ -453,7 +463,7 @@ private fun SearchErrorState(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = message ?: "Something went wrong.",
+            text = message ?: stringResource(R.string.something_went_wrong),
             style = AppTheme.typography.paragraph,
             color = AppTheme.colorScheme.textSecondary,
             textAlign = TextAlign.Center
@@ -461,7 +471,7 @@ private fun SearchErrorState(
         Spacer(modifier = Modifier.height(8.dp))
         TextButton(onClick = onRetry) {
             Text(
-                text = "Try again",
+                text = stringResource(R.string.try_again),
                 color = AppTheme.colorScheme.primaryLight,
                 fontWeight = FontWeight.Bold
             )

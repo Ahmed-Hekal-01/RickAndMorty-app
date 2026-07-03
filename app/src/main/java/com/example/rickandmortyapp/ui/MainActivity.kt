@@ -26,6 +26,8 @@ import javax.inject.Inject
 import com.example.rickandmortyapp.data.model.AppSettings
 import com.example.rickandmortyapp.data.repository.ISettingsRepository
 import androidx.compose.ui.platform.LocalContext
+import java.util.Locale
+import androidx.compose.runtime.LaunchedEffect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -60,19 +62,56 @@ class MainActivity : ComponentActivity() {
                 initialValue = AppSettings()
             )
 
-            AppTheme(isDarkTheme = appSettings.darkMode) {
-                val state by viewmodel.state.collectAsStateWithLifecycle()
-                val destination = state.destination
+            LaunchedEffect(appSettings.language) {
+                applyLocale(appSettings.language)
+            }
 
-                if (destination != null) {
-                    val startDestination = when (destination) {
-                        Destination.HOME -> AppGraphs.MAIN
-                        Destination.LOGIN -> AppGraphs.AUTH
+            val locale = Locale(appSettings.language)
+            val configuration = android.content.res.Configuration(androidx.compose.ui.platform.LocalConfiguration.current)
+            configuration.setLocale(locale)
+            configuration.setLayoutDirection(locale)
+            
+            val layoutDirection = if (locale.language == "ar") {
+                androidx.compose.ui.unit.LayoutDirection.Rtl
+            } else {
+                androidx.compose.ui.unit.LayoutDirection.Ltr
+            }
+
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalConfiguration provides configuration,
+                androidx.compose.ui.platform.LocalLayoutDirection provides layoutDirection
+            ) {
+                AppTheme(isDarkTheme = appSettings.darkMode) {
+                    val state by viewmodel.state.collectAsStateWithLifecycle()
+                    val destination = state.destination
+
+                    if (destination != null) {
+                        val startDestination = when (destination) {
+                            Destination.HOME -> AppGraphs.MAIN
+                            Destination.LOGIN -> AppGraphs.AUTH
+                        }
+
+                        AppRoot(startDestination = startDestination)
                     }
-
-                    AppRoot(startDestination = startDestination)
                 }
             }
         }
+    }
+
+    private fun applyLocale(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
+        
+        val appContext = applicationContext
+        val appConfig = appContext.resources.configuration
+        appConfig.setLocale(locale)
+        appConfig.setLayoutDirection(locale)
+        @Suppress("DEPRECATION")
+        appContext.resources.updateConfiguration(appConfig, appContext.resources.displayMetrics)
     }
 }

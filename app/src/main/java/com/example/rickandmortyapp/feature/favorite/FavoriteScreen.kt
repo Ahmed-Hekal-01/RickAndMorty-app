@@ -4,14 +4,31 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,12 +38,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.Character
-import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.data.model.color
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
@@ -51,8 +69,8 @@ fun FavoriteScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is FavoriteEffect.NavigateToHome  -> onNavigateToHome()
-                is FavoriteEffect.ShowSnackbar    -> onShowSnackbar(effect.message)
+                is FavoriteEffect.NavigateToHome -> onNavigateToHome()
+                is FavoriteEffect.ShowSnackbar -> onShowSnackbar(effect.message)
             }
         }
     }
@@ -79,7 +97,8 @@ fun FavoriteScreenContent(
                 .padding(horizontal = AppTheme.size.large),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopBar("RICK & MORTY")
+            CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
+
 
             AnimatedVisibility(
                 visible = state.favorites.isEmpty(),
@@ -194,7 +213,7 @@ private fun FavoriteCharacterCard(
             IconButton(onClick = onRemove) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
-                    contentDescription = "Remove from favorites",
+                    contentDescription = stringResource(R.string.remove_from_favorites),
                     tint = AppTheme.colorScheme.primary
                 )
             }
@@ -238,7 +257,7 @@ private fun EmptyFavoriteContent(
         Spacer(modifier = Modifier.height(AppTheme.size.large))
 
         Text(
-            text = "No favorite characters yet",
+            text = stringResource(R.string.no_favorite_characters_yet),
             color = AppTheme.colorScheme.primaryLight,
             style = AppTheme.typography.titleNormal
         )
@@ -246,7 +265,7 @@ private fun EmptyFavoriteContent(
         Spacer(modifier = Modifier.height(AppTheme.size.small))
 
         Text(
-            text = "Add characters to favorites to see\nthem here",
+            text = stringResource(R.string.add_characters_to_favorites),
             color = AppTheme.colorScheme.textSecondary,
             style = AppTheme.typography.paragraph
         )
@@ -269,7 +288,7 @@ private fun EmptyFavoriteContent(
             )
         ) {
             Text(
-                text = "EXPLORE MULTIVERSE",
+                text = stringResource(R.string.explore_multiverse),
                 color = AppTheme.colorScheme.onPrimary,
                 style = AppTheme.typography.labelLarge
             )

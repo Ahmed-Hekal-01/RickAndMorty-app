@@ -1,35 +1,60 @@
 package com.example.rickandmortyapp.feature.episodes
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.Episode
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.platform.LocalContext
-import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
-import android.widget.Toast
-import com.example.rickandmortyapp.util.AppRoutes
+import androidx.core.net.toUri
 
 @Preview(showSystemUi = true)
 @Composable
@@ -73,25 +98,22 @@ fun EpisodesScreenContent(
     onEvent: (EpisodesEvent) -> Unit,
     onNavClick: (String) -> Unit
 ) {
-    var selectedSeason by remember { mutableStateOf("All Episodes") }
+    var selectedSeasonNumber by remember { mutableStateOf<Int?>(null) }
 
     val context = LocalContext.current
 
-    // Dynamic list of seasons computed from episodes
-    val seasons = remember(state.episodes) {
-        listOf("All Episodes") + state.episodes
-            .map { "Season ${it.seasonNumber}" }
+    val seasonNumbers = remember(state.episodes) {
+        state.episodes
+            .map { it.seasonNumber }
             .distinct()
             .sorted()
     }
 
-    // Filtered episodes based on season selection
-    val filteredEpisodes = remember(state.episodes, selectedSeason) {
-        if (selectedSeason == "All Episodes") {
+    val filteredEpisodes = remember(state.episodes, selectedSeasonNumber) {
+        if (selectedSeasonNumber == null) {
             state.episodes
         } else {
-            val seasonNum = selectedSeason.substringAfter("Season ").toIntOrNull() ?: 1
-            state.episodes.filter { it.seasonNumber == seasonNum }
+            state.episodes.filter { it.seasonNumber == selectedSeasonNumber }
         }
     }
 
@@ -105,17 +127,18 @@ fun EpisodesScreenContent(
                 .fillMaxSize()
                 .padding(horizontal = AppTheme.size.large)
         ) {
-            CustomTopBar("RICK & MORTY")
+            CustomTopBar(stringResource(R.string.home_screen_top_bar_name))
+
 
             Column(modifier = Modifier.padding(vertical = AppTheme.size.medium)) {
                 Text(
-                    text = "Season Guides",
+                    text = stringResource(R.string.season_guides),
                     color = AppTheme.colorScheme.primaryLight,
                     style = AppTheme.typography.labelSmall
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Episodes",
+                    text = stringResource(R.string.episodes_title),
                     color = AppTheme.colorScheme.textSecondary,
                     style = AppTheme.typography.titleLarge
                 )
@@ -124,9 +147,9 @@ fun EpisodesScreenContent(
             Spacer(modifier = Modifier.height(AppTheme.size.normal))
 
             SeasonChips(
-                seasons = seasons,
-                selectedSeason = selectedSeason,
-                onSeasonClick = { selectedSeason = it }
+                seasonNumbers = seasonNumbers,
+                selectedSeasonNumber = selectedSeasonNumber,
+                onSeasonClick = { selectedSeasonNumber = it }
             )
 
             Spacer(modifier = Modifier.height(AppTheme.size.large))
@@ -140,6 +163,7 @@ fun EpisodesScreenContent(
                         CircularProgressIndicator(color = AppTheme.colorScheme.primary)
                     }
                 }
+
                 state.error != null -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -158,10 +182,11 @@ fun EpisodesScreenContent(
                                 containerColor = AppTheme.colorScheme.primary
                             )
                         ) {
-                            Text("Retry", color = Color.White)
+                            Text(stringResource(R.string.retry), color = Color.White)
                         }
                     }
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -178,7 +203,7 @@ fun EpisodesScreenContent(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "No episodes found.",
+                                        text = stringResource(R.string.no_episodes_found),
                                         style = AppTheme.typography.paragraph,
                                         color = AppTheme.colorScheme.textSecondary
                                     )
@@ -228,7 +253,7 @@ fun EpisodesScreenContent(
                                             )
                                         ) {
                                             Text(
-                                                text = "LOAD MORE EPISODES",
+                                                text = stringResource(R.string.load_more_episodes),
                                                 color = AppTheme.colorScheme.primary,
                                                 style = AppTheme.typography.labelLarge
                                             )
@@ -253,19 +278,37 @@ fun EpisodesScreenContent(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SeasonChips(
-    seasons: List<String>,
-    selectedSeason: String,
-    onSeasonClick: (String) -> Unit
+    seasonNumbers: List<Int>,
+    selectedSeasonNumber: Int?,
+    onSeasonClick: (Int?) -> Unit
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.size.normal),
         verticalArrangement = Arrangement.spacedBy(AppTheme.size.normal)
     ) {
-        seasons.forEach { season ->
-            val selected = season == selectedSeason
+        val isAllSelected = selectedSeasonNumber == null
+
+        Button(
+            onClick = { onSeasonClick(null) },
+            modifier = Modifier.height(AppTheme.size.episodeChipHeight),
+            shape = AppTheme.shape.button,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isAllSelected) AppTheme.colorScheme.primaryLight else AppTheme.colorScheme.darkCardBackground,
+                contentColor = if (isAllSelected) AppTheme.colorScheme.primary else AppTheme.colorScheme.textPrimary
+            ),
+            contentPadding = PaddingValues(horizontal = AppTheme.size.large)
+        ) {
+            Text(
+                text = stringResource(R.string.all_episodes),
+                style = AppTheme.typography.labelNormal
+            )
+        }
+
+        seasonNumbers.forEach { seasonNum ->
+            val selected = seasonNum == selectedSeasonNumber
 
             Button(
-                onClick = { onSeasonClick(season) },
+                onClick = { onSeasonClick(seasonNum) },
                 modifier = Modifier.height(AppTheme.size.episodeChipHeight),
                 shape = AppTheme.shape.button,
                 colors = ButtonDefaults.buttonColors(
@@ -275,14 +318,13 @@ private fun SeasonChips(
                 contentPadding = PaddingValues(horizontal = AppTheme.size.large)
             ) {
                 Text(
-                    text = season,
+                    text = stringResource(R.string.season_format, seasonNum),
                     style = AppTheme.typography.labelNormal
                 )
             }
         }
     }
 }
-private const val WATCH_BASE_URL = "https://web.topcinemaa.com"
 
 private fun arabicSeasonName(seasonNumber: Int): String {
     return when (seasonNumber) {
@@ -311,6 +353,7 @@ private fun buildEpisodeWatchUrl(
 
     return "https://web.topcinemaa.com/${Uri.encode(slug, "-")}/"
 }
+
 private fun openEpisodeInBrowser(
     context: android.content.Context,
     seasonNumber: Int,
@@ -321,9 +364,10 @@ private fun openEpisodeInBrowser(
         episodeNumber = episodeNumber
     )
 
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     context.startActivity(intent)
 }
+
 @Composable
 fun EpisodeItem(
     episode: Episode,

@@ -190,7 +190,7 @@ private fun LoginContent(
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.app_logo),
-                            contentDescription = "Rick and Morty Logo",
+                            contentDescription = stringResource(R.string.rick_and_morty_logo_desc),
                             contentScale = ContentScale.Crop,
                             alignment = Alignment.Center
                         )
@@ -227,7 +227,7 @@ private fun LoginContent(
                     onValueChange = {
                         onEvent(LoginEvent.EmailChanged(it))
                     },
-                    label = { Text("Email") },
+                    label = { Text(stringResource(R.string.email_label)) },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     singleLine = true,
@@ -242,14 +242,14 @@ private fun LoginContent(
                     onValueChange = {
                         onEvent(LoginEvent.PasswordChanged(it))
                     },
-                    label = { Text("password") },
+                    label = { Text(stringResource(R.string.password_label)) },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                contentDescription = if (passwordVisible) stringResource(R.string.hide_password) else stringResource(R.string.show_password)
                             )
                         }
                     },
@@ -264,7 +264,7 @@ private fun LoginContent(
                     contentPadding = PaddingValues(horizontal = 4.dp)
                 ) {
                     Text(
-                        text = "Forgot Password?",
+                        text = stringResource(R.string.forgot_password),
                         color = AppTheme.colorScheme.accent,
                         style = AppTheme.typography.labelNormal,
                     )
@@ -287,7 +287,7 @@ private fun LoginContent(
                         )
                     } else {
                         Text(
-                            text = "Login", style = MaterialTheme.typography.titleMedium
+                            text = stringResource(R.string.login_button), style = MaterialTheme.typography.titleMedium
                         )
                     }
 
@@ -309,12 +309,12 @@ private fun LoginContent(
                     } else {
                         Image(
                             painter = painterResource(id = R.drawable.ic_google_logo),
-                            contentDescription = "Google Logo",
+                            contentDescription = stringResource(R.string.google_logo_desc),
                             modifier = Modifier.size(24.dp),
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Continue with Google",
+                            text = stringResource(R.string.continue_with_google),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -324,17 +324,16 @@ private fun LoginContent(
                     modifier = Modifier.padding(4.dp)
                 ) {
                     Text(
-                        text = "Have no account? ",
+                        text = stringResource(R.string.have_no_account),
                         color = AppTheme.colorScheme.textSecondary,
                         style = AppTheme.typography.labelNormal
                     )
                     Text(
-                        text = "SignUp",
+                        text = stringResource(R.string.sign_up),
                         color = AppTheme.colorScheme.accent,
                         style = AppTheme.typography.labelNormal.copy(fontWeight = FontWeight.Medium),
                         modifier = Modifier
                             .clickable {
-                                println("hello from sign up")
                                 onEvent(LoginEvent.SignUpClicked)
                             }
                             .padding(4.dp))
