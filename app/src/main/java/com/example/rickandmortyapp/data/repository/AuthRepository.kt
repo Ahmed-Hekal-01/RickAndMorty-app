@@ -67,15 +67,28 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    override suspend fun register(email: String, password: String): NetworkResult<FirebaseUser> {
+    override suspend fun register(
+        fullName: String,
+        email: String,
+        password: String
+    ): NetworkResult<FirebaseUser> {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user ?: return NetworkResult.Error.BackendError.UnKnown
-            NetworkResult.Success(user)
+
+            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                .setDisplayName(fullName)
+                .build()
+
+            user.updateProfile(profileUpdates).await()
+            user.reload().await()
+
+            val refreshedUser = firebaseAuth.currentUser ?: user
+
+            NetworkResult.Success(refreshedUser)
         } catch (e: FirebaseAuthWeakPasswordException) {
             NetworkResult.Error.BackendError.UnKnown
         } catch (e: FirebaseAuthUserCollisionException) {
-            // Email already in use
             NetworkResult.Error.BackendError.UnKnown
         } catch (e: FirebaseAuthException) {
             NetworkResult.Error.BackendError.UnKnown
@@ -86,5 +99,18 @@ class AuthRepository @Inject constructor(
 
     override suspend fun logout() {
         firebaseAuth.signOut()
+    }
+
+    override suspend fun sendPasswordResetEmail(email: String): NetworkResult<Unit> {
+        return try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+            NetworkResult.Success(Unit)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            NetworkResult.Error.BackendError.UnKnown
+        } catch (e: FirebaseAuthException) {
+            NetworkResult.Error.BackendError.UnKnown
+        } catch (e: Exception) {
+            NetworkResult.Error.OfflineError
+        }
     }
 }

@@ -23,6 +23,7 @@ import com.example.rickandmortyapp.data.repository.SessionRepository
 import com.example.rickandmortyapp.data.repository.SettingsRepository
 import com.example.rickandmortyapp.data.repository.UserProfileRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -95,8 +96,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideUserProfileRepository(
-        firebaseAuth: FirebaseAuth
-    ): IUserProfileRepository = UserProfileRepository(firebaseAuth)
+        firebaseAuth: FirebaseAuth,
+        firestore: FirebaseFirestore
+    ): IUserProfileRepository = UserProfileRepository(firebaseAuth, firestore)
 
     // ─── DataStore ────────────────────────────────────────────────────────────
 

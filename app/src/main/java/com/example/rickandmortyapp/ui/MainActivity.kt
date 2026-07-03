@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 class MainActivity : ComponentActivity() {
 
     private val viewmodel: SplashViewModel by viewModels<SplashViewModel>()
+    @Inject
+    lateinit var settingsRepository: ISettingsRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().apply {
@@ -51,14 +53,20 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
-            AppTheme {
+            val appSettings by settingsRepository.settings.collectAsStateWithLifecycle(
+                initialValue = AppSettings()
+            )
+
+            AppTheme(isDarkTheme = appSettings.darkMode) {
                 val state by viewmodel.state.collectAsStateWithLifecycle()
                 val destination = state.destination
+
                 if (destination != null) {
                     val startDestination = when (destination) {
                         Destination.HOME -> AppGraphs.MAIN
                         Destination.LOGIN -> AppGraphs.AUTH
                     }
+
                     AppRoot(startDestination = startDestination)
                 }
             }

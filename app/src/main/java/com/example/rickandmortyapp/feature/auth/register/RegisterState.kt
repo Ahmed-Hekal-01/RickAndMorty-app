@@ -14,10 +14,13 @@ import com.example.rickandmortyapp.feature.base.UiState
  * @param confirmPasswordError inline validation error for confirm field, or null.
  */
 data class RegisterState(
+    val fullName: String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val isLoading: Boolean = false,
+    val isGoogleLoading: Boolean = false,
+    val fullNameError: String? = null,
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null

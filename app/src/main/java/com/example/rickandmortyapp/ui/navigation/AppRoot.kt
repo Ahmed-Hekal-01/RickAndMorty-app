@@ -19,9 +19,11 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.rickandmortyapp.feature.auth.login.LoginScreen
+import com.example.rickandmortyapp.feature.auth.register.RegistrationScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterDetailsScreen
 import com.example.rickandmortyapp.feature.characterdetail.CharacterEpisodesScreen
 import com.example.rickandmortyapp.feature.favorite.FavoriteScreen
+import com.example.rickandmortyapp.feature.episodes.EpisodesScreen
 import com.example.rickandmortyapp.feature.home.HomeScreen
 import com.example.rickandmortyapp.feature.profile.ProfileScreen
 import com.example.rickandmortyapp.ui.components.BottomNavBar
@@ -100,10 +102,35 @@ fun AppRoot(
 
                     )
                 }
-                composable(AppRoutes.SIGN_UP_SCREEN) { }
-                composable(AppRoutes.FORGOT_PASSWORD_SCREEN) { }
-                composable(AppRoutes.OTP_VERIFICATION_SCREEN) { }
-                composable(AppRoutes.NEW_PASSWORD_SCREEN) { }
+                composable(AppRoutes.SIGN_UP_SCREEN) {
+                    RegistrationScreen(
+                        onNavigateToHome = {
+                            navController.navigate(AppGraphs.MAIN) {
+                                popUpTo(AppGraphs.AUTH) { inclusive = true }
+                            }
+                        },
+                        onNavigateToLogin = {
+                            navController.navigate(AppRoutes.LOGIN_SCREEN) {
+                                popUpTo(AppRoutes.SIGN_UP_SCREEN) { inclusive = true }
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
+                composable(AppRoutes.FORGOT_PASSWORD_SCREEN) {
+                    ForgotPasswordScreen(
+                        onBackClick = {
+                            navController.navigate(AppRoutes.LOGIN_SCREEN) {
+                                popUpTo(AppRoutes.FORGOT_PASSWORD_SCREEN) { inclusive = true }
+                            }
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
 
             }
 
@@ -130,7 +157,16 @@ fun AppRoot(
                         }
                     )
                 }
-                composable(AppRoutes.EPISODES_SCREEN) { }
+                composable(AppRoutes.EPISODES_SCREEN) {
+                    EpisodesScreen(
+                        onNavClick = { route ->
+                            navigateMain(route)
+                        },
+                        onShowSnackbar = { message ->
+                            showSnackbar(message)
+                        }
+                    )
+                }
                 composable(
                     route = AppRoutes.CHARACTER_DETAILS_SCREEN,
                     arguments = listOf(navArgument("characterId") { type = NavType.IntType })

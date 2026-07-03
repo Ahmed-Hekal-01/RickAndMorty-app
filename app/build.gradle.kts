@@ -30,7 +30,7 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-
+            signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BASE_URL", "\"https://rickandmortyapi.com/api\"")
         }
 
@@ -121,4 +121,5 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

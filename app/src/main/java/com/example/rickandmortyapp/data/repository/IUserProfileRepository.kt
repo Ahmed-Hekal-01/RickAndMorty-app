@@ -20,4 +20,6 @@ interface IUserProfileRepository {
      * @return the updated [UserProfile] on success.
      */
     suspend fun updateDisplayName(name: String): NetworkResult<UserProfile>
+    suspend fun updateAvatar(photoUrl: String): NetworkResult<UserProfile>
+    suspend fun updateBio(bio: String): NetworkResult<UserProfile>
 }
