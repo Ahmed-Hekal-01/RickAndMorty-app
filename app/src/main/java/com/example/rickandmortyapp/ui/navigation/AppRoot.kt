@@ -145,11 +145,8 @@ fun AppRoot(
                                 characterId.toString()
                             )
 
+                            if (navController.currentBackStackEntry?.destination?.route != AppRoutes.CHARACTER_DETAILS_SCREEN) {
                             navController.navigate(route)
-                        },
-                        onNavigateToSearch = {
-                            navController.navigate(AppRoutes.SEARCH_SCREEN) {
-                                launchSingleTop = true
                             }
                         },
                         onShowSnackbar = { message ->

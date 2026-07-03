@@ -58,7 +58,6 @@ import com.example.rickandmortyapp.ui.theme.AppTheme
 @Composable
 fun HomeScreen(
     onNavigateToCharacterDetails: (Int) -> Unit,
-    onNavigateToSearch: () -> Unit,
     onShowSnackbar: suspend (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -189,11 +188,10 @@ fun CharacterCard(
     character: Character,
     isFavorite: Boolean,
     onClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onFavoriteClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clip(AppTheme.shape.cardShape)
             .clickable(onClick = onClick)
