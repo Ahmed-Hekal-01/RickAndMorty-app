@@ -57,9 +57,10 @@ import com.example.rickandmortyapp.ui.theme.AppTheme
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToCharacterDetails: (Int) -> Unit,
-    onShowSnackbar: suspend (String) -> Unit
+    onNavigateToSearch: () -> Unit,
+    onShowSnackbar: suspend (String) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -167,7 +168,7 @@ fun CharacterGrid(
                 }
             )
         }
-        
+
         if (state.isLoadingMore) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(
@@ -188,10 +189,11 @@ fun CharacterCard(
     character: Character,
     isFavorite: Boolean,
     onClick: () -> Unit,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(AppTheme.shape.cardShape)
             .clickable(onClick = onClick)
