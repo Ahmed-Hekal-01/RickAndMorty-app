@@ -9,6 +9,10 @@ import com.example.rickandmortyapp.feature.base.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.rickandmortyapp.data.repository.ISettingsRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Manages user profile screen state.
@@ -22,20 +26,70 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val authRepository: IAuthRepository,
-    private val sessionRepository: ISessionRepository
+    private val sessionRepository: ISessionRepository,
+    private val settingsRepository: ISettingsRepository
 ) : MviViewModel<ProfileState, ProfileEvent, ProfileEffect>() {
 
     override fun createInitialState() = ProfileState()
 
     init {
+        observeSettings()
         onEvent(ProfileEvent.LoadProfile)
     }
+    private var settingsJob: Job? = null
 
     override fun handleEvent(event: ProfileEvent) {
         when (event) {
             is ProfileEvent.LoadProfile -> loadProfile()
             is ProfileEvent.UpdateDisplayName -> updateDisplayName(event.name)
+            is ProfileEvent.UpdateAvatar -> updateAvatar(event.avatarUri)
+            is ProfileEvent.ToggleDarkMode -> toggleDarkMode(event.enabled)
+            is ProfileEvent.UpdateBio -> updateBio(event.bio)
             is ProfileEvent.Logout -> logout()
+        }
+    }
+    private fun observeSettings() {
+        settingsJob?.cancel()
+
+        settingsJob = settingsRepository.settings
+            .onEach { settings ->
+                setState {
+                    copy(isDarkMode = settings.darkMode)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun toggleDarkMode(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                settingsRepository.setDarkMode(enabled)
+            } catch (e: Exception) {
+                setEffect(ProfileEffect.ShowError("Failed to change theme."))
+            }
+        }
+    }
+
+    private fun updateAvatar(avatarUri: String) {
+        viewModelScope.launch {
+            setState { copy(isSaving = true) }
+
+            when (val result = userProfileRepository.updateAvatar(avatarUri)) {
+                is NetworkResult.Success -> {
+                    setState {
+                        copy(
+                            profile = result.data,
+                            isSaving = false
+                        )
+                    }
+                    setEffect(ProfileEffect.ShowSuccess("Profile image updated."))
+                }
+
+                is NetworkResult.Error -> {
+                    setState { copy(isSaving = false) }
+                    setEffect(ProfileEffect.ShowError("Failed to update profile image."))
+                }
+            }
         }
     }
 
@@ -70,6 +124,35 @@ class ProfileViewModel @Inject constructor(
                 is NetworkResult.Error -> {
                     setState { copy(isSaving = false) }
                     setEffect(ProfileEffect.ShowError("Failed to update profile."))
+                }
+            }
+        }
+    }
+    private fun updateBio(bio: String) {
+        val cleanedBio = bio.trim()
+
+        if (cleanedBio.length > 160) {
+            setEffect(ProfileEffect.ShowError("Bio must be 160 characters or less."))
+            return
+        }
+
+        viewModelScope.launch {
+            setState { copy(isSaving = true) }
+
+            when (val result = userProfileRepository.updateBio(cleanedBio)) {
+                is NetworkResult.Success -> {
+                    setState {
+                        copy(
+                            profile = result.data,
+                            isSaving = false
+                        )
+                    }
+                    setEffect(ProfileEffect.ShowSuccess("Bio updated successfully."))
+                }
+
+                is NetworkResult.Error -> {
+                    setState { copy(isSaving = false) }
+                    setEffect(ProfileEffect.ShowError("Failed to update bio."))
                 }
             }
         }

@@ -27,7 +27,7 @@ class SettingsRepository @Inject constructor(
 
     override val settings: Flow<AppSettings> = dataStore.data.map { prefs ->
         AppSettings(
-            darkMode = prefs[KEY_DARK_MODE] ?: false,
+            darkMode = prefs[KEY_DARK_MODE] ?: true,
             notificationsEnabled = prefs[KEY_NOTIFICATIONS] ?: true
         )
     }

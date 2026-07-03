@@ -5,6 +5,6 @@ package com.example.rickandmortyapp.data.model
  * Stored via DataStore and exposed as a Flow by [ISettingsRepository].
  */
 data class AppSettings(
-    val darkMode: Boolean = false,
+    val darkMode: Boolean = true,
     val notificationsEnabled: Boolean = true
 )
