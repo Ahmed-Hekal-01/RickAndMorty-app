@@ -2,6 +2,7 @@ package com.example.rickandmortyapp.feature.characterdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.Episode
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.ICharacterRepository
@@ -10,6 +11,7 @@ import com.example.rickandmortyapp.feature.base.MviViewModel
 import com.example.rickandmortyapp.feature.base.UiEffect
 import com.example.rickandmortyapp.feature.base.UiEvent
 import com.example.rickandmortyapp.feature.base.UiState
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,6 +39,7 @@ sealed class CharacterEpisodesEffect : UiEffect {
 class CharacterEpisodesViewModel @Inject constructor(
     private val characterRepository: ICharacterRepository,
     private val episodeRepository: IEpisodeRepository,
+    private val stringProvider: StringProvider,
     savedStateHandle: SavedStateHandle
 ) : MviViewModel<CharacterEpisodesState, CharacterEpisodesEvent, CharacterEpisodesEffect>() {
 
@@ -81,14 +84,14 @@ class CharacterEpisodesViewModel @Inject constructor(
                             setState { copy(episodes = epResult.data, isLoading = false) }
                         }
                         is NetworkResult.Error -> {
-                            val message = epResult.toUserMessage()
+                            val message = epResult.toUserMessage(stringProvider)
                             setState { copy(isLoading = false, error = message) }
                             setEffect(CharacterEpisodesEffect.ShowError(message))
                         }
                     }
                 }
                 is NetworkResult.Error -> {
-                    val message = charResult.toUserMessage()
+                    val message = charResult.toUserMessage(stringProvider)
                     setState { copy(isLoading = false, error = message) }
                     setEffect(CharacterEpisodesEffect.ShowError(message))
                 }
@@ -96,12 +99,14 @@ class CharacterEpisodesViewModel @Inject constructor(
         }
     }
     
-    private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-        is NetworkResult.Error.OfflineError -> "No internet connection."
-        is NetworkResult.Error.BackendError.NotFound -> "Data not found."
-        is NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
-        is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
-        is NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
-        else -> "Error loading data."
+    private fun NetworkResult.Error.toUserMessage(stringProvider: StringProvider): String {
+        return when (this) {
+            is NetworkResult.Error.OfflineError -> stringProvider.getString(R.string.error_no_internet_short)
+            is NetworkResult.Error.BackendError.NotFound -> stringProvider.getString(R.string.error_data_not_found)
+            is NetworkResult.Error.BackendError.TooManyRequests -> stringProvider.getString(R.string.error_too_many_requests)
+            is NetworkResult.Error.BackendError.Unavailable -> stringProvider.getString(R.string.error_service_unavailable_short)
+            is NetworkResult.Error.BackendError.UnKnown -> stringProvider.getString(R.string.error_something_went_wrong)
+            else -> stringProvider.getString(R.string.error_loading_data)
+        }
     }
 }

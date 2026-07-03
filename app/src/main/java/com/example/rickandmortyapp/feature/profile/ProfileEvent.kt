@@ -11,4 +11,5 @@ sealed class ProfileEvent : UiEvent {
     data class ToggleDarkMode(val enabled: Boolean) : ProfileEvent()
     data object Logout : ProfileEvent()
     data class UpdateBio(val bio: String) : ProfileEvent()
+    data class ChangeLanguage(val languageCode: String) : ProfileEvent()
 }

@@ -23,6 +23,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import com.example.rickandmortyapp.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -47,40 +49,38 @@ fun BottomNavBar(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val items = remember {
-        listOf(
+    val items = listOf(
             BottomNavBarItem(
                 Icons.Default.Home,
                 Icons.Outlined.Home,
                 AppRoutes.HOME_SCREEN,
-                "Home"
+                stringResource(R.string.nav_home)
             ),
             BottomNavBarItem(
                 Icons.Default.Tv,
                 Icons.Outlined.Tv,
                 AppRoutes.EPISODES_SCREEN,
-                "Episodes"
+                stringResource(R.string.nav_episodes)
             ),
             BottomNavBarItem(
                 Icons.Default.Favorite,
                 Icons.Default.FavoriteBorder,
                 AppRoutes.FAV_SCREEN,
-                "Favorites"
+                stringResource(R.string.nav_favorites)
             ),
             BottomNavBarItem(
                 Icons.Default.Search,
                 Icons.Outlined.Search,
                 AppRoutes.SEARCH_SCREEN,
-                "Search"
+                stringResource(R.string.nav_search)
             ),
             BottomNavBarItem(
                 Icons.Default.Person,
                 Icons.Outlined.Person,
                 AppRoutes.PROFILE_SCREEN,
-                "Profile"
+                stringResource(R.string.nav_profile)
             )
-        )
-    }
+    )
 
     NavigationBar(
         modifier = Modifier.clip(

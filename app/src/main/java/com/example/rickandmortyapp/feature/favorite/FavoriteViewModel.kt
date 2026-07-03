@@ -1,8 +1,10 @@
 package com.example.rickandmortyapp.feature.favorite
 
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.repository.IFavoritesRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val favoritesRepository: IFavoritesRepository
+    private val favoritesRepository: IFavoritesRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<FavoriteState, FavoriteEvent, FavoriteEffect>() {
 
     override fun createInitialState() = FavoriteState()
@@ -56,7 +59,8 @@ class FavoriteViewModel @Inject constructor(
     private fun removeFavorite(event: FavoriteEvent.RemoveFavorite) {
         viewModelScope.launch {
             favoritesRepository.toggleFavorite(event.character)
-            setEffect(FavoriteEffect.ShowSnackbar("${event.character.name} removed from favorites"))
+            val message = stringProvider.getString(R.string.msg_removed_favorite, event.character.name)
+            setEffect(FavoriteEffect.ShowSnackbar(message))
         }
     }
 }

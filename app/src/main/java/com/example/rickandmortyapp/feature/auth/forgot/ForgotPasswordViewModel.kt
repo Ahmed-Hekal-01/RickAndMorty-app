@@ -2,16 +2,19 @@ package com.example.rickandmortyapp.feature.auth.forgot
 
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.IAuthRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authRepository: IAuthRepository
+    private val authRepository: IAuthRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<ForgotPasswordState, ForgotPasswordEvent, ForgotPasswordEffect>() {
 
     override fun createInitialState(): ForgotPasswordState {
@@ -53,7 +56,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
                     setEffect(
                         ForgotPasswordEffect.ShowMessage(
-                            "Password reset link has been sent to your email."
+                            stringProvider.getString(R.string.msg_reset_link_sent)
                         )
                     )
 
@@ -65,7 +68,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
                     setEffect(
                         ForgotPasswordEffect.ShowMessage(
-                            result.toErrorMessage()
+                            result.toErrorMessage(stringProvider)
                         )
                     )
                 }
@@ -78,12 +81,12 @@ class ForgotPasswordViewModel @Inject constructor(
 
         return when {
             email.isBlank() -> {
-                setState { copy(emailError = "Email is required") }
+                setState { copy(emailError = stringProvider.getString(R.string.error_email_required)) }
                 false
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                setState { copy(emailError = "Enter a valid email address") }
+                setState { copy(emailError = stringProvider.getString(R.string.error_invalid_email)) }
                 false
             }
 
@@ -92,22 +95,22 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 }
 
-private fun NetworkResult.Error.toErrorMessage(): String {
+private fun NetworkResult.Error.toErrorMessage(stringProvider: StringProvider): String {
     return when (this) {
         is NetworkResult.Error.OfflineError ->
-            "No internet connection. Please try again."
+            stringProvider.getString(R.string.error_no_internet)
 
         is NetworkResult.Error.BackendError.NotFound ->
-            "No account found with this email."
+            stringProvider.getString(R.string.error_no_account_email)
 
         is NetworkResult.Error.BackendError.TooManyRequests ->
-            "Too many attempts. Please wait and try again."
+            stringProvider.getString(R.string.error_too_many_attempts)
 
         is NetworkResult.Error.BackendError.Unavailable ->
-            "Service unavailable. Please try again later."
+            stringProvider.getString(R.string.error_service_unavailable)
 
         is NetworkResult.Error.BackendError.UnKnown ->
-            "Failed to send reset link. Please check your email."
+            stringProvider.getString(R.string.error_failed_reset_link)
 
         is NetworkResult.Error.UserCancellation ->
             ""

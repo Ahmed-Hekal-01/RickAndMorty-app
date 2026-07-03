@@ -17,4 +17,7 @@ interface ISettingsRepository {
 
     /** Persist the notifications preference. */
     suspend fun setNotificationsEnabled(enabled: Boolean)
+
+    /** Persist the language preference ("en" or "ar"). */
+    suspend fun setLanguage(languageCode: String)
 }

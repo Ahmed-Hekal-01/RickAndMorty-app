@@ -1,38 +1,47 @@
 package com.example.rickandmortyapp.feature.search
 
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.model.CharacterStatus
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.ICharacterRepository
+import com.example.rickandmortyapp.data.repository.IFavoritesRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * Manages character search screen state.
+ * Manages the character search screen.
  *
- * Search strategy:
- * - [SearchEvent.QueryChanged] / [SearchEvent.StatusFilterChanged] update state immediately
- *   and schedule a debounced auto-search (300 ms) so the user gets live results
- *   while typing without hammering the API on every keystroke.
- * - [SearchEvent.Search] cancels any pending debounce and fires immediately.
- * - [SearchEvent.LoadNextPage] appends the next page to the existing results.
- * - [SearchEvent.ClearSearch] resets all state back to the initial blank screen.
- *
- * The API returns 404 when no characters match — this is treated as an empty
- * result set (not a hard error) so the UI can show "No results found."
+ * Supported filters:
+ * - Name only.
+ * - Status only.
+ * - Name + status together.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val characterRepository: ICharacterRepository
+    private val characterRepository: ICharacterRepository,
+    private val favoritesRepository: IFavoritesRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<SearchState, SearchEvent, SearchEffect>() {
+
+    companion object {
+        private const val TAG = "SearchViewModel"
+    }
 
     override fun createInitialState() = SearchState()
 
     private var debounceJob: Job? = null
+    private var searchJob: Job? = null
+
+    init {
+        observeFavoriteIds()
+    }
 
     override fun handleEvent(event: SearchEvent) {
         when (event) {
@@ -40,54 +49,122 @@ class SearchViewModel @Inject constructor(
                 setState { copy(query = event.query) }
                 scheduleDebounceSearch()
             }
+
             is SearchEvent.StatusFilterChanged -> {
                 setState { copy(statusFilter = event.status) }
                 scheduleDebounceSearch()
             }
-            is SearchEvent.Search -> {
+
+            SearchEvent.Search -> {
                 debounceJob?.cancel()
                 performSearch()
             }
-            is SearchEvent.LoadNextPage -> loadNextPage()
-            is SearchEvent.ClearSearch -> {
+
+            SearchEvent.LoadNextPage -> loadNextPage()
+
+            SearchEvent.ClearSearch -> {
                 debounceJob?.cancel()
-                setState { SearchState() }
+                searchJob?.cancel()
+                setState { SearchState(favoriteIds = favoriteIds) }
+            }
+
+            SearchEvent.Retry -> performSearch()
+
+            is SearchEvent.FavoriteClicked -> toggleFavorite(event)
+        }
+    }
+
+    private fun observeFavoriteIds() {
+        viewModelScope.launch {
+            favoritesRepository.observeFavoriteIds.collect { ids ->
+                setState { copy(favoriteIds = ids) }
             }
         }
     }
 
-    // ─── Search logic ─────────────────────────────────────────────────────────
+    private fun toggleFavorite(event: SearchEvent.FavoriteClicked) {
+        viewModelScope.launch {
+            val character = state.value.results.find { it.id == event.characterId } ?: return@launch
+            val wasFavorite = event.characterId in state.value.favoriteIds
+            favoritesRepository.toggleFavorite(character)
+            val message = if (wasFavorite) stringProvider.getString(R.string.msg_removed_favorite, character.name)
+            else stringProvider.getString(R.string.msg_added_favorite, character.name)
+            setEffect(SearchEffect.ShowError(message))
+        }
+    }
 
     private fun scheduleDebounceSearch() {
         debounceJob?.cancel()
         debounceJob = viewModelScope.launch {
-            delay(300L)
+            delay(500L)
             performSearch()
         }
     }
 
     private fun performSearch() {
         val query = state.value.query.trim()
-        if (query.isBlank()) {
-            setState { copy(results = emptyList(), hasSearched = false, error = null) }
+        val status = state.value.statusFilter
+
+        if (query.isBlank() && status == null) {
+            Timber.tag(TAG).d("performSearch: skipped — query is blank and no status filter")
+            setState {
+                copy(
+                    results = emptyList(),
+                    isLoading = false,
+                    isLoadingMore = false,
+                    currentPage = 1,
+                    hasMorePages = true,
+                    hasSearched = false,
+                    error = null
+                )
+            }
             return
         }
-        viewModelScope.launch {
-            setState { copy(isLoading = true, error = null, results = emptyList(), hasSearched = true) }
-            fetchPage(page = 1, query = query, status = state.value.statusFilter, isInitial = true)
+
+        Timber.tag(TAG).d("performSearch: query=\"$query\", status=$status")
+
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            setState {
+                copy(
+                    isLoading = true,
+                    isLoadingMore = false,
+                    error = null,
+                    results = emptyList(),
+                    currentPage = 1,
+                    hasMorePages = true,
+                    hasSearched = true
+                )
+            }
+            fetchPage(page = 1, query = query, status = status, isInitial = true)
         }
     }
 
     private fun loadNextPage() {
-        val s = state.value
-        if (s.isLoading || s.isLoadingMore || !s.hasMorePages || s.query.isBlank()) return
+        val current = state.value
+        val canSearch = current.query.isNotBlank() || current.statusFilter != null
+        if (
+            !canSearch ||
+            current.isLoading ||
+            current.isLoadingMore ||
+            !current.hasMorePages
+        ) {
+            Timber.tag(TAG).d(
+                "loadNextPage: skipped — canSearch=$canSearch, isLoading=${current.isLoading}, " +
+                        "isLoadingMore=${current.isLoadingMore}, hasMorePages=${current.hasMorePages}"
+            )
+            return
+        }
+
+        val nextPage = current.currentPage + 1
+        Timber.tag(TAG).d("loadNextPage: loading page $nextPage")
 
         viewModelScope.launch {
-            setState { copy(isLoadingMore = true) }
+            setState { copy(isLoadingMore = true, error = null) }
             fetchPage(
-                page = s.currentPage + 1,
-                query = s.query.trim(),
-                status = s.statusFilter,
+                page = nextPage,
+                query = current.query.trim(),
+                status = current.statusFilter,
                 isInitial = false
             )
         }
@@ -99,10 +176,24 @@ class SearchViewModel @Inject constructor(
         status: CharacterStatus?,
         isInitial: Boolean
     ) {
-        when (val result = characterRepository.searchCharacters(query, status, page)) {
+        Timber.tag(TAG)
+            .d("fetchPage: >>> API REQUEST — page=$page, query=\"$query\", status=$status, isInitial=$isInitial")
+
+        val result = characterRepository.searchCharacters(query, status, page)
+
+        // Ignore old network responses if the user changed the input mid-request.
+        if (state.value.query.trim() != query || state.value.statusFilter != status) {
+            Timber.tag(TAG)
+                .d("fetchPage: stale response discarded — query or status changed mid-request")
+            return
+        }
+
+        when (result) {
             is NetworkResult.Success -> {
                 val newResults = result.data.results
                 val hasMore = result.data.next != null
+                Timber.tag(TAG)
+                    .d("fetchPage: <<< SUCCESS — page=$page, resultsCount=${newResults.size}, hasMore=$hasMore")
                 setState {
                     copy(
                         results = if (isInitial) newResults else results + newResults,
@@ -114,36 +205,54 @@ class SearchViewModel @Inject constructor(
                     )
                 }
             }
+
             is NetworkResult.Error -> {
-                // 404 from the Rick & Morty API means "no characters match" — show empty list.
-                // Also reset pagination so LoadNextPage cannot run with stale metadata.
+                Timber.tag(TAG).e("fetchPage: <<< ERROR — page=$page, error=$result")
+
                 if (isInitial && result is NetworkResult.Error.BackendError.NotFound) {
+                    Timber.tag(TAG)
+                        .d("fetchPage: 404 on initial search — treating as empty results")
                     setState {
                         copy(
                             isLoading = false,
                             isLoadingMore = false,
                             results = emptyList(),
                             currentPage = 1,
-                            hasMorePages = false
+                            hasMorePages = false,
+                            error = null
                         )
                     }
                     return
                 }
-                val message = result.toUserMessage()
-                setState { copy(isLoading = false, isLoadingMore = false, error = message) }
-                setEffect(SearchEffect.ShowError(message))
+
+                val message = result.toUserMessage(stringProvider)
+                if (isInitial) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            isLoadingMore = false,
+                            error = message
+                        )
+                    }
+                    setEffect(SearchEffect.ShowError(message))
+                } else {
+                    // Pagination error — show snackbar then auto-retry after delay
+                    // (matches HomeViewModel behaviour).
+                    setState { copy(isLoadingMore = false) }
+                    setEffect(SearchEffect.ShowError(message))
+                    delay(10_000)
+                    fetchPage(page, query, status, isInitial = false)
+                }
             }
         }
     }
 }
 
-// ─── Extension ───────────────────────────────────────────────────────────────
-
-private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError -> "No internet connection."
-    is NetworkResult.Error.BackendError.NotFound -> "No characters found."
-    is NetworkResult.Error.BackendError.TooManyRequests -> "Too many requests. Please slow down."
-    is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable."
-    is NetworkResult.Error.BackendError.UnKnown -> "Something went wrong."
-    else -> {"todo"}
+private fun NetworkResult.Error.toUserMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError -> stringProvider.getString(R.string.error_no_internet_short)
+    is NetworkResult.Error.BackendError.NotFound -> stringProvider.getString(R.string.error_no_characters_found)
+    is NetworkResult.Error.BackendError.TooManyRequests -> stringProvider.getString(R.string.error_too_many_requests)
+    is NetworkResult.Error.BackendError.Unavailable -> stringProvider.getString(R.string.error_service_unavailable_short)
+    is NetworkResult.Error.BackendError.UnKnown -> stringProvider.getString(R.string.error_something_went_wrong)
+    is NetworkResult.Error.UserCancellation -> stringProvider.getString(R.string.error_request_cancelled)
 }

@@ -6,5 +6,6 @@ package com.example.rickandmortyapp.data.model
  */
 data class AppSettings(
     val darkMode: Boolean = true,
-    val notificationsEnabled: Boolean = true
+    val notificationsEnabled: Boolean = true,
+    val language: String = "en"
 )

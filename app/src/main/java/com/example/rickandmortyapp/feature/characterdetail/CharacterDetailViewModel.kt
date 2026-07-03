@@ -6,6 +6,8 @@ import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.ICharacterRepository
 import com.example.rickandmortyapp.data.repository.IFavoritesRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
+import com.example.rickandmortyapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +32,8 @@ import javax.inject.Inject
 class CharacterDetailViewModel @Inject constructor(
     private val characterRepository: ICharacterRepository,
     private val favoritesRepository: IFavoritesRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val stringProvider: StringProvider
 ) : MviViewModel<CharacterDetailState, CharacterDetailEvent, CharacterDetailEffect>() {
 
     /** The ID passed via Navigation Compose argument. */
@@ -62,7 +65,7 @@ class CharacterDetailViewModel @Inject constructor(
                     setState { copy(character = result.data, isLoading = false) }
                 }
                 is NetworkResult.Error -> {
-                    val message = result.toUserMessage()
+                    val message = result.toUserMessage(stringProvider)
                     setState { copy(isLoading = false, error = message) }
                     setEffect(CharacterDetailEffect.ShowError(message))
                 }
@@ -90,8 +93,8 @@ class CharacterDetailViewModel @Inject constructor(
             // flipped by the time toggleFavorite() returns (Room Flow emission).
             val wasFavorite = state.value.isFavorite
             favoritesRepository.toggleFavorite(character)
-            val message = if (wasFavorite) "${character.name} removed from favorites"
-                          else "${character.name} added to favorites"
+            val message = if (wasFavorite) stringProvider.getString(R.string.msg_removed_favorite, character.name)
+                          else stringProvider.getString(R.string.msg_added_favorite, character.name)
             setEffect(CharacterDetailEffect.ShowSnackbar(message))
         }
     }
@@ -99,11 +102,11 @@ class CharacterDetailViewModel @Inject constructor(
 
 // ─── Extension ───────────────────────────────────────────────────────────────
 
-private fun NetworkResult.Error.toUserMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError                     -> "No internet connection."
-    is NetworkResult.Error.BackendError.NotFound            -> "Character not found."
-    is NetworkResult.Error.BackendError.TooManyRequests     -> "Too many requests. Please slow down."
-    is NetworkResult.Error.BackendError.Unavailable         -> "Service unavailable."
-    is NetworkResult.Error.BackendError.UnKnown             -> "Something went wrong."
+private fun NetworkResult.Error.toUserMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError                     -> stringProvider.getString(R.string.error_no_internet_short)
+    is NetworkResult.Error.BackendError.NotFound            -> stringProvider.getString(R.string.error_character_not_found)
+    is NetworkResult.Error.BackendError.TooManyRequests     -> stringProvider.getString(R.string.error_too_many_requests)
+    is NetworkResult.Error.BackendError.Unavailable         -> stringProvider.getString(R.string.error_service_unavailable_short)
+    is NetworkResult.Error.BackendError.UnKnown             -> stringProvider.getString(R.string.error_something_went_wrong)
     else                                                     -> ""
 }

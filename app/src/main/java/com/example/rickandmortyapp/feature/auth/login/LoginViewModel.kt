@@ -1,10 +1,12 @@
 package com.example.rickandmortyapp.feature.auth.login
 
 import androidx.lifecycle.viewModelScope
+import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.remote.NetworkResult
 import com.example.rickandmortyapp.data.repository.IAuthRepository
 import com.example.rickandmortyapp.data.repository.ISessionRepository
 import com.example.rickandmortyapp.feature.base.MviViewModel
+import com.example.rickandmortyapp.util.StringProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: IAuthRepository,
-    private val sessionRepository: ISessionRepository
+    private val sessionRepository: ISessionRepository,
+    private val stringProvider: StringProvider
 ) : MviViewModel<LoginState, LoginEvent, LoginEffect>() {
 
     override fun createInitialState() = LoginState()
@@ -89,7 +92,7 @@ class LoginViewModel @Inject constructor(
 
                 is NetworkResult.Error -> {
                     setState { copy(isGoogleLoading = false) }
-                    setEffect(LoginEffect.ShowError(result.toErrorMessage()))
+                    setEffect(LoginEffect.ShowError(result.toErrorMessage(stringProvider)))
                 }
             }
         }
@@ -101,12 +104,12 @@ class LoginViewModel @Inject constructor(
         var isValid = true
 
         if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            setState { copy(emailError = "Enter a valid email address") }
+            setState { copy(emailError = stringProvider.getString(R.string.error_invalid_email)) }
             isValid = false
         }
 
         if (password.length < 6) {
-            setState { copy(passwordError = "Password must be at least 6 characters") }
+            setState { copy(passwordError = stringProvider.getString(R.string.error_password_length)) }
             isValid = false
         }
 
@@ -131,7 +134,7 @@ class LoginViewModel @Inject constructor(
 
                 is NetworkResult.Error -> {
                     setState { copy(isEmailLoading = false) }
-                    setEffect(LoginEffect.ShowError(result.toErrorMessage()))
+                    setEffect(LoginEffect.ShowError(result.toErrorMessage(stringProvider)))
                 }
             }
         }
@@ -141,11 +144,11 @@ class LoginViewModel @Inject constructor(
 
 // ─── Extension ───────────────────────────────────────────────────────────────
 
-private fun NetworkResult.Error.toErrorMessage(): String = when (this) {
-    is NetworkResult.Error.OfflineError -> "No internet connection. Please try again."
-    is NetworkResult.Error.BackendError.NotFound -> "Account not found."
-    is NetworkResult.Error.BackendError.TooManyRequests -> "Too many attempts. Please wait and try again."
-    is NetworkResult.Error.BackendError.Unavailable -> "Service unavailable. Please try again later."
-    is NetworkResult.Error.BackendError.UnKnown -> "Invalid email or password."
+private fun NetworkResult.Error.toErrorMessage(stringProvider: StringProvider): String = when (this) {
+    is NetworkResult.Error.OfflineError -> stringProvider.getString(R.string.error_no_internet)
+    is NetworkResult.Error.BackendError.NotFound -> stringProvider.getString(R.string.error_account_not_found)
+    is NetworkResult.Error.BackendError.TooManyRequests -> stringProvider.getString(R.string.error_too_many_attempts)
+    is NetworkResult.Error.BackendError.Unavailable -> stringProvider.getString(R.string.error_service_unavailable)
+    is NetworkResult.Error.BackendError.UnKnown -> stringProvider.getString(R.string.error_invalid_credentials)
     is NetworkResult.Error.UserCancellation -> ""
 }
