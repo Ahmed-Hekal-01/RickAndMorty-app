@@ -51,23 +51,15 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
-//            AppTheme {
-//                val state by viewmodel.state.collectAsStateWithLifecycle()
-//                val destination = state.destination
-//                if (destination != null) {
-//                    val startDestination = when (destination) {
-//                        Destination.HOME -> AppGraphs.MAIN
-//                        Destination.LOGIN -> AppGraphs.AUTH
-//                    }
-//                    AppRoot(startDestination = startDestination)
-//                }
-//            }
-
-            setContent {
-                AppTheme {
-                    AppRoot(
-                        startDestination = AppGraphs.MAIN
-                    )
+            AppTheme {
+                val state by viewmodel.state.collectAsStateWithLifecycle()
+                val destination = state.destination
+                if (destination != null) {
+                    val startDestination = when (destination) {
+                        Destination.HOME -> AppGraphs.MAIN
+                        Destination.LOGIN -> AppGraphs.AUTH
+                    }
+                    AppRoot(startDestination = startDestination)
                 }
             }
         }
