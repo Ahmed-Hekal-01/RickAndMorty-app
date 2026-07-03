@@ -21,9 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.rickandmortyapp.data.model.Episode
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import com.example.rickandmortyapp.ui.components.AnimatedGradientText
 import com.example.rickandmortyapp.ui.components.CustomTopBar
 import com.example.rickandmortyapp.ui.theme.AppTheme
+import android.widget.Toast
 import com.example.rickandmortyapp.util.AppRoutes
 
 @Preview(showSystemUi = true)
@@ -69,6 +74,8 @@ fun EpisodesScreenContent(
     onNavClick: (String) -> Unit
 ) {
     var selectedSeason by remember { mutableStateOf("All Episodes") }
+
+    val context = LocalContext.current
 
     // Dynamic list of seasons computed from episodes
     val seasons = remember(state.episodes) {
@@ -179,7 +186,17 @@ fun EpisodesScreenContent(
                             }
                         } else {
                             items(filteredEpisodes, key = { it.id }) { episode ->
-                                EpisodeItem(episode = episode)
+                                EpisodeItem(
+                                    episode = episode,
+                                    onClick = {
+                                        openEpisodeInBrowser(
+                                            context = context,
+                                            seasonNumber = episode.seasonNumber,
+                                            episodeNumber = episode.episodeNumber
+                                        )
+                                    }
+                                )
+
                                 Spacer(modifier = Modifier.height(AppTheme.size.large))
                             }
                         }
@@ -265,12 +282,61 @@ private fun SeasonChips(
         }
     }
 }
+private const val WATCH_BASE_URL = "https://web.topcinemaa.com"
 
+private fun arabicSeasonName(seasonNumber: Int): String {
+    return when (seasonNumber) {
+        1 -> "الاول"
+        2 -> "الثاني"
+        3 -> "الثالث"
+        4 -> "الرابع"
+        5 -> "الخامس"
+        6 -> "السادس"
+        7 -> "السابع"
+        8 -> "الثامن"
+        9 -> "التاسع"
+        10 -> "العاشر"
+        else -> seasonNumber.toString()
+    }
+}
+
+private fun buildEpisodeWatchUrl(
+    seasonNumber: Int,
+    episodeNumber: Int
+): String {
+    val seasonArabicName = arabicSeasonName(seasonNumber)
+
+    val slug =
+        "مسلسل-rick-and-morty-الموسم-$seasonArabicName-الحلقة-$episodeNumber-مترجمة"
+
+    return "https://web.topcinemaa.com/${Uri.encode(slug, "-")}/"
+}
+private fun openEpisodeInBrowser(
+    context: android.content.Context,
+    seasonNumber: Int,
+    episodeNumber: Int
+) {
+    val url = buildEpisodeWatchUrl(
+        seasonNumber = seasonNumber,
+        episodeNumber = episodeNumber
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
 @Composable
-fun EpisodeItem(episode: Episode) {
+fun EpisodeItem(
+    episode: Episode,
+    onClick: () -> Unit
+) {
     Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = AppTheme.shape.container,
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colorScheme.cardBackground),
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colorScheme.cardBackground
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -285,9 +351,14 @@ fun EpisodeItem(episode: Episode) {
                     tint = AppTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
+
                 Text(
-                    text = "S%02dE%02d".format(episode.seasonNumber, episode.episodeNumber),
+                    text = "S%02dE%02d".format(
+                        episode.seasonNumber,
+                        episode.episodeNumber
+                    ),
                     style = AppTheme.typography.labelNormal,
                     color = AppTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
@@ -312,7 +383,9 @@ fun EpisodeItem(episode: Episode) {
                     tint = AppTheme.colorScheme.textSecondary,
                     modifier = Modifier.size(14.dp)
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
+
                 Text(
                     text = episode.airDate,
                     style = AppTheme.typography.paragraph,
